@@ -1,5 +1,7 @@
 # 1. Project Structure
 
+```bash
+
 Toxy-Bot/
 │── data/                    # Store datasets (raw, processed)
 │── models/                  # Trained models, checkpoints
@@ -14,6 +16,8 @@ Toxy-Bot/
 │── main.py                  # Entry point
 │── README.md                # Project documentation
 │── .env
+
+```
 
 
 # 2. Development Plan
