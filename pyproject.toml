@@ -1,0 +1,17 @@
+[project]
+name = "toxy-bot"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "anitamaxvim", email = "107803920+anitamaxvim@users.noreply.github.com" }
+]
+requires-python = ">=3.13"
+dependencies = []
+
+[project.scripts]
+toxy-bot = "toxy_bot:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
