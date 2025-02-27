@@ -22,7 +22,7 @@ Toxy-Bot/
 
 # 2. Development Plan
 
-**Phase 1**: Data Handling & Preprocessing
+**Phase 1**: Data Handling & Preprocessing ✅
 
     Download Kaggle dataset and store in data/
     Clean, preprocess (tokenization, padding, text augmentation)
