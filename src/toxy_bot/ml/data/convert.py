@@ -7,32 +7,30 @@ from toxy_bot.utils.config import CONFIG
 
 
 def convert_to_tf_datasets() -> None:
-    processed_data_dir = Path(CONFIG["paths"]["processed_data"])
-    tf_data_dir = Path(CONFIG["paths"]["tensorflow_data"])
+    PROCESSED_DATA_DIR = Path(CONFIG["paths"]["processed_data"])
+    TF_DATA_DIR = Path(CONFIG["paths"]["tensorflow_data"])
+    BATCH_SIZE = CONFIG["dataset"]["batch_size"]
 
-    train_df = pd.read_csv(processed_data_dir / "train.csv")
-    val_df = pd.read_csv(processed_data_dir / "val.csv")
-    test_df = pd.read_csv(processed_data_dir / "test.csv")
+    TF_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-    train_ds = _df_to_tf_dataset(train_df)
-    val_ds = _df_to_tf_dataset(val_df)
-    test_ds = _df_to_tf_dataset(test_df)
+    datasets = {}
+    for split in ["train", "val", "test"]:
+        file_path = PROCESSED_DATA_DIR / f"{split}.csv"
+        assert file_path.exists(), f"Missing file: {file_path}"
 
-    train_ds.save(str(tf_data_dir / "train"))
-    val_ds.save(str(tf_data_dir / "val"))
-    test_ds.save(str(tf_data_dir / "test"))
+        df = pd.read_csv(file_path)
+        datasets[split] = _df_to_tf_dataset(df, BATCH_SIZE)
+        datasets[split].save(str(TF_DATA_DIR / split))
 
-    print(f"TensorFLow datasets saved to {tf_data_dir}")
-    print("Train batches: ", len(train_ds))
-    print("Val batches: ", len(val_ds))
-    print("Test batches: ", len(test_ds))
+    print(f"TensorFlow datasets saved to {TF_DATA_DIR}")
+    for split, ds in datasets.items():
+        print(f"{split.capitalize()} batches: {len(ds)}")
 
 
-def _df_to_tf_dataset(df: pd.DataFrame) -> tf.data.Dataset:
+def _df_to_tf_dataset(df: pd.DataFrame, batch_size: int) -> tf.data.Dataset:
     features = df[CONFIG["dataset"]["features"]].values
     labels = df[CONFIG["dataset"]["labels"]].values
-    dataset = tf.data.Dataset.from_tensor_slices((features, labels))
-    return dataset.batch(CONFIG["dataset"]["batch_size"])
+    return tf.data.Dataset.from_tensor_slices((features, labels)).batch(batch_size)
 
 
 if __name__ == "__main__":

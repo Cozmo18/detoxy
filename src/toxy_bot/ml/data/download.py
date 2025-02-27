@@ -14,10 +14,9 @@ class Files(Enum):
 
 
 def download_dataset(force_download: bool = False) -> None:
-    raw_data_dir = Path(CONFIG["paths"]["raw_data"])
-    raw_data_dir.mkdir(parents=True, exist_ok=True)
+    RAW_DATA_DIR = Path(CONFIG["paths"]["raw_data"])
+    RAW_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-    # Kaggle downloads to cache dir
     handle = CONFIG["dataset"]["kaggle_handle"]
     download_dir = Path(
         kagglehub.dataset_download(
@@ -28,18 +27,11 @@ def download_dataset(force_download: bool = False) -> None:
 
     for file in Files:
         source = download_dir / file.value
-        destination = raw_data_dir / file.value
+        destination = RAW_DATA_DIR / file.value
+        assert source.exists(), f"Download failed: {file.value} is missing."
+        shutil.copy2(source, destination)
 
-        if not source.exists():
-            raise FileNotFoundError(
-                f"Download failed. The {file.value} file is missing."
-            )
-        else:
-            shutil.copy2(source, destination)
-
-    print(f"Data downloaded to {raw_data_dir}")
-
-    return None
+    print(f"Dataset downloaded successfully to: {RAW_DATA_DIR}")
 
 
 if __name__ == "__main__":

@@ -27,3 +27,8 @@ pipeline = "toxy_bot.ml.data.pipeline:run_pipeline"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pandas-stubs>=2.2.3.241126",
+]
