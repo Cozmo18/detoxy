@@ -1,0 +1,14 @@
+paths:
+  raw_data: "data/raw/"
+  processed_data: "data/processed/"
+  tensorflow_data: "data/tensorflow/"
+
+dataset:
+  kaggle_handle: "julian3833/jigsaw-toxic-comment-classification-challenge"
+
+  features: ["comment_text"]
+  labels:
+    ["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]
+
+  val_size: 0.2
+  batch_size: 128
