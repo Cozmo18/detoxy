@@ -14,6 +14,9 @@ dependencies = [
     "scikit-learn>=1.6.1",
     "scikit-multilearn>=0.2.0",
     "tensorflow==2.15.1",
+    "tensorflow-text==2.15",
+    "tf-models-official>=2.15.0",
+    "tfds-nightly>=4.9.7.dev202502280044",
 ]
 
 [tool.pyright]
@@ -29,6 +32,4 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [dependency-groups]
-dev = [
-    "pandas-stubs>=2.2.3.241126",
-]
+dev = ["pandas-stubs>=2.2.3.241126"]

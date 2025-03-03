@@ -3,6 +3,8 @@ paths:
   processed_data: "data/processed/"
   tensorflow_data: "data/tensorflow/"
 
+  figures: "reports/figures"
+
 dataset:
   kaggle_handle: "julian3833/jigsaw-toxic-comment-classification-challenge"
 
