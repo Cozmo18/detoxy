@@ -1,20 +1,15 @@
-import os
-
-import tensorflow as tf
-
-
-def connect_to_tpu_worker():
-    if os.environ["COLAB_TPU_ADDR"]:
-        cluster_resolver = tf.distribute.cluster_resolver.TPUClusterResolver(tpu="")
-        tf.config.experimental_connect_to_cluster(cluster_resolver)
-        tf.tpu.experimental.initialize_tpu_system(cluster_resolver)
-        strategy = tf.distribute.TPUStrategy(cluster_resolver)
-        print("Using TPU")
-    elif tf.config.list_physical_devices("GPU"):
-        strategy = tf.distribute.MirroredStrategy()
-        print("Using GPU")
-    else:
-        raise ValueError("Running on CPU is not recommended.")
+# def connect_to_tpu_worker():
+#     if os.environ["COLAB_TPU_ADDR"]:
+#         cluster_resolver = tf.distribute.cluster_resolver.TPUClusterResolver(tpu="")
+#         tf.config.experimental_connect_to_cluster(cluster_resolver)
+#         tf.tpu.experimental.initialize_tpu_system(cluster_resolver)
+#         strategy = tf.distribute.TPUStrategy(cluster_resolver)
+#         print("Using TPU")
+#     elif tf.config.list_physical_devices("GPU"):
+#         strategy = tf.distribute.MirroredStrategy()
+#         print("Using GPU")
+#     else:
+#         raise ValueError("Running on CPU is not recommended.")
 
 
 def get_encoder_url(bert_model: str) -> str:
