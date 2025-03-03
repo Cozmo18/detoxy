@@ -18,6 +18,8 @@ dependencies = [
     "tf-models-official>=2.15.0",
     "tfds-nightly>=4.9.7.dev202502280044",
 ]
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
 
 [tool.pyright]
 venvPath = "."
