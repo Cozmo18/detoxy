@@ -6,9 +6,15 @@ import tensorflow_text as text  # noqa: F401
 
 from toxy_bot.ml.model.preprocess import make_bert_preprocess_model
 from toxy_bot.ml.model.utils import get_encoder_url
+from toxy_bot.utils.config import CONFIG
 
 
-class ToxyBertClassifier(tf.keras.Model):  # type: ignore
+def make_bert_classifier_model(bert_model: str) -> tf.keras.Model: # type: ignore
+    num_labels = len(CONFIG["dataset"]["labels"])
+    return Classifier(bert_model, num_labels)
+
+
+class Classifier(tf.keras.Model):  # type: ignore
     """BERT-based classifier for multi-label text classification."""
 
     def __init__(self, bert_model: str, num_labels: int) -> None:
@@ -44,10 +50,10 @@ class ToxyBertClassifier(tf.keras.Model):  # type: ignore
 if __name__ == "__main__":
     BERT_MODEL_NAME = "small_bert/bert_en_uncased_L-4_H-512_A-8"
     preprocessor = make_bert_preprocess_model(BERT_MODEL_NAME)
+    classifier = make_bert_classifier_model(BERT_MODEL_NAME)
+
     test_text = [tf.constant(["some random test sentence", "some different text"])]
     text_preprocessed = preprocessor(test_text)
-
-    classifier = ToxyBertClassifier(BERT_MODEL_NAME, 6)
     test_result = classifier(text_preprocessed)
     print(test_result)
 
