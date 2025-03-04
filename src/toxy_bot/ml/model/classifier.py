@@ -6,11 +6,11 @@ import tensorflow_text as text  # noqa: F401
 
 from toxy_bot.ml.model.preprocess import make_bert_preprocess_model
 from toxy_bot.ml.model.utils import get_encoder_url
-from toxy_bot.utils.config import CONFIG
+from toxy_bot.utils import config
 
 
-def make_bert_classifier_model(bert_model: str) -> tf.keras.Model: # type: ignore
-    num_labels = len(CONFIG["dataset"]["labels"])
+def make_bert_classifier_model(bert_model: str) -> tf.keras.Model:  # type: ignore
+    num_labels = len(config.DATASET_LABELS)
     return Classifier(bert_model, num_labels)
 
 

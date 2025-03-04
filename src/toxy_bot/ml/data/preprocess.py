@@ -1,32 +1,34 @@
-from pathlib import Path
 from typing import Tuple
 
 import pandas as pd
 from skmultilearn.model_selection import iterative_train_test_split
 
 from toxy_bot.ml.data.schemas import CommentData
-from toxy_bot.utils.config import CONFIG
+from toxy_bot.utils import config
 
 
-def process_data() -> None:
+def process_data(val_size: float = 0.2) -> None:
+    if val_size < 0 or val_size > 1:
+        raise ValueError(
+            "The validation size must be a positive float between 0 and 1."
+        )
     train = _load_data("train.csv")
     test = _load_data("test.csv", "test_labels.csv")
 
-    features = CONFIG["dataset"]["features"]
-    labels = CONFIG["dataset"]["labels"]
+    features = config.DATASET_FEATURES
+    labels = config.DATASET_LABELS
 
     train, test = [df[features + labels].dropna() for df in (train, test)]
     train, test = map(lambda df: _drop_untested_samples(df, labels), (train, test))
-    train, val = _iter_split_df(train, features, labels, CONFIG["dataset"]["val_size"])
+    train, val = _iter_split_df(train, features, labels, val_size)
 
     _save_data(train, val, test)
 
-    print(f"Processed data saved to {CONFIG['paths']['processed_data']}")
     print(f"Train: {train.shape}, Val: {val.shape}, Test: {test.shape}")
 
 
 def _load_data(inputs_file: str, labels_file: str | None = None) -> pd.DataFrame:
-    RAW_DATA_DIR = Path(CONFIG["paths"]["raw_data"])
+    RAW_DATA_DIR = config.RAW_DATA_DIR
     inputs_df = pd.read_csv(RAW_DATA_DIR / inputs_file)
 
     if labels_file:
@@ -51,9 +53,6 @@ def _iter_split_df(
 
     X, y = df[features].values, df[labels].values
 
-    # X = df[features].values.reshape(-1, 1)  # type: ignore
-    # y = df[labels].values  # type: ignore
-
     X_train, y_train, X_test, y_test = iterative_train_test_split(X, y, test_size)
 
     train_df = pd.DataFrame(columns=df.columns)
@@ -70,11 +69,13 @@ def _drop_untested_samples(df: pd.DataFrame, labels: list[str]) -> pd.DataFrame:
 
 
 def _save_data(train: pd.DataFrame, val: pd.DataFrame, test: pd.DataFrame) -> None:
-    PROCESSED_DATA_DIR = Path(CONFIG["paths"]["processed_data"])
+    PROCESSED_DATA_DIR = config.PROCESSED_DATA_DIR
     PROCESSED_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
     for split, df in zip(["train", "val", "test"], [train, val, test]):
         df.to_csv(PROCESSED_DATA_DIR / f"{split}.csv", index=False)
+
+    print(f"Processed data saved to: {PROCESSED_DATA_DIR}")
 
 
 if __name__ == "__main__":

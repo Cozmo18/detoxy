@@ -12,5 +12,3 @@ dataset:
   labels:
     ["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]
 
-  val_size: 0.2
-  batch_size: 128
