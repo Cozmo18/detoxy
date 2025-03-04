@@ -12,36 +12,16 @@ dependencies = [
     "pandas>=2.2.3",
     "pydantic>=2.10.6",
     "scikit-learn>=1.6.1",
-    "scikit-multilearn>=0.2.0", 
+    "scikit-multilearn>=0.2.0",
+    "tensorflow==2.16.2",
 ]
 
 license = "MIT"
 license-files = ["LICEN[CS]E*"]
 
-[project.optional-dependencies]
-cpu = [
-  "tensorflow==2.16.1",
-  "tensorflow-text==2.16.1",
-  "tf-models-official>=2.16.0",
-]
-
-gpu = [
-  "tensorflow>=2.18",
-  "tensorflow-text>=2.18",
-  "tf-models-official>=2.18",
-]
-
-[tool.uv]
-conflicts = [
-  [
-    { extra = "cpu" },
-    { extra = "gpu" },
-  ],
-]
-
 [project.scripts]
 toxy-bot = "toxy_bot:main"
-pipeline = "toxy_bot.ml.data.pipeline:run_pipeline"
+make_datasets = "toxy_bot.ml.data.pipeline:run_pipeline"
 
 [build-system]
 requires = ["hatchling"]
