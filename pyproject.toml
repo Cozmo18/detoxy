@@ -13,10 +13,9 @@ dependencies = [
     "pydantic>=2.10.6",
     "scikit-learn>=1.6.1",
     "scikit-multilearn>=0.2.0",
-    "tensorflow==2.15.1",
-    "tensorflow-text==2.15",
-    "tf-models-official>=2.15.0",
-    "tfds-nightly>=4.9.7.dev202502280044",
+    "tensorflow==2.16.2",
+    "tensorflow-text>=2.16.1",
+    "tf-models-official>=2.16.0",
 ]
 license = "MIT"
 license-files = ["LICEN[CS]E*"]

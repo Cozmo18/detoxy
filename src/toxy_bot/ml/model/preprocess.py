@@ -1,5 +1,6 @@
 from typing import List
 
+import numpy as np
 import tensorflow as tf
 import tensorflow_hub as hub
 import tensorflow_text as text  # noqa: F401
@@ -62,8 +63,15 @@ if __name__ == "__main__":
     BERT_MODEL_NAME = "small_bert/bert_en_uncased_L-4_H-512_A-8"
     preprocess_model = make_bert_preprocess_model(BERT_MODEL_NAME)
 
-    test_text = [tf.constant(["This is a test comment."])]
-    text_preprocessed = preprocess_model(test_text)
+    test_preprocess_model = make_bert_preprocess_model(
+        BERT_MODEL_NAME, ["my_input1", "my_input2"]
+    )
+
+    test_text = [
+        np.array(["some random test sentence"]),
+        np.array(["another sentence"]),
+    ]
+    text_preprocessed = test_preprocess_model(test_text)
 
     print("Keys           : ", list(text_preprocessed.keys()))
     print("Shape Word Ids : ", text_preprocessed["input_word_ids"].shape)

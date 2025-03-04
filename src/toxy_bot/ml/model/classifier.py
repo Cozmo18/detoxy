@@ -2,6 +2,7 @@ from typing import Dict
 
 import tensorflow as tf
 import tensorflow_hub as hub
+import tensorflow_text as text  # noqa: F401
 
 from toxy_bot.ml.model.preprocess import make_bert_preprocess_model
 from toxy_bot.ml.model.utils import get_encoder_url
