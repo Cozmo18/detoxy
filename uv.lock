@@ -2,16 +2,31 @@ version = 1
 revision = 1
 requires-python = ">=3.11"
 resolution-markers = [
-    "python_full_version >= '3.13' and sys_platform == 'darwin'",
-    "python_full_version == '3.12.*' and sys_platform == 'darwin'",
-    "python_full_version >= '3.13' and platform_machine == 'aarch64' and sys_platform == 'linux'",
-    "python_full_version == '3.12.*' and platform_machine == 'aarch64' and sys_platform == 'linux'",
-    "(python_full_version >= '3.13' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version >= '3.13' and sys_platform != 'darwin' and sys_platform != 'linux')",
-    "(python_full_version == '3.12.*' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version == '3.12.*' and sys_platform != 'darwin' and sys_platform != 'linux')",
-    "python_full_version < '3.12' and sys_platform == 'darwin'",
-    "python_full_version < '3.12' and platform_machine == 'aarch64' and sys_platform == 'linux'",
-    "(python_full_version < '3.12' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version < '3.12' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "python_full_version >= '3.13' and sys_platform == 'darwin' and extra != 'extra-8-toxy-bot-cpu' and extra == 'extra-8-toxy-bot-gpu'",
+    "python_full_version == '3.12.*' and sys_platform == 'darwin' and extra != 'extra-8-toxy-bot-cpu' and extra == 'extra-8-toxy-bot-gpu'",
+    "python_full_version >= '3.13' and platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-8-toxy-bot-cpu' and extra == 'extra-8-toxy-bot-gpu'",
+    "python_full_version == '3.12.*' and platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-8-toxy-bot-cpu' and extra == 'extra-8-toxy-bot-gpu'",
+    "(python_full_version >= '3.13' and platform_machine != 'aarch64' and sys_platform == 'linux' and extra != 'extra-8-toxy-bot-cpu' and extra == 'extra-8-toxy-bot-gpu') or (python_full_version >= '3.13' and sys_platform != 'darwin' and sys_platform != 'linux' and extra != 'extra-8-toxy-bot-cpu' and extra == 'extra-8-toxy-bot-gpu')",
+    "(python_full_version == '3.12.*' and platform_machine != 'aarch64' and sys_platform == 'linux' and extra != 'extra-8-toxy-bot-cpu' and extra == 'extra-8-toxy-bot-gpu') or (python_full_version == '3.12.*' and sys_platform != 'darwin' and sys_platform != 'linux' and extra != 'extra-8-toxy-bot-cpu' and extra == 'extra-8-toxy-bot-gpu')",
+    "python_full_version < '3.12' and sys_platform == 'darwin' and extra != 'extra-8-toxy-bot-cpu' and extra == 'extra-8-toxy-bot-gpu'",
+    "python_full_version < '3.12' and platform_machine == 'aarch64' and sys_platform == 'linux' and extra != 'extra-8-toxy-bot-cpu' and extra == 'extra-8-toxy-bot-gpu'",
+    "(python_full_version < '3.12' and platform_machine != 'aarch64' and sys_platform == 'linux' and extra != 'extra-8-toxy-bot-cpu' and extra == 'extra-8-toxy-bot-gpu') or (python_full_version < '3.12' and sys_platform != 'darwin' and sys_platform != 'linux' and extra != 'extra-8-toxy-bot-cpu' and extra == 'extra-8-toxy-bot-gpu')",
+    "python_full_version >= '3.13' and sys_platform == 'darwin' and extra == 'extra-8-toxy-bot-cpu' and extra != 'extra-8-toxy-bot-gpu'",
+    "python_full_version == '3.12.*' and sys_platform == 'darwin' and extra == 'extra-8-toxy-bot-cpu' and extra != 'extra-8-toxy-bot-gpu'",
+    "python_full_version >= '3.13' and platform_machine == 'aarch64' and sys_platform == 'linux' and extra == 'extra-8-toxy-bot-cpu' and extra != 'extra-8-toxy-bot-gpu'",
+    "python_full_version == '3.12.*' and platform_machine == 'aarch64' and sys_platform == 'linux' and extra == 'extra-8-toxy-bot-cpu' and extra != 'extra-8-toxy-bot-gpu'",
+    "(python_full_version >= '3.13' and platform_machine != 'aarch64' and sys_platform == 'linux' and extra == 'extra-8-toxy-bot-cpu' and extra != 'extra-8-toxy-bot-gpu') or (python_full_version >= '3.13' and sys_platform != 'darwin' and sys_platform != 'linux' and extra == 'extra-8-toxy-bot-cpu' and extra != 'extra-8-toxy-bot-gpu')",
+    "(python_full_version == '3.12.*' and platform_machine != 'aarch64' and sys_platform == 'linux' and extra == 'extra-8-toxy-bot-cpu' and extra != 'extra-8-toxy-bot-gpu') or (python_full_version == '3.12.*' and sys_platform != 'darwin' and sys_platform != 'linux' and extra == 'extra-8-toxy-bot-cpu' and extra != 'extra-8-toxy-bot-gpu')",
+    "python_full_version < '3.12' and sys_platform == 'darwin' and extra == 'extra-8-toxy-bot-cpu' and extra != 'extra-8-toxy-bot-gpu'",
+    "python_full_version < '3.12' and platform_machine == 'aarch64' and sys_platform == 'linux' and extra == 'extra-8-toxy-bot-cpu' and extra != 'extra-8-toxy-bot-gpu'",
+    "(python_full_version < '3.12' and platform_machine != 'aarch64' and sys_platform == 'linux' and extra == 'extra-8-toxy-bot-cpu' and extra != 'extra-8-toxy-bot-gpu') or (python_full_version < '3.12' and sys_platform != 'darwin' and sys_platform != 'linux' and extra == 'extra-8-toxy-bot-cpu' and extra != 'extra-8-toxy-bot-gpu')",
+    "python_full_version >= '3.12' and extra != 'extra-8-toxy-bot-cpu' and extra != 'extra-8-toxy-bot-gpu'",
+    "python_full_version < '3.12' and extra != 'extra-8-toxy-bot-cpu' and extra != 'extra-8-toxy-bot-gpu'",
 ]
+conflicts = [[
+    { package = "toxy-bot", extra = "cpu" },
+    { package = "toxy-bot", extra = "gpu" },
+]]
 
 [[package]]
 name = "absl-py"
@@ -20,6 +35,23 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/7a/8f/fc001b92ecc467cc32ab38398bd0bfb45df46e7523bf33c2ad22a505f06e/absl-py-2.1.0.tar.gz", hash = "sha256:7820790efbb316739cde8b4e19357243fc3608a152024288513dd968d7d959ff", size = 118055 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a2/ad/e0d3c824784ff121c03cc031f944bc7e139a8f1870ffd2845cc2dd76f6c4/absl_py-2.1.0-py3-none-any.whl", hash = "sha256:526a04eadab8b4ee719ce68f204172ead1027549089702d99b9059f129ff1308", size = 133706 },
+]
+
+[[package]]
+name = "ai-edge-litert"
+version = "1.1.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "flatbuffers" },
+    { name = "numpy" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/02/c7/e2050079554e546793e70be8ac41ea71a9553ca392f329097b53d4bf63c8/ai_edge_litert-1.1.2-cp311-cp311-macosx_12_0_arm64.whl", hash = "sha256:36e624d6d3af91ee54a6ebcf26e48b5dacbdd1deee0d396a1ca7dae813ed532b", size = 3853190 },
+    { url = "https://files.pythonhosted.org/packages/31/eb/fd19065cbd75a81c3c11e8fa05316bea5fe94d7953d9fe757bea84f7af3f/ai_edge_litert-1.1.2-cp311-cp311-manylinux_2_17_aarch64.whl", hash = "sha256:63803d91fcad468e790136ce9a67d466c7d5978e1f5b5b123ccf716f574059fe", size = 1943873 },
+    { url = "https://files.pythonhosted.org/packages/2a/82/10ec6bc8847eef99c4bc95d89111f3dd1b446e62fca0f6c134533187bfdb/ai_edge_litert-1.1.2-cp311-cp311-manylinux_2_17_x86_64.whl", hash = "sha256:346792e27af84ec49820e5e9b65d0545a297c414e752b689dee7cd9e9afea17b", size = 3512519 },
+    { url = "https://files.pythonhosted.org/packages/80/9d/3163379ab1f5f400033d01957fff857e2c230a4efaa50165ada48b1de88c/ai_edge_litert-1.1.2-cp312-cp312-macosx_12_0_arm64.whl", hash = "sha256:4c638e76ea53155ff90284e329e6e0f93b2a99634d2377562c209d70bdac615d", size = 3852777 },
+    { url = "https://files.pythonhosted.org/packages/9f/e6/5dd04b6394c48281dbc877f378100e5dffb1bca66b9cca85b0de5421130b/ai_edge_litert-1.1.2-cp312-cp312-manylinux_2_17_aarch64.whl", hash = "sha256:7989be189f5cb942b5f54ef6a391b16d3bc7676beabda5a07045f3704737f552", size = 1943680 },
+    { url = "https://files.pythonhosted.org/packages/78/be/fbd03f87325cdbf765d86a4aff55af4f9c80cab7cf4b3f50795917b16a1d/ai_edge_litert-1.1.2-cp312-cp312-manylinux_2_17_x86_64.whl", hash = "sha256:987b09037ce13202a870d849ad677b500ab33a7fe500075720d7d0e895ca58fe", size = 3513326 },
 ]
 
 [[package]]
@@ -37,11 +69,13 @@ version = "0.6.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "absl-py", marker = "sys_platform != 'darwin'" },
-    { name = "etils", extra = ["epath"], marker = "sys_platform != 'darwin'" },
+    { name = "etils", extra = ["epath"], marker = "(sys_platform != 'darwin' and extra == 'extra-8-toxy-bot-cpu') or (sys_platform != 'darwin' and extra == 'extra-8-toxy-bot-gpu') or (extra == 'extra-8-toxy-bot-cpu' and extra == 'extra-8-toxy-bot-gpu')" },
 ]
 wheels = [
+    { url = "https://files.pythonhosted.org/packages/f1/95/31f1d2493eee19d7bf4c8bcd523e73205499d27640f45b111b64e68374dc/array_record-0.6.0-cp311-cp311-macosx_11_0_universal2.whl", hash = "sha256:1ea2596fb8bf19eade5e8c2d0dce9c4dc6a9d14222551863d32238f7e5754afe", size = 1903658 },
     { url = "https://files.pythonhosted.org/packages/e5/43/f73e572290db1dd29dbd5bff48522ef1e52edd96005b225cfa8aaece3985/array_record-0.6.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:035575c271461f26a0684db5e3b65a487233d0921880933f680e7aeb86130a39", size = 2246584 },
     { url = "https://files.pythonhosted.org/packages/0c/df/16d19d8aaa61c24896ec94313b271fc16320e402a311bcc54c42ee190a70/array_record-0.6.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4c85df128819191a4f85937ab390f59f181ab7b6183626e5d0f5ecab47ecb022", size = 2298237 },
+    { url = "https://files.pythonhosted.org/packages/3d/b5/907a718461b643f1a101c5d2df2a6c4899ae0e15a870f302826c9a803ace/array_record-0.6.0-cp312-cp312-macosx_11_0_universal2.whl", hash = "sha256:af81f6ae5404a42962b96f4efacd9a9b098cb2eeddae068cde9be0b8bfbfc457", size = 1904611 },
     { url = "https://files.pythonhosted.org/packages/31/a0/a870569df6e941c450cb3c0a2735c314efce141b319fd0065c3ab18a80cb/array_record-0.6.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:370cf9bdcdaab7537e897aae017ea607f75ac33378991d2fbb1e52b1fedb2bcf", size = 2246222 },
     { url = "https://files.pythonhosted.org/packages/a4/b0/49c973a170836e62d3be1ac081eb78c0ec12d610a3ac1be58b8b70ed3c4c/array_record-0.6.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c418b2b83410c630e6662d4ce0156e4e5120ee27ea9ed7672dd87c9cda39a060", size = 2298463 },
 ]
@@ -393,7 +427,8 @@ dependencies = [
     { name = "google-auth" },
     { name = "googleapis-common-protos" },
     { name = "proto-plus" },
-    { name = "protobuf" },
+    { name = "protobuf", version = "4.25.6", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "protobuf", version = "5.29.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-8-toxy-bot-gpu'" },
     { name = "requests" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/b8/b7/481c83223d7b4f02c7651713fceca648fa3336e1571b9804713f66bca2d8/google_api_core-2.24.1.tar.gz", hash = "sha256:f8b36f5456ab0dd99a1b693a40a31d1e7757beea380ad1b38faaf8941eae9d8a", size = 163508 }
@@ -461,7 +496,8 @@ name = "googleapis-common-protos"
 version = "1.69.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "protobuf" },
+    { name = "protobuf", version = "4.25.6", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "protobuf", version = "5.29.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-8-toxy-bot-gpu'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/c2/92/6bb11dad062ad7cc40665d0a8986193d54f1a0032b510e84e7182df9e661/googleapis_common_protos-1.69.0.tar.gz", hash = "sha256:5a46d58af72846f59009b9c4710425b9af2139555c71837081706b213b298187", size = 61264 }
 wheels = [
@@ -615,7 +651,8 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "absl-py" },
     { name = "h5py" },
-    { name = "ml-dtypes" },
+    { name = "ml-dtypes", version = "0.3.2", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "ml-dtypes", version = "0.4.1", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-8-toxy-bot-gpu'" },
     { name = "namex" },
     { name = "numpy" },
     { name = "optree" },
@@ -894,8 +931,19 @@ wheels = [
 name = "ml-dtypes"
 version = "0.3.2"
 source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.13' and sys_platform == 'darwin'",
+    "python_full_version == '3.12.*' and sys_platform == 'darwin'",
+    "python_full_version >= '3.13' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "python_full_version == '3.12.*' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version >= '3.13' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version >= '3.13' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "(python_full_version == '3.12.*' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version == '3.12.*' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "python_full_version < '3.12' and sys_platform == 'darwin'",
+    "python_full_version < '3.12' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version < '3.12' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version < '3.12' and sys_platform != 'darwin' and sys_platform != 'linux')",
+]
 dependencies = [
-    { name = "numpy" },
+    { name = "numpy", marker = "extra == 'extra-8-toxy-bot-cpu'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/39/7d/8d85fcba868758b3a546e6914e727abd8f29ea6918079f816975c9eecd63/ml_dtypes-0.3.2.tar.gz", hash = "sha256:533059bc5f1764fac071ef54598db358c167c51a718f68f5bb55e3dee79d2967", size = 692014 }
 wheels = [
@@ -907,6 +955,36 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/6a/05/ec30199c791cf0d788a26f56d8efb8ee4133ede79a9680fd8cc05e706404/ml_dtypes-0.3.2-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:3a17ef2322e60858d93584e9c52a5be7dd6236b056b7fa1ec57f1bb6ba043e33", size = 2180925 },
     { url = "https://files.pythonhosted.org/packages/e5/f1/93219c44bae4017e6e43391fa4433592de08e05def9d885227d3596f21a5/ml_dtypes-0.3.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e8505946df1665db01332d885c2020b4cb9e84a8b1241eb4ba69d59591f65855", size = 2160573 },
     { url = "https://files.pythonhosted.org/packages/47/f3/847da54c3d243ff2aa778078ecf09da199194d282744718ef325dd8afd41/ml_dtypes-0.3.2-cp312-cp312-win_amd64.whl", hash = "sha256:f47619d978ab1ae7dfdc4052ea97c636c6263e1f19bd1be0e42c346b98d15ff4", size = 128649 },
+]
+
+[[package]]
+name = "ml-dtypes"
+version = "0.4.1"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.13' and sys_platform == 'darwin'",
+    "python_full_version == '3.12.*' and sys_platform == 'darwin'",
+    "python_full_version >= '3.13' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "python_full_version == '3.12.*' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version >= '3.13' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version >= '3.13' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "(python_full_version == '3.12.*' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version == '3.12.*' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "python_full_version < '3.12' and sys_platform == 'darwin'",
+    "python_full_version < '3.12' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version < '3.12' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version < '3.12' and sys_platform != 'darwin' and sys_platform != 'linux')",
+]
+dependencies = [
+    { name = "numpy", marker = "extra == 'extra-8-toxy-bot-gpu'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/fd/15/76f86faa0902836cc133939732f7611ace68cf54148487a99c539c272dc8/ml_dtypes-0.4.1.tar.gz", hash = "sha256:fad5f2de464fd09127e49b7fd1252b9006fb43d2edc1ff112d390c324af5ca7a", size = 692594 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d1/76/9835c8609c29f2214359e88f29255fc4aad4ea0f613fb48aa8815ceda1b6/ml_dtypes-0.4.1-cp311-cp311-macosx_10_9_universal2.whl", hash = "sha256:2d55b588116a7085d6e074cf0cdb1d6fa3875c059dddc4d2c94a4cc81c23e975", size = 397973 },
+    { url = "https://files.pythonhosted.org/packages/7e/99/e68c56fac5de973007a10254b6e17a0362393724f40f66d5e4033f4962c2/ml_dtypes-0.4.1-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:e138a9b7a48079c900ea969341a5754019a1ad17ae27ee330f7ebf43f23877f9", size = 2185134 },
+    { url = "https://files.pythonhosted.org/packages/28/bc/6a2344338ea7b61cd7b46fb24ec459360a5a0903b57c55b156c1e46c644a/ml_dtypes-0.4.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:74c6cfb5cf78535b103fde9ea3ded8e9f16f75bc07789054edc7776abfb3d752", size = 2163661 },
+    { url = "https://files.pythonhosted.org/packages/e8/d3/ddfd9878b223b3aa9a930c6100a99afca5cfab7ea703662e00323acb7568/ml_dtypes-0.4.1-cp311-cp311-win_amd64.whl", hash = "sha256:274cc7193dd73b35fb26bef6c5d40ae3eb258359ee71cd82f6e96a8c948bdaa6", size = 126727 },
+    { url = "https://files.pythonhosted.org/packages/ba/1a/99e924f12e4b62139fbac87419698c65f956d58de0dbfa7c028fa5b096aa/ml_dtypes-0.4.1-cp312-cp312-macosx_10_9_universal2.whl", hash = "sha256:827d3ca2097085cf0355f8fdf092b888890bb1b1455f52801a2d7756f056f54b", size = 405077 },
+    { url = "https://files.pythonhosted.org/packages/8f/8c/7b610bd500617854c8cc6ed7c8cfb9d48d6a5c21a1437a36a4b9bc8a3598/ml_dtypes-0.4.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:772426b08a6172a891274d581ce58ea2789cc8abc1c002a27223f314aaf894e7", size = 2181554 },
+    { url = "https://files.pythonhosted.org/packages/c7/c6/f89620cecc0581dc1839e218c4315171312e46c62a62da6ace204bda91c0/ml_dtypes-0.4.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:126e7d679b8676d1a958f2651949fbfa182832c3cd08020d8facd94e4114f3e9", size = 2160488 },
+    { url = "https://files.pythonhosted.org/packages/ae/11/a742d3c31b2cc8557a48efdde53427fd5f9caa2fa3c9c27d826e78a66f51/ml_dtypes-0.4.1-cp312-cp312-win_amd64.whl", hash = "sha256:df0fb650d5c582a9e72bb5bd96cfebb2cdb889d89daff621c8fbc60295eba66c", size = 127462 },
 ]
 
 [[package]]
@@ -1177,7 +1255,8 @@ name = "proto-plus"
 version = "1.26.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "protobuf" },
+    { name = "protobuf", version = "4.25.6", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "protobuf", version = "5.29.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-8-toxy-bot-gpu'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/26/79/a5c6cbb42268cfd3ddc652dc526889044a8798c688a03ff58e5e92b743c8/proto_plus-1.26.0.tar.gz", hash = "sha256:6e93d5f5ca267b54300880fff156b6a3386b3fa3f43b1da62e680fc0c586ef22", size = 56136 }
 wheels = [
@@ -1188,6 +1267,17 @@ wheels = [
 name = "protobuf"
 version = "4.25.6"
 source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.13' and sys_platform == 'darwin'",
+    "python_full_version == '3.12.*' and sys_platform == 'darwin'",
+    "python_full_version >= '3.13' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "python_full_version == '3.12.*' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version >= '3.13' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version >= '3.13' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "(python_full_version == '3.12.*' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version == '3.12.*' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "python_full_version < '3.12' and sys_platform == 'darwin'",
+    "python_full_version < '3.12' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version < '3.12' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version < '3.12' and sys_platform != 'darwin' and sys_platform != 'linux')",
+]
 sdist = { url = "https://files.pythonhosted.org/packages/48/d5/cccc7e82bbda9909ced3e7a441a24205ea07fea4ce23a772743c0c7611fa/protobuf-4.25.6.tar.gz", hash = "sha256:f8cfbae7c5afd0d0eaccbe73267339bff605a2315860bb1ba08eb66670a9a91f", size = 380631 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/42/41/0ff3559d9a0fbdb37c9452f2b84e61f7784d8d7b9850182c7ef493f523ee/protobuf-4.25.6-cp310-abi3-win32.whl", hash = "sha256:61df6b5786e2b49fc0055f636c1e8f0aff263808bb724b95b164685ac1bcc13a", size = 392454 },
@@ -1196,6 +1286,31 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/64/d5/7dbeb69b74fa88f297c6d8f11b7c9cef0c2e2fb1fdf155c2ca5775cfa998/protobuf-4.25.6-cp37-abi3-manylinux2014_aarch64.whl", hash = "sha256:5dd800da412ba7f6f26d2c08868a5023ce624e1fdb28bccca2dc957191e81fb5", size = 293714 },
     { url = "https://files.pythonhosted.org/packages/d4/f0/6d5c100f6b18d973e86646aa5fc09bc12ee88a28684a56fd95511bceee68/protobuf-4.25.6-cp37-abi3-manylinux2014_x86_64.whl", hash = "sha256:4434ff8bb5576f9e0c78f47c41cdf3a152c0b44de475784cd3fd170aef16205a", size = 294634 },
     { url = "https://files.pythonhosted.org/packages/71/eb/be11a1244d0e58ee04c17a1f939b100199063e26ecca8262c04827fe0bf5/protobuf-4.25.6-py3-none-any.whl", hash = "sha256:07972021c8e30b870cfc0863409d033af940213e0e7f64e27fe017b929d2c9f7", size = 156466 },
+]
+
+[[package]]
+name = "protobuf"
+version = "5.29.3"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.13' and sys_platform == 'darwin'",
+    "python_full_version == '3.12.*' and sys_platform == 'darwin'",
+    "python_full_version >= '3.13' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "python_full_version == '3.12.*' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version >= '3.13' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version >= '3.13' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "(python_full_version == '3.12.*' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version == '3.12.*' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "python_full_version < '3.12' and sys_platform == 'darwin'",
+    "python_full_version < '3.12' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version < '3.12' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version < '3.12' and sys_platform != 'darwin' and sys_platform != 'linux')",
+]
+sdist = { url = "https://files.pythonhosted.org/packages/f7/d1/e0a911544ca9993e0f17ce6d3cc0932752356c1b0a834397f28e63479344/protobuf-5.29.3.tar.gz", hash = "sha256:5da0f41edaf117bde316404bad1a486cb4ededf8e4a54891296f648e8e076620", size = 424945 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/dc/7a/1e38f3cafa022f477ca0f57a1f49962f21ad25850c3ca0acd3b9d0091518/protobuf-5.29.3-cp310-abi3-win32.whl", hash = "sha256:3ea51771449e1035f26069c4c7fd51fba990d07bc55ba80701c78f886bf9c888", size = 422708 },
+    { url = "https://files.pythonhosted.org/packages/61/fa/aae8e10512b83de633f2646506a6d835b151edf4b30d18d73afd01447253/protobuf-5.29.3-cp310-abi3-win_amd64.whl", hash = "sha256:a4fa6f80816a9a0678429e84973f2f98cbc218cca434abe8db2ad0bffc98503a", size = 434508 },
+    { url = "https://files.pythonhosted.org/packages/dd/04/3eaedc2ba17a088961d0e3bd396eac764450f431621b58a04ce898acd126/protobuf-5.29.3-cp38-abi3-macosx_10_9_universal2.whl", hash = "sha256:a8434404bbf139aa9e1300dbf989667a83d42ddda9153d8ab76e0d5dcaca484e", size = 417825 },
+    { url = "https://files.pythonhosted.org/packages/4f/06/7c467744d23c3979ce250397e26d8ad8eeb2bea7b18ca12ad58313c1b8d5/protobuf-5.29.3-cp38-abi3-manylinux2014_aarch64.whl", hash = "sha256:daaf63f70f25e8689c072cfad4334ca0ac1d1e05a92fc15c54eb9cf23c3efd84", size = 319573 },
+    { url = "https://files.pythonhosted.org/packages/a8/45/2ebbde52ad2be18d3675b6bee50e68cd73c9e0654de77d595540b5129df8/protobuf-5.29.3-cp38-abi3-manylinux2014_x86_64.whl", hash = "sha256:c027e08a08be10b67c06bf2370b99c811c466398c357e615ca88c91c07f0910f", size = 319672 },
+    { url = "https://files.pythonhosted.org/packages/fd/b2/ab07b09e0f6d143dfb839693aa05765257bceaa13d03bf1a696b78323e7a/protobuf-5.29.3-py3-none-any.whl", hash = "sha256:0a18ed4a24198528f2333802eb075e59dea9d679ab7a6c5efb017a59004d849f", size = 172550 },
 ]
 
 [[package]]
@@ -1749,19 +1864,61 @@ wheels = [
 name = "tensorboard"
 version = "2.16.2"
 source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.13' and sys_platform == 'darwin'",
+    "python_full_version == '3.12.*' and sys_platform == 'darwin'",
+    "python_full_version >= '3.13' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "python_full_version == '3.12.*' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version >= '3.13' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version >= '3.13' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "(python_full_version == '3.12.*' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version == '3.12.*' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "python_full_version < '3.12' and sys_platform == 'darwin'",
+    "python_full_version < '3.12' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version < '3.12' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version < '3.12' and sys_platform != 'darwin' and sys_platform != 'linux')",
+]
 dependencies = [
-    { name = "absl-py" },
-    { name = "grpcio" },
-    { name = "markdown" },
-    { name = "numpy" },
-    { name = "protobuf" },
-    { name = "setuptools" },
-    { name = "six" },
-    { name = "tensorboard-data-server" },
-    { name = "werkzeug" },
+    { name = "absl-py", marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "grpcio", marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "markdown", marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "numpy", marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "protobuf", version = "4.25.6", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "setuptools", marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "six", marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "tensorboard-data-server", marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "werkzeug", marker = "extra == 'extra-8-toxy-bot-cpu'" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/3a/d0/b97889ffa769e2d1fdebb632084d5e8b53fc299d43a537acee7ec0c021a3/tensorboard-2.16.2-py3-none-any.whl", hash = "sha256:9f2b4e7dad86667615c0e5cd072f1ea8403fc032a299f0072d6f74855775cc45", size = 5490335 },
+]
+
+[[package]]
+name = "tensorboard"
+version = "2.18.0"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.13' and sys_platform == 'darwin'",
+    "python_full_version == '3.12.*' and sys_platform == 'darwin'",
+    "python_full_version >= '3.13' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "python_full_version == '3.12.*' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version >= '3.13' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version >= '3.13' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "(python_full_version == '3.12.*' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version == '3.12.*' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "python_full_version < '3.12' and sys_platform == 'darwin'",
+    "python_full_version < '3.12' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version < '3.12' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version < '3.12' and sys_platform != 'darwin' and sys_platform != 'linux')",
+]
+dependencies = [
+    { name = "absl-py", marker = "extra == 'extra-8-toxy-bot-gpu'" },
+    { name = "grpcio", marker = "extra == 'extra-8-toxy-bot-gpu'" },
+    { name = "markdown", marker = "extra == 'extra-8-toxy-bot-gpu'" },
+    { name = "numpy", marker = "extra == 'extra-8-toxy-bot-gpu'" },
+    { name = "packaging", marker = "extra == 'extra-8-toxy-bot-gpu'" },
+    { name = "protobuf", version = "5.29.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-8-toxy-bot-gpu'" },
+    { name = "setuptools", marker = "extra == 'extra-8-toxy-bot-gpu'" },
+    { name = "six", marker = "extra == 'extra-8-toxy-bot-gpu'" },
+    { name = "tensorboard-data-server", marker = "extra == 'extra-8-toxy-bot-gpu'" },
+    { name = "werkzeug", marker = "extra == 'extra-8-toxy-bot-gpu'" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b1/de/021c1d407befb505791764ad2cbd56ceaaa53a746baed01d2e2143f05f18/tensorboard-2.18.0-py3-none-any.whl", hash = "sha256:107ca4821745f73e2aefa02c50ff70a9b694f39f790b11e6f682f7d326745eab", size = 5503036 },
 ]
 
 [[package]]
@@ -1776,43 +1933,104 @@ wheels = [
 
 [[package]]
 name = "tensorflow"
-version = "2.16.2"
+version = "2.16.1"
 source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.13' and sys_platform == 'darwin'",
+    "python_full_version == '3.12.*' and sys_platform == 'darwin'",
+    "python_full_version >= '3.13' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "python_full_version == '3.12.*' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version >= '3.13' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version >= '3.13' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "(python_full_version == '3.12.*' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version == '3.12.*' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "python_full_version < '3.12' and sys_platform == 'darwin'",
+    "python_full_version < '3.12' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version < '3.12' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version < '3.12' and sys_platform != 'darwin' and sys_platform != 'linux')",
+]
 dependencies = [
-    { name = "absl-py" },
-    { name = "astunparse" },
-    { name = "flatbuffers" },
-    { name = "gast" },
-    { name = "google-pasta" },
-    { name = "grpcio" },
-    { name = "h5py" },
-    { name = "keras" },
-    { name = "libclang" },
-    { name = "ml-dtypes" },
-    { name = "numpy" },
-    { name = "opt-einsum" },
-    { name = "packaging" },
-    { name = "protobuf" },
-    { name = "requests" },
-    { name = "setuptools" },
-    { name = "six" },
-    { name = "tensorboard" },
-    { name = "tensorflow-io-gcs-filesystem", marker = "python_full_version < '3.12'" },
-    { name = "termcolor" },
-    { name = "typing-extensions" },
-    { name = "wrapt" },
+    { name = "absl-py", marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "astunparse", marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "flatbuffers", marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "gast", marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "google-pasta", marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "grpcio", marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "h5py", marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "keras", marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "libclang", marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "ml-dtypes", version = "0.3.2", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "numpy", marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "opt-einsum", marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "packaging", marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "protobuf", version = "4.25.6", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "requests", marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "setuptools", marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "six", marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "tensorboard", version = "2.16.2", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "tensorflow-io-gcs-filesystem", marker = "(python_full_version < '3.12' and extra == 'extra-8-toxy-bot-cpu') or (extra == 'extra-8-toxy-bot-cpu' and extra == 'extra-8-toxy-bot-gpu')" },
+    { name = "termcolor", marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "typing-extensions", marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "wrapt", marker = "extra == 'extra-8-toxy-bot-cpu'" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/6d/69/9999c2d9e8a3b08dfcfc7e9259a05fb1da5f700936091d2eb4a7985c2776/tensorflow-2.16.2-cp311-cp311-macosx_10_15_x86_64.whl", hash = "sha256:ec06570d57bfa0e2be804405e3cdc2960e94887e7619ffb6bc053e9775b695aa", size = 259588062 },
-    { url = "https://files.pythonhosted.org/packages/9d/72/6f09443493b9df2fd8a9585c9af4d9453762906a8e5735a8a5efa6e3d1e3/tensorflow-2.16.2-cp311-cp311-macosx_12_0_arm64.whl", hash = "sha256:2c8a0e79395639b762e62002db99b2f6cc608f744312c9940899c1128f325331", size = 227025342 },
-    { url = "https://files.pythonhosted.org/packages/b5/01/c03e98c8e97d151d9ce075fae210f838832eb53d8aa55669d384cb72925b/tensorflow-2.16.2-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:8728b12bc86941d90d0a927c40d4b21f8820964a80439a7c45f850eb37d57067", size = 218904025 },
-    { url = "https://files.pythonhosted.org/packages/43/dd/8f03331107b76e63313d2089ddfbd13f15e51fb8ed73517cdd0ab3341928/tensorflow-2.16.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:d8798dea8e2281b4a0b569d9c00e7949c0090509be363da271e1ef21828bffae", size = 590660880 },
-    { url = "https://files.pythonhosted.org/packages/1f/97/dec9dfa95cfbee631adffbeb0b7eda51ddc93a5f7e8aa8f4d95dde59e69e/tensorflow-2.16.2-cp311-cp311-win_amd64.whl", hash = "sha256:1da04e39834cdba509b4dd5ac5c71c3a1d1ffe6bc03e6970e65791b9a4071340", size = 2070 },
-    { url = "https://files.pythonhosted.org/packages/eb/ba/1bf6837421d2cd8866866a296eb0b147f2a989951e3641e347c026584af0/tensorflow-2.16.2-cp312-cp312-macosx_10_15_x86_64.whl", hash = "sha256:912b8cd1f88fd1ef32b8db54f0193ad0a3f057691324436ba82c5f74a63a17dd", size = 259727578 },
-    { url = "https://files.pythonhosted.org/packages/1f/dc/9a784acddbc7e23888dd30891f766a7c9317cfba068c17fb4280c89ae324/tensorflow-2.16.2-cp312-cp312-macosx_12_0_arm64.whl", hash = "sha256:917366179b596d0dae13e194a26965229b09fef946e4a5892a47fa9b4f7e4ba1", size = 227126832 },
-    { url = "https://files.pythonhosted.org/packages/53/b8/6ef11d379b8079310b20b89c6e1ebd5fb44f0acf51c0caf26366c5c928cf/tensorflow-2.16.2-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:e7df529f8db271d3def80538aa7fcd6f5abe306f7b01cb5b580138df68afb499", size = 218991442 },
-    { url = "https://files.pythonhosted.org/packages/d6/5c/691ab570c3637ba26d76f24d743a71f6afd952fc74e42243c108690d9f66/tensorflow-2.16.2-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:5badc6744672a3181c012b6ab2815975be34d0573db3b561383634acc0d46a55", size = 590776704 },
-    { url = "https://files.pythonhosted.org/packages/9b/cb/d3d450d41bd66813933b85f49bb872c66409852370e55d04bf426b8980f4/tensorflow-2.16.2-cp312-cp312-win_amd64.whl", hash = "sha256:505df82fde3b9c6a2a78bf679efb4d0a2e84f4f925202130477ca519ae1514e4", size = 2070 },
+    { url = "https://files.pythonhosted.org/packages/b8/75/ce4d8eeb1fb100726634358411bc4a8b12f889f6ce560b0973c0a5dbac39/tensorflow-2.16.1-cp311-cp311-macosx_10_15_x86_64.whl", hash = "sha256:f8a5b83ca4bf1813da158f63479cfdf848c0761e5120258417b3a96074a489f5", size = 259587949 },
+    { url = "https://files.pythonhosted.org/packages/f9/14/67e9b2b2379cb530c0412123a674d045eca387dfcfa7db1c0028857b0a66/tensorflow-2.16.1-cp311-cp311-macosx_12_0_arm64.whl", hash = "sha256:cc2065d1d27f9f89fea8a0fe8fdf6c437ae60987cd7f2928e0d00e532e79e44d", size = 227025225 },
+    { url = "https://files.pythonhosted.org/packages/8a/80/f87c8325dd42787f5cb9e546a5683857974e48786f5ac6104c56c02b9989/tensorflow-2.16.1-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:617df9fa2d697c4bc22fa3ee87eb01d580ab1bd0438fea15c4ec2f2870c40bb0", size = 218904090 },
+    { url = "https://files.pythonhosted.org/packages/58/70/e8ac764ec80810eefcbab0cb1d21dbba6cf26719c44cd6d9a5e9f0407935/tensorflow-2.16.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:930c61100cce3a5cb63d30fe6776504405214e8398a26ca968222ecb8b8f9404", size = 589831274 },
+    { url = "https://files.pythonhosted.org/packages/e4/14/d795bb156f8cc10eb1dcfe1332b7dbb8405b634688980aa9be8f885cc888/tensorflow-2.16.1-cp311-cp311-win_amd64.whl", hash = "sha256:093573a8eb93ef9511e7015b8de9659ed27156f2f05e6d1211f8f4cb76407ee1", size = 2097 },
+    { url = "https://files.pythonhosted.org/packages/d4/01/08f64f801235455061b72aac12687622b77d5792e7fe00d0ece2e59dd878/tensorflow-2.16.1-cp312-cp312-macosx_10_15_x86_64.whl", hash = "sha256:09cac3c6a8fbf85a9b95491b58086154dd00a09956ed31823bb45c6605f0e881", size = 259727458 },
+    { url = "https://files.pythonhosted.org/packages/71/a2/863a553d48f52d8f719626bb6d1c6f51d77e26d4bb9445a48fbf73f8e445/tensorflow-2.16.1-cp312-cp312-macosx_12_0_arm64.whl", hash = "sha256:bbf06d879070dfce2617c7d2bb19696bb1b2bcbb3b4ae009520e7166dd75dfc2", size = 227126718 },
+    { url = "https://files.pythonhosted.org/packages/41/ab/e5386c722548df2043c1eaadc431ea3ba0ee42a66b3af7f8013bbbacecd3/tensorflow-2.16.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c612cdd436bb55b8dae1ecdd1d253496c95b006870b7165b8480c6606b8622aa", size = 218991463 },
+    { url = "https://files.pythonhosted.org/packages/0d/58/d302d19f06d028ad6c2e33c449ef9813058a16dc35c0ca9580740e0dc9ed/tensorflow-2.16.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4a123fbb5788ba30d1113ce01bb166ddf85056fcb40e287c32a929ebfa4aa061", size = 589947129 },
+    { url = "https://files.pythonhosted.org/packages/76/4f/39ddae9fb07b8c039fa5a5f2b6623c6e0564199d82da33fcef62bcf93174/tensorflow-2.16.1-cp312-cp312-win_amd64.whl", hash = "sha256:1c5611e7357b7a4bc6dccc60750c91e27cdff82622fc917848f22add5ab8de26", size = 2097 },
+]
+
+[[package]]
+name = "tensorflow"
+version = "2.18.0"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.13' and sys_platform == 'darwin'",
+    "python_full_version == '3.12.*' and sys_platform == 'darwin'",
+    "python_full_version >= '3.13' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "python_full_version == '3.12.*' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version >= '3.13' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version >= '3.13' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "(python_full_version == '3.12.*' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version == '3.12.*' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "python_full_version < '3.12' and sys_platform == 'darwin'",
+    "python_full_version < '3.12' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version < '3.12' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version < '3.12' and sys_platform != 'darwin' and sys_platform != 'linux')",
+]
+dependencies = [
+    { name = "absl-py", marker = "extra == 'extra-8-toxy-bot-gpu'" },
+    { name = "astunparse", marker = "extra == 'extra-8-toxy-bot-gpu'" },
+    { name = "flatbuffers", marker = "extra == 'extra-8-toxy-bot-gpu'" },
+    { name = "gast", marker = "extra == 'extra-8-toxy-bot-gpu'" },
+    { name = "google-pasta", marker = "extra == 'extra-8-toxy-bot-gpu'" },
+    { name = "grpcio", marker = "extra == 'extra-8-toxy-bot-gpu'" },
+    { name = "h5py", marker = "extra == 'extra-8-toxy-bot-gpu'" },
+    { name = "keras", marker = "extra == 'extra-8-toxy-bot-gpu'" },
+    { name = "libclang", marker = "extra == 'extra-8-toxy-bot-gpu'" },
+    { name = "ml-dtypes", version = "0.4.1", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-8-toxy-bot-gpu'" },
+    { name = "numpy", marker = "extra == 'extra-8-toxy-bot-gpu'" },
+    { name = "opt-einsum", marker = "extra == 'extra-8-toxy-bot-gpu'" },
+    { name = "packaging", marker = "extra == 'extra-8-toxy-bot-gpu'" },
+    { name = "protobuf", version = "5.29.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-8-toxy-bot-gpu'" },
+    { name = "requests", marker = "extra == 'extra-8-toxy-bot-gpu'" },
+    { name = "setuptools", marker = "extra == 'extra-8-toxy-bot-gpu'" },
+    { name = "six", marker = "extra == 'extra-8-toxy-bot-gpu'" },
+    { name = "tensorboard", version = "2.18.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-8-toxy-bot-gpu'" },
+    { name = "tensorflow-io-gcs-filesystem", marker = "(python_full_version < '3.12' and extra == 'extra-8-toxy-bot-gpu') or (extra == 'extra-8-toxy-bot-cpu' and extra == 'extra-8-toxy-bot-gpu')" },
+    { name = "termcolor", marker = "extra == 'extra-8-toxy-bot-gpu'" },
+    { name = "typing-extensions", marker = "extra == 'extra-8-toxy-bot-gpu'" },
+    { name = "wrapt", marker = "extra == 'extra-8-toxy-bot-gpu'" },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/26/08/556c4159675c1a30e077ec2a942eeeb81b457cc35c247a5b4a59a1274f05/tensorflow-2.18.0-cp311-cp311-macosx_12_0_arm64.whl", hash = "sha256:453cb60638a02fd26316fb36c8cbcf1569d33671f17c658ca0cf2b4626f851e7", size = 239492146 },
+    { url = "https://files.pythonhosted.org/packages/0d/3d/45956345442e3a7b335df6f13d068121d8454c243f31b1f44244705ac584/tensorflow-2.18.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:85f1e7369af6d329b117b52e86093cd1e0458dd5404bf5b665853f873dd00b48", size = 231839918 },
+    { url = "https://files.pythonhosted.org/packages/84/76/c55967ac9968ddaede25a4dce37aba37e9030656f02c12676151ce1b6f22/tensorflow-2.18.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:70b8dd70fa3600bfce66ab529eebb804e1f9d7c863d2f71bc8fe9fc7a1ec3976", size = 615407268 },
+    { url = "https://files.pythonhosted.org/packages/cf/24/271e77c22724f370c24c705f394b8035b4d27e4c2c6339f3f45ab9b8258e/tensorflow-2.18.0-cp311-cp311-win_amd64.whl", hash = "sha256:6e8b0f499ef0b7652480a58e358a73844932047f21c42c56f7f3bdcaf0803edc", size = 7516 },
+    { url = "https://files.pythonhosted.org/packages/dc/bf/4cc283db323fd723f630e2454b2857054d2c81ff5012c1857659e72470f1/tensorflow-2.18.0-cp312-cp312-macosx_12_0_arm64.whl", hash = "sha256:ec4133a215c59314e929e7cbe914579d3afbc7874d9fa924873ee633fe4f71d0", size = 239565465 },
+    { url = "https://files.pythonhosted.org/packages/56/e4/55aaac2b15af4dad079e5af329a79d961e5206589d0e02b1e8da221472ed/tensorflow-2.18.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:4822904b3559d8a9c25f0fe5fef191cfc1352ceca42ca64f2a7bc7ae0ff4a1f5", size = 231898760 },
+    { url = "https://files.pythonhosted.org/packages/50/29/61ce80da0bfea3948326697dd1d832d28c863c9dacf90a27ee80fd4c1d31/tensorflow-2.18.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:bfdd65ea7e064064283dd78d529dd621257ee617218f63681935fd15817c6286", size = 615520727 },
+    { url = "https://files.pythonhosted.org/packages/eb/f1/828bbccc84a72db960a7d116f55f3f6aec9f5658f5d32ce9db20142d5742/tensorflow-2.18.0-cp312-cp312-win_amd64.whl", hash = "sha256:a701c2d3dca5f2efcab315b2c217f140ebd3da80410744e87d77016b3aaf53cb", size = 7520 },
 ]
 
 [[package]]
@@ -1824,11 +2042,12 @@ dependencies = [
     { name = "array-record", marker = "sys_platform == 'linux'" },
     { name = "click" },
     { name = "dm-tree" },
-    { name = "etils", extra = ["edc", "enp", "epath", "epy", "etree"] },
+    { name = "etils", extra = ["edc", "enp", "epath", "epy", "etree"], marker = "extra == 'extra-8-toxy-bot-cpu' or extra == 'extra-8-toxy-bot-gpu'" },
     { name = "immutabledict" },
     { name = "numpy" },
     { name = "promise" },
-    { name = "protobuf" },
+    { name = "protobuf", version = "4.25.6", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "protobuf", version = "5.29.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-8-toxy-bot-gpu'" },
     { name = "psutil" },
     { name = "pyarrow" },
     { name = "requests" },
@@ -1850,8 +2069,10 @@ version = "0.16.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "numpy" },
-    { name = "protobuf" },
-    { name = "tf-keras" },
+    { name = "protobuf", version = "4.25.6", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "protobuf", version = "5.29.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-8-toxy-bot-gpu'" },
+    { name = "tf-keras", version = "2.16.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "tf-keras", version = "2.18.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-8-toxy-bot-gpu'" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e5/50/00dba77925bf2a0a1e45d7bcf8a69a1d2534fb4bb277d9010bd148d2235e/tensorflow_hub-0.16.1-py2.py3-none-any.whl", hash = "sha256:e10c184b3d08daeafada11ffea2dd46781725b6bef01fad1f74d6634ad05311f", size = 30771 },
@@ -1874,14 +2095,14 @@ wheels = [
 
 [[package]]
 name = "tensorflow-macos"
-version = "2.16.2"
+version = "2.16.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "tensorflow", marker = "platform_machine == 'arm64' and sys_platform == 'darwin'" },
+    { name = "tensorflow", version = "2.16.1", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine == 'arm64' and sys_platform == 'darwin'" },
 ]
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/05/c5/47dee312dde75b7f6c04af18287839cbede72418137ad9ed3c1965dad6ae/tensorflow_macos-2.16.2-cp311-cp311-macosx_12_0_arm64.whl", hash = "sha256:13687ed18ad93757b9a8b9b5a55c434cbadb142a354888ea28581b5d278338b7", size = 2135 },
-    { url = "https://files.pythonhosted.org/packages/c3/8d/411bf034704893d35dee0b9825c7845a7c9be96417e8f97feca2ed8055bd/tensorflow_macos-2.16.2-cp312-cp312-macosx_12_0_arm64.whl", hash = "sha256:6948f046fa1ef4f4abcd480e0057de1dec95b97c38cf716018083173ee6dfa8e", size = 2134 },
+    { url = "https://files.pythonhosted.org/packages/f5/95/ea9b5896e747d35a56642fb3397a21d44315a4d060c8899a09e10f61fe2d/tensorflow_macos-2.16.1-cp311-cp311-macosx_12_0_arm64.whl", hash = "sha256:45b1f25a7360d9139bb293a5115eeb02b40e053838c541c10ba503cfaaccf8cf", size = 2164 },
+    { url = "https://files.pythonhosted.org/packages/6d/fb/b0343094d7770c17a70b58a7c3b158d17d2aa8e74a559a8461f8aaee0a3e/tensorflow_macos-2.16.1-cp312-cp312-macosx_12_0_arm64.whl", hash = "sha256:b6e311ae49f4d0aaa4c8d211d75317f70ce52c30af17ebd6fc9feedddf4e99d6", size = 2165 },
 ]
 
 [[package]]
@@ -1891,7 +2112,8 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "absl-py" },
     { name = "googleapis-common-protos" },
-    { name = "protobuf" },
+    { name = "protobuf", version = "4.25.6", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-8-toxy-bot-cpu'" },
+    { name = "protobuf", version = "5.29.3", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-8-toxy-bot-gpu'" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e0/57/393aa9dde72347cde9e01f665bac344f14adefd5c748be45b23aa5804f6d/tensorflow_metadata-1.16.1-py3-none-any.whl", hash = "sha256:2ce72ea31d78a00c0c74c6d465482335aa5cb2a3b2a104dedba0b258bc7bb18a", size = 28984 },
@@ -1914,13 +2136,51 @@ wheels = [
 name = "tensorflow-text"
 version = "2.16.1"
 source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.13' and sys_platform == 'darwin'",
+    "python_full_version == '3.12.*' and sys_platform == 'darwin'",
+    "python_full_version >= '3.13' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "python_full_version == '3.12.*' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version >= '3.13' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version >= '3.13' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "(python_full_version == '3.12.*' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version == '3.12.*' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "python_full_version < '3.12' and sys_platform == 'darwin'",
+    "python_full_version < '3.12' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version < '3.12' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version < '3.12' and sys_platform != 'darwin' and sys_platform != 'linux')",
+]
 dependencies = [
-    { name = "tensorflow", marker = "platform_machine != 'arm64' or sys_platform != 'darwin'" },
+    { name = "tensorflow", version = "2.16.1", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine != 'arm64' or sys_platform != 'darwin'" },
     { name = "tensorflow-macos", marker = "platform_machine == 'arm64' and sys_platform == 'darwin'" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ed/5d/b55f48cdf98a164d293f660748c2501ea828e148250a4cadbb5b0d988735/tensorflow_text-2.16.1-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:601dbd708df88adab7e15540d250857df7388be7c6066db66dede8b9399a879e", size = 6434057 },
     { url = "https://files.pythonhosted.org/packages/c5/ef/5b8270e5665923bda4222f56382d9fbcb7fd6efd5fb8557ad0776848cdff/tensorflow_text-2.16.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ad20018b92a4c8403a488edf68b6a7304062c67171bbbf54ef857b9177a63bf2", size = 5201484 },
+]
+
+[[package]]
+name = "tensorflow-text"
+version = "2.18.1"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.13' and sys_platform == 'darwin'",
+    "python_full_version == '3.12.*' and sys_platform == 'darwin'",
+    "python_full_version >= '3.13' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "python_full_version == '3.12.*' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version >= '3.13' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version >= '3.13' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "(python_full_version == '3.12.*' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version == '3.12.*' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "python_full_version < '3.12' and sys_platform == 'darwin'",
+    "python_full_version < '3.12' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version < '3.12' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version < '3.12' and sys_platform != 'darwin' and sys_platform != 'linux')",
+]
+dependencies = [
+    { name = "tensorflow", version = "2.18.0", source = { registry = "https://pypi.org/simple" } },
+]
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/18/b6/8ad233edb0732847db1da538cea941dcccc42f59304ff6fb449676e6dd5a/tensorflow_text-2.18.1-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:67e687625f8fe175beacad9e63b13d0ddbd79f771d6e0d2014ae629fa40131e2", size = 6113774 },
+    { url = "https://files.pythonhosted.org/packages/8a/9a/ebba9f6274f8b51e5fe1ac2411b8b6bf680a32d10bd6e9c54be1faeec062/tensorflow_text-2.18.1-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a037754fa3bac551594a049d3a17a64ea61cb4e121c9ef09906ad1a9bd542895", size = 5449465 },
+    { url = "https://files.pythonhosted.org/packages/f3/73/3a906feb0d71d9353c6fb2363d4052856cc6eff5a78a097b1a6002d4e908/tensorflow_text-2.18.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6daf2e9c654a60308c8d5d8a612182be90d0d5c8843da25175ab0ad0a5b8ecf5", size = 5239750 },
+    { url = "https://files.pythonhosted.org/packages/71/70/40e20bdda20dc163ca14ce31cb1e2d01df889d0747661ad3231b1ac567b3/tensorflow_text-2.18.1-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:17600dca16c8546005872613fa45b02f24de0cd65ab530b3121f718e41ae3a2a", size = 6107647 },
+    { url = "https://files.pythonhosted.org/packages/34/86/3e0916e0fc1d723b09408adc898cf0aa0dce59608374d387a65b37b42367/tensorflow_text-2.18.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:295a7d405692841767ca02cef3c5bf266c9e6e25b3a77d001a554bb4d40e649a", size = 5447286 },
+    { url = "https://files.pythonhosted.org/packages/04/7b/7dcf287a3d6f8b5fb0f17558d560bb3c1e04185b33fa822749e35118142b/tensorflow_text-2.18.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b59ed1e0f524652eb19e282f85f1bbeb9779a27208499848532f2bb80496bdd1", size = 5240952 },
 ]
 
 [[package]]
@@ -1945,8 +2205,19 @@ wheels = [
 name = "tf-keras"
 version = "2.16.0"
 source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.13' and sys_platform == 'darwin'",
+    "python_full_version == '3.12.*' and sys_platform == 'darwin'",
+    "python_full_version >= '3.13' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "python_full_version == '3.12.*' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version >= '3.13' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version >= '3.13' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "(python_full_version == '3.12.*' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version == '3.12.*' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "python_full_version < '3.12' and sys_platform == 'darwin'",
+    "python_full_version < '3.12' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version < '3.12' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version < '3.12' and sys_platform != 'darwin' and sys_platform != 'linux')",
+]
 dependencies = [
-    { name = "tensorflow" },
+    { name = "tensorflow", version = "2.16.1", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-8-toxy-bot-cpu'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/7c/63/59a4aee62ea8999850e4b3b5d94b60fe280ca93de60d0e2958066e24d6a7/tf_keras-2.16.0.tar.gz", hash = "sha256:db53891f1ac98197c2acced98cdca8c06ba8255655a6cb7eb95ed49676118280", size = 1259784 }
 wheels = [
@@ -1954,9 +2225,43 @@ wheels = [
 ]
 
 [[package]]
+name = "tf-keras"
+version = "2.18.0"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.13' and sys_platform == 'darwin'",
+    "python_full_version == '3.12.*' and sys_platform == 'darwin'",
+    "python_full_version >= '3.13' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "python_full_version == '3.12.*' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version >= '3.13' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version >= '3.13' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "(python_full_version == '3.12.*' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version == '3.12.*' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "python_full_version < '3.12' and sys_platform == 'darwin'",
+    "python_full_version < '3.12' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version < '3.12' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version < '3.12' and sys_platform != 'darwin' and sys_platform != 'linux')",
+]
+dependencies = [
+    { name = "tensorflow", version = "2.18.0", source = { registry = "https://pypi.org/simple" }, marker = "extra == 'extra-8-toxy-bot-gpu'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/a9/a4/7d0acc28cde2b29b8114552ce3258dafdc6b2186d24bf8e912de713dd74f/tf_keras-2.18.0.tar.gz", hash = "sha256:ebf744519b322afead33086a2aba872245473294affd40973694f3eb7c7ad77d", size = 1260765 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8a/ed/e08afca471299b04a34cd548e64e89d0153eda0e6cf9b715356777e24774/tf_keras-2.18.0-py3-none-any.whl", hash = "sha256:c431d04027eef790fcd3261cf7fdf93eb74f3cb32e05078b57b7f5a54bd53262", size = 1725427 },
+]
+
+[[package]]
 name = "tf-models-official"
 version = "2.16.0"
 source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.13' and sys_platform == 'darwin'",
+    "python_full_version == '3.12.*' and sys_platform == 'darwin'",
+    "python_full_version >= '3.13' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "python_full_version == '3.12.*' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version >= '3.13' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version >= '3.13' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "(python_full_version == '3.12.*' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version == '3.12.*' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "python_full_version < '3.12' and sys_platform == 'darwin'",
+    "python_full_version < '3.12' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version < '3.12' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version < '3.12' and sys_platform != 'darwin' and sys_platform != 'linux')",
+]
 dependencies = [
     { name = "cython" },
     { name = "gin-config" },
@@ -1978,17 +2283,67 @@ dependencies = [
     { name = "sentencepiece" },
     { name = "seqeval" },
     { name = "six" },
-    { name = "tensorflow" },
+    { name = "tensorflow", version = "2.16.1", source = { registry = "https://pypi.org/simple" } },
     { name = "tensorflow-datasets" },
     { name = "tensorflow-hub" },
     { name = "tensorflow-model-optimization" },
-    { name = "tensorflow-text" },
-    { name = "tf-keras" },
+    { name = "tensorflow-text", version = "2.16.1", source = { registry = "https://pypi.org/simple" } },
+    { name = "tf-keras", version = "2.16.0", source = { registry = "https://pypi.org/simple" } },
     { name = "tf-slim" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/f7/bc/acb7f1b3699e1db0e3fc251dbb7bd44e20d684199c56a095cc65ba6c395f/tf-models-official-2.16.0.tar.gz", hash = "sha256:73a3d80208119e35b8b7d474dad450b27e20aa27529d6ba72968b51c44dd3c38", size = 1751395 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a2/fa/6e335dce23cabebfc996b37a50b71d9bba1f47e483753501704e78fe31a1/tf_models_official-2.16.0-py2.py3-none-any.whl", hash = "sha256:9d0d8965e25f133948d53af17635123b02e77d9cd3684238afc350fc7afb8b4d", size = 2742687 },
+]
+
+[[package]]
+name = "tf-models-official"
+version = "2.18.0"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.13' and sys_platform == 'darwin'",
+    "python_full_version == '3.12.*' and sys_platform == 'darwin'",
+    "python_full_version >= '3.13' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "python_full_version == '3.12.*' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version >= '3.13' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version >= '3.13' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "(python_full_version == '3.12.*' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version == '3.12.*' and sys_platform != 'darwin' and sys_platform != 'linux')",
+    "python_full_version < '3.12' and sys_platform == 'darwin'",
+    "python_full_version < '3.12' and platform_machine == 'aarch64' and sys_platform == 'linux'",
+    "(python_full_version < '3.12' and platform_machine != 'aarch64' and sys_platform == 'linux') or (python_full_version < '3.12' and sys_platform != 'darwin' and sys_platform != 'linux')",
+]
+dependencies = [
+    { name = "ai-edge-litert" },
+    { name = "cython" },
+    { name = "gin-config" },
+    { name = "google-api-python-client" },
+    { name = "immutabledict" },
+    { name = "kaggle" },
+    { name = "matplotlib" },
+    { name = "numpy" },
+    { name = "oauth2client" },
+    { name = "opencv-python-headless" },
+    { name = "pandas" },
+    { name = "pillow" },
+    { name = "psutil" },
+    { name = "py-cpuinfo" },
+    { name = "pycocotools" },
+    { name = "pyyaml" },
+    { name = "sacrebleu" },
+    { name = "scipy" },
+    { name = "sentencepiece" },
+    { name = "seqeval" },
+    { name = "six" },
+    { name = "tensorflow", version = "2.18.0", source = { registry = "https://pypi.org/simple" } },
+    { name = "tensorflow-datasets" },
+    { name = "tensorflow-hub" },
+    { name = "tensorflow-model-optimization" },
+    { name = "tensorflow-text", version = "2.18.1", source = { registry = "https://pypi.org/simple" } },
+    { name = "tf-keras", version = "2.18.0", source = { registry = "https://pypi.org/simple" } },
+    { name = "tf-slim" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/bf/8b/baf7ac9cc487dc000f69edd98314d514e9951f7f37666c515bfc7247871c/tf_models_official-2.18.0.tar.gz", hash = "sha256:2fdaba1607d3b389b6f60864f3439ef176ce7ce43b033b25a699775893a396ad", size = 1840258 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/59/42/ae322e4c920936a042f29e453e26845e11d3b75b60aab082de4120fe5aa3/tf_models_official-2.18.0-py2.py3-none-any.whl", hash = "sha256:4b57c66faeca2c08208b3623d14de42642ff76e880fe83f4094e4d802ffd0440", size = 2889995 },
 ]
 
 [[package]]
@@ -2022,7 +2377,7 @@ wheels = [
 
 [[package]]
 name = "toxy-bot"
-version = "0.1.1"
+version = "0.1.3"
 source = { editable = "." }
 dependencies = [
     { name = "kagglehub" },
@@ -2030,9 +2385,18 @@ dependencies = [
     { name = "pydantic" },
     { name = "scikit-learn" },
     { name = "scikit-multilearn" },
-    { name = "tensorflow" },
-    { name = "tensorflow-text" },
-    { name = "tf-models-official" },
+]
+
+[package.optional-dependencies]
+cpu = [
+    { name = "tensorflow", version = "2.16.1", source = { registry = "https://pypi.org/simple" } },
+    { name = "tensorflow-text", version = "2.16.1", source = { registry = "https://pypi.org/simple" } },
+    { name = "tf-models-official", version = "2.16.0", source = { registry = "https://pypi.org/simple" } },
+]
+gpu = [
+    { name = "tensorflow", version = "2.18.0", source = { registry = "https://pypi.org/simple" } },
+    { name = "tensorflow-text", version = "2.18.1", source = { registry = "https://pypi.org/simple" } },
+    { name = "tf-models-official", version = "2.18.0", source = { registry = "https://pypi.org/simple" } },
 ]
 
 [package.dev-dependencies]
@@ -2047,10 +2411,14 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.10.6" },
     { name = "scikit-learn", specifier = ">=1.6.1" },
     { name = "scikit-multilearn", specifier = ">=0.2.0" },
-    { name = "tensorflow", specifier = "==2.16.2" },
-    { name = "tensorflow-text", specifier = ">=2.16.1" },
-    { name = "tf-models-official", specifier = ">=2.16.0" },
+    { name = "tensorflow", marker = "extra == 'cpu'", specifier = "==2.16.1" },
+    { name = "tensorflow", marker = "extra == 'gpu'", specifier = ">=2.18" },
+    { name = "tensorflow-text", marker = "extra == 'cpu'", specifier = "==2.16.1" },
+    { name = "tensorflow-text", marker = "extra == 'gpu'", specifier = ">=2.18" },
+    { name = "tf-models-official", marker = "extra == 'cpu'", specifier = ">=2.16.0" },
+    { name = "tf-models-official", marker = "extra == 'gpu'", specifier = ">=2.18" },
 ]
+provides-extras = ["cpu", "gpu"]
 
 [package.metadata.requires-dev]
 dev = [{ name = "pandas-stubs", specifier = ">=2.2.3.241126" }]
