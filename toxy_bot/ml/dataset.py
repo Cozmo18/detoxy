@@ -80,6 +80,7 @@ def load_dataset(
     valid_split: str = DatasetConfig.valid_split,
     test_split: str = DatasetConfig.test_split,
     cache_dir: str = Config.cache_dir,
+    seed: int = Config.seed,
     force_download: bool = False,
 ) -> DatasetDict:
     """
@@ -123,7 +124,9 @@ def load_dataset(
 
     # Create train/validation
     print(f"Creating train/validation split with {train_size:.0%} training data")
-    train_valid_ds = dataset[train_split].train_test_split(train_size=train_size)
+    train_valid_ds = dataset[train_split].train_test_split(
+        train_size=train_size, seed=seed
+    )
     dataset[train_split] = train_valid_ds["train"]
     dataset[valid_split] = train_valid_ds["test"]
 
