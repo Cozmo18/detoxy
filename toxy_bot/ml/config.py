@@ -37,17 +37,17 @@ class DatasetConfig:
             "identity_hate",
         ]
     )
-    train_split = "train"
-    valid_split = "valid"
-    test_split = "test"
-    train_size: float = 0.85
 
 
 @dataclass
 class DataModuleConfig:
     num_labels: int = 6
+    train_size: float = 0.85
     batch_size: int = 128
     max_len: int = 256
+    train_split: str = "train"
+    valid_split: str = "valid"
+    test_split: str = "test"
 
 
 @dataclass

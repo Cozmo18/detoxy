@@ -5,8 +5,47 @@ import pandas as pd
 from datasets import Dataset, DatasetDict
 from kagglehub import KaggleDatasetAdapter
 
-from toxy_bot.ml.config import Config, DatasetConfig
+from toxy_bot.ml.config import Config, DataModuleConfig, DatasetConfig
 from toxy_bot.ml.utils import create_dirs
+
+
+def load_dataset(
+    dataset_name: str = DatasetConfig.dataset_name,
+    dataset_paths: dict[str, str] = DatasetConfig().dataset_paths,
+    label_list: list[str] = DatasetConfig().label_list,
+    train_split: str = DataModuleConfig.train_split,
+    test_split: str = DataModuleConfig.test_split,
+    cache_dir: str = Config.cache_dir,
+    seed: int = Config.seed,
+) -> DatasetDict:
+    """
+    Load dataset from cache if available, otherwise download from Kaggle,
+    process it, and save to cache.
+
+    Returns:
+        HuggingFace DatasetDict with train, valid, and test splits
+    """
+    cached_ds_dir = os.path.join(cache_dir, dataset_name)
+
+    cached_ds_exists: bool = os.path.exists(cached_ds_dir)
+    cached_ds_dir_is_empty: bool = len(os.listdir(cached_ds_dir)) == 0
+
+    if cached_ds_exists and not cached_ds_dir_is_empty:
+        print("Data cache exists. Loading from cache.")
+        dataset = DatasetDict.load_from_disk(cached_ds_dir)
+    else:
+        print("Downloading dataset.")
+        df_dict = _download_dataset_from_kaggle(
+            dataset_name, dataset_paths, train_split, test_split
+        )
+        dataset = _clean_and_prepare_dataset(
+            df_dict, label_list, train_split, test_split
+        )
+        print("Saving dataset to cache.")
+        create_dirs(cached_ds_dir)
+        dataset.save_to_disk(cached_ds_dir)
+
+    return dataset
 
 
 def _download_dataset_from_kaggle(
@@ -67,68 +106,6 @@ def _clean_and_prepare_dataset(
         # Convert to HuggingFace Dataset
         ds = Dataset.from_pandas(df)
         dataset[split] = ds
-
-    return dataset
-
-
-def load_dataset(
-    dataset_name: str = DatasetConfig.dataset_name,
-    dataset_paths: dict[str, str] = DatasetConfig().dataset_paths,
-    label_list: list[str] = DatasetConfig().label_list,
-    train_size: float = DatasetConfig.train_size,
-    train_split: str = DatasetConfig.train_split,
-    valid_split: str = DatasetConfig.valid_split,
-    test_split: str = DatasetConfig.test_split,
-    cache_dir: str = Config.cache_dir,
-    seed: int = Config.seed,
-    force_download: bool = False,
-) -> DatasetDict:
-    """
-    Load dataset from cache if available, otherwise download from Kaggle,
-    process it, and save to cache.
-
-    Args:
-        config: Dataset configuration
-        module_config: Data module configuration for split names
-        cache_dir: Directory to store cached datasets
-        force_download: If True, always download fresh data even if cache exists
-
-    Returns:
-        HuggingFace DatasetDict with train, valid, and test splits
-    """
-    # Create dataset directory path
-    dataset_dir = os.path.join(cache_dir, dataset_name)
-
-    # Check if the dataset is already cached
-    if os.path.exists(dataset_dir) and not force_download:
-        print(f"Loading dataset from cache: {dataset_dir}")
-        dataset = DatasetDict.load_from_disk(dataset_dir)
-    else:
-        # Download fresh data if no cache or force_download is True
-        print(f"Downloading dataset from Kaggle: {dataset_name}")
-        create_dirs(dataset_dir)
-
-        # Load raw kaggle dataset into dictionary of Pandas dataframes
-        df_dict = _download_dataset_from_kaggle(
-            dataset_name, dataset_paths, train_split, test_split
-        )
-
-        # Clean up dataframes and convert to HuggingFace DatasetDict
-        dataset = _clean_and_prepare_dataset(
-            df_dict, label_list, train_split, test_split
-        )
-
-        # Save processed dataset to cache for future use
-        print(f"Saving dataset to cache: {dataset_dir}")
-        dataset.save_to_disk(dataset_dir)
-
-    # Create train/validation
-    print(f"Creating train/validation split with {train_size:.0%} training data")
-    train_valid_ds = dataset[train_split].train_test_split(
-        train_size=train_size, seed=seed
-    )
-    dataset[train_split] = train_valid_ds["train"]
-    dataset[valid_split] = train_valid_ds["test"]
 
     return dataset
 
