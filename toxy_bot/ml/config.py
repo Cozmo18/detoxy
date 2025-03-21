@@ -1,15 +1,19 @@
 import os
 from dataclasses import dataclass, field
+from multiprocessing import cpu_count
 from pathlib import Path
 from typing import Optional
 
 this_file = Path(__file__)
 root_path = this_file.parents[2]
 
+LABELS = ["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]
+
 
 @dataclass
 class Config:
-    cache_dir: str = os.path.join(root_path, "data")
+    cache_dir: str = os.path.join(root_path, "data", "huggingface")
+    external_dir: Optional[str] = os.path.join(root_path, "data", "external")
     log_dir: str = os.path.join(root_path, "logs")
     ckpt_dir: str = os.path.join(root_path, "checkpoint")
     perf_dir: str = os.path.join(root_path, "logs", "perf")
@@ -17,43 +21,23 @@ class Config:
 
 
 @dataclass
-class DatasetConfig:
-    dataset_name: str = "julian3833/jigsaw-toxic-comment-classification-challenge"
-    dataset_paths: dict[str, str] = field(
-        default_factory=lambda: {
-            "train": "train.csv",
-            "test_inputs": "test.csv",
-            "test_labels": "test_labels.csv",
-        }
-    )
-    input_list: list[str] = field(default_factory=lambda: ["comment_text"])
-    label_list: list[str] = field(
-        default_factory=lambda: [
-            "toxic",
-            "severe_toxic",
-            "obscene",
-            "threat",
-            "insult",
-            "identity_hate",
-        ]
-    )
-
-
-@dataclass
 class DataModuleConfig:
-    num_labels: int = 6
-    train_size: float = 0.85
+    dataset_name: str = "google/jigsaw_toxicity_pred"
+    text_col: str = "comment_text"
+    label_cols: list[str] = field(default_factory=lambda: LABELS)
+    num_labels: int = len(LABELS)
     batch_size: int = 128
     max_len: int = 256
     train_split: str = "train"
-    valid_split: str = "valid"
     test_split: str = "test"
+    train_size: float = 0.85
+    num_workers: int = cpu_count()
 
 
 @dataclass
 class ModuleConfig:
     model_name: str = "google/bert_uncased_L-4_H-512_A-8"
-    leaning_rate: float = 2e-5
+    learning_rate: float = 2e-5
     finetuned: str = "checkpoints/google/bert_uncased_L-4_H-512_A-8_finetuned.ckpt"
 
 
