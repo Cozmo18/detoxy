@@ -1,5 +1,4 @@
 import os
-import shutil
 
 
 def create_dirs(dirs: str | list) -> None:

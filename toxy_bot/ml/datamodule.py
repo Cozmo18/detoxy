@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 from typing import Any, Optional
 
-import pytorch_lightning as pl
+import lightning.pytorch as pl
 from datasets import Dataset, load_dataset
 from lightning.pytorch.utilities.types import EVAL_DATALOADERS, TRAIN_DATALOADERS
 from lightning_utilities.core.rank_zero import rank_zero_info
@@ -24,7 +24,7 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
         num_labels: int = DataModuleConfig.num_labels,
         columns: list[str] = ["input_ids", "attention_mask", "label"],
         batch_size: int = DataModuleConfig.batch_size,
-        max_len: int = DataModuleConfig.max_len,
+        max_length: int = DataModuleConfig.max_length,
         train_split: str = DataModuleConfig.train_split,
         test_split: str = DataModuleConfig.test_split,
         train_size: float = DataModuleConfig.train_size,
@@ -42,7 +42,7 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
         self.num_lables = num_labels
         self.columns = columns
         self.batch_size = batch_size
-        self.max_len = max_len
+        self.max_length = max_length
         self.train_split = train_split
         self.test_split = test_split
         self.train_size = train_size
@@ -90,7 +90,7 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
                 self.text_col,
                 self.label_cols,
                 self.model_name,
-                self.max_len,
+                self.max_length,
             )
 
             # Prep val
@@ -99,11 +99,8 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
                 self.text_col,
                 self.label_cols,
                 self.model_name,
-                self.max_len,
+                self.max_length,
             )
-
-            # Free memory from unneeeded dataset objj
-            del dataset
 
         if stage == "test" or stage is None:
             dataset = load_dataset(
@@ -113,9 +110,15 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
                 data_dir=self.data_dir,
             )
             self.test_data = prepare_dataset(
-                dataset, self.text_col, self.label_cols, self.model_name, self.max_len
+                dataset,
+                self.text_col,
+                self.label_cols,
+                self.model_name,
+                self.max_length,
             )
-            del dataset
+
+        # Free memory from unneeeded dataset obj
+        del dataset
 
     def train_dataloader(self) -> TRAIN_DATALOADERS:
         return DataLoader(
@@ -125,7 +128,7 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
             shuffle=True,
         )
 
-    def valid_dataloader(self) -> EVAL_DATALOADERS:
+    def val_dataloader(self) -> EVAL_DATALOADERS:
         return DataLoader(
             self.val_data,
             batch_size=self.batch_size,
@@ -145,7 +148,7 @@ def prepare_dataset(
     text_col: str,
     label_cols: list[str],
     model_name: str,
-    max_len: int,
+    max_length: int,
 ) -> Dataset:
     # Combine labels
     prepared_dataset = dataset.map(
@@ -161,7 +164,7 @@ def prepare_dataset(
         fn_kwargs={
             "text_col": text_col,
             "model_name": model_name,
-            "max_len": max_len,
+            "max_length": max_length,
         },
     )
 
@@ -174,25 +177,24 @@ def prepare_dataset(
 
 
 def tokenize_text(
-    batch: str | dict,
+    batch: Any,  # TODO: fix type
     *,
-    text_col: str,
     model_name: str,
-    max_len: int,
-    add_special_tokens: bool = True,
+    max_length: int,
+    text_col: Optional[str] = None,
+    # add_special_tokens: bool = True,
     truncation: bool = True,
     padding: str = "max_length",
 ) -> Any:
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    # allow for inference input as raw text
     text = batch if isinstance(batch, str) else batch[text_col]
-    # TODO: Check special tokens
+
     return tokenizer(
         text,
-        add_special_tokens=True,
-        padding="max_length",
+        # add_special_tokens=add_special_tokens,
+        padding=padding,
         truncation=truncation,
-        max_length=max_len,
+        max_length=max_length,
         return_tensors="pt",
     )
 
@@ -201,7 +203,10 @@ if __name__ == "__main__":
     dm = AutoTokenizerDataModule()
     dm.prepare_data()
     dm.setup(stage="fit")
-    train = dm.train_data
-    val = dm.val_data
 
-    print(train[0])
+    print(len(dm.train_dataloader()))
+    print(len(dm.val_dataloader()))
+
+    batch = next(iter(dm.train_dataloader()))
+    for key, value in batch.items():
+        print(key, value.size())
