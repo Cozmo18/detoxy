@@ -18,11 +18,11 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
         dataset_name: str = DataModuleConfig.dataset_name,
         data_dir: Optional[str] = Config.external_dir,
         cache_dir: str = Config.cache_dir,
-        model_name: str = ModuleConfig.model_name,
         text_col: str = DataModuleConfig.text_col,
         label_cols: list[str] = DataModuleConfig().label_cols,
         num_labels: int = DataModuleConfig.num_labels,
-        columns: list[str] = ["input_ids", "attention_mask", "label"],
+        columns: list[str] = ["input_ids", "attention_mask", "labels"],
+        model_name: str = ModuleConfig.model_name,
         batch_size: int = DataModuleConfig.batch_size,
         max_length: int = DataModuleConfig.max_length,
         train_split: str = DataModuleConfig.train_split,
@@ -74,6 +74,8 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
             )
 
     def setup(self, stage: str) -> None:
+        dataset = None
+
         if stage == "fit" or stage is None:
             # Load and split training data
             dataset = load_dataset(
@@ -82,24 +84,28 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
                 cache_dir=self.cache_dir,
                 data_dir=self.data_dir,
             )
-            dataset = dataset.train_test_split(train_size=self.train_size)
+            dataset = dataset.train_test_split(train_size=self.train_size)  # type: ignore
 
             # Prep train
-            self.train_data = prepare_dataset(
+            self.train_data = preprocess(
                 dataset["train"],
                 self.text_col,
                 self.label_cols,
                 self.model_name,
+                self.cache_dir,
                 self.max_length,
+                self.columns,
             )
 
             # Prep val
-            self.val_data = prepare_dataset(
+            self.val_data = preprocess(
                 dataset["test"],
                 self.text_col,
                 self.label_cols,
                 self.model_name,
+                self.cache_dir,
                 self.max_length,
+                self.columns,
             )
 
         if stage == "test" or stage is None:
@@ -109,20 +115,23 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
                 cache_dir=self.cache_dir,
                 data_dir=self.data_dir,
             )
-            self.test_data = prepare_dataset(
+            self.test_data = preprocess(
                 dataset,
                 self.text_col,
                 self.label_cols,
                 self.model_name,
+                self.cache_dir,
                 self.max_length,
+                self.columns,
             )
 
-        # Free memory from unneeeded dataset obj
-        del dataset
+        # Free memory from unneeded dataset obj
+        if dataset is not None:
+            del dataset
 
     def train_dataloader(self) -> TRAIN_DATALOADERS:
         return DataLoader(
-            self.train_data,
+            dataset=self.train_data,
             batch_size=self.batch_size,
             num_workers=self.num_workers,
             shuffle=True,
@@ -130,29 +139,31 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
 
     def val_dataloader(self) -> EVAL_DATALOADERS:
         return DataLoader(
-            self.val_data,
+            dataset=self.val_data,
             batch_size=self.batch_size,
             num_workers=self.num_workers,
         )
 
     def test_dataloader(self) -> EVAL_DATALOADERS:
         return DataLoader(
-            self.test_data,
+            dataset=self.test_data,
             batch_size=self.batch_size,
             num_workers=self.num_workers,
         )
 
 
-def prepare_dataset(
+def preprocess(
     dataset: Dataset,
     text_col: str,
     label_cols: list[str],
     model_name: str,
+    cache_dir: str,
     max_length: int,
+    cols_to_keep: list[str],
 ) -> Dataset:
-    # Combine labels
+    # Combine labels and convert to float
     prepared_dataset = dataset.map(
-        lambda example: {"label": [example[label] for label in label_cols]},
+        lambda example: {"labels": [float(example[label]) for label in label_cols]},
         batched=False,
     )
 
@@ -164,14 +175,13 @@ def prepare_dataset(
         fn_kwargs={
             "text_col": text_col,
             "model_name": model_name,
+            "cache_dir": cache_dir,
             "max_length": max_length,
         },
     )
 
     # Set format for PyTorch
-    prepared_dataset.set_format(
-        type="torch", columns=["input_ids", "attention_mask", "label"]
-    )
+    prepared_dataset.set_format(type="torch", columns=cols_to_keep)
 
     return prepared_dataset
 
@@ -180,13 +190,14 @@ def tokenize_text(
     batch: Any,  # TODO: fix type
     *,
     model_name: str,
+    cache_dir: str,
     max_length: int,
     text_col: Optional[str] = None,
     # add_special_tokens: bool = True,
     truncation: bool = True,
     padding: str = "max_length",
 ) -> Any:
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=cache_dir)
     text = batch if isinstance(batch, str) else batch[text_col]
 
     return tokenizer(
@@ -197,16 +208,3 @@ def tokenize_text(
         max_length=max_length,
         return_tensors="pt",
     )
-
-
-if __name__ == "__main__":
-    dm = AutoTokenizerDataModule()
-    dm.prepare_data()
-    dm.setup(stage="fit")
-
-    print(len(dm.train_dataloader()))
-    print(len(dm.val_dataloader()))
-
-    batch = next(iter(dm.train_dataloader()))
-    for key, value in batch.items():
-        print(key, value.size())

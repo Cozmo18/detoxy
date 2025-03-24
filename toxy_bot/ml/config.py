@@ -1,9 +1,8 @@
 import os
 from dataclasses import dataclass, field
+from multiprocessing import cpu_count
 from pathlib import Path
-from typing import Any, Optional
-
-from torchmetrics.functional import accuracy
+from typing import Optional
 
 this_file = Path(__file__)
 root_path = this_file.parents[2]
@@ -16,7 +15,7 @@ class Config:
     cache_dir: str = os.path.join(root_path, "data", "huggingface")
     external_dir: Optional[str] = os.path.join(root_path, "data", "external")
     log_dir: str = os.path.join(root_path, "logs")
-    ckpt_dir: str = os.path.join(root_path, "checkpoint")
+    ckpt_dir: str = os.path.join(root_path, "checkpoints")
     perf_dir: str = os.path.join(root_path, "logs", "perf")
     seed: int = 42
 
@@ -32,14 +31,13 @@ class DataModuleConfig:
     train_split: str = "train"
     test_split: str = "test"
     train_size: float = 0.85
-    num_workers: int = 0  # cpu_count()
+    num_workers: int = cpu_count()
 
 
 @dataclass
 class ModuleConfig:
-    model_name: str = "textattack/bert-base-uncased-yelp-polarity"  # "google/bert_uncased_L-4_H-512_A-8"
+    model_name: str = "google/bert_uncased_L-4_H-512_A-8"
     learning_rate: float = 5e-5
-    accuracy: Any = accuracy  # TODO: fix type
     finetuned: str = "checkpoints/google/bert_uncased_L-4_H-512_A-8_finetuned.ckpt"
 
 
@@ -48,9 +46,5 @@ class TrainerConfig:
     accelerator: str = "auto"
     devices: int | str = "auto"
     strategy: str = "auto"
-    precision: Optional[str] = "bf16-mixed"  # "16-mixed"
+    precision: Optional[str] = "16-mixed"
     max_epochs: int = 1
-
-
-if __name__ == "__main__":
-    pass

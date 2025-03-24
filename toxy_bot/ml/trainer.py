@@ -30,24 +30,40 @@ def train(
     strategy: str = TrainerConfig.strategy,
     precision: Optional[str] = TrainerConfig.precision,
     max_epochs: int = TrainerConfig.max_epochs,
+    lr: float = ModuleConfig.learning_rate,
+    batch_size: int = DataModuleConfig.batch_size,
+    perf: bool = False,
 ) -> None:
-    lit_datamodule = AutoTokenizerDataModule()
-    lit_module = SequenceClassificationModule()
+    lit_datamodule = AutoTokenizerDataModule(
+        model_name=MODEL_NAME,
+        dataset_name=DATASET_NAME,
+        cache_dir=CACHE_DIR,
+        batch_size=batch_size,
+    )
+
+    lit_module = SequenceClassificationModule(learning_rate=lr)
 
     logger = CSVLogger(save_dir=LOG_DIR, name="csv_logs")
-    callbacks = [
-        EarlyStopping(monitor="val_acc", mode="min"),
-        ModelCheckpoint(dirpath=CKPT_DIR, filename="model"),
-    ]
+
+    # do not use EarlyStopping if getting perf benchmark
+    if perf:
+        callbacks = [
+            ModelCheckpoint(dirpath=CKPT_DIR, filename="model"),
+        ]
+    else:
+        callbacks = [
+            EarlyStopping(monitor="val_acc", mode="min", patience=3),
+            ModelCheckpoint(dirpath=CKPT_DIR, filename="model"),
+        ]
 
     lit_trainer = pl.Trainer(
         accelerator=accelerator,
         devices=devices,
         strategy=strategy,
-        precision=precision,
+        precision=precision,  # type: ignore
         max_epochs=max_epochs,
         logger=logger,
-        callbacks=callbacks,
+        callbacks=callbacks,  # type: ignore
         log_every_n_steps=50,
     )
 
