@@ -9,8 +9,7 @@ from torchmetrics.classification import (
 )
 from transformers import BertForSequenceClassification
 
-from toxy_bot.ml.config import Config, DataModuleConfig, ModuleConfig
-from toxy_bot.ml.datamodule import tokenize_text
+from toxy_bot.ml.config import DataModuleConfig, ModuleConfig
 
 
 class SequenceClassificationModule(pl.LightningModule):
@@ -80,21 +79,21 @@ class SequenceClassificationModule(pl.LightningModule):
         self.log("test_precision", prec)
         self.log("test_recall", rec)
 
-    def predict_step(
-        self, sequence: str, cache_dir: str = Config.cache_dir
-    ) -> torch.Tensor:
-        batch = tokenize_text(
-            batch=sequence,
-            model_name=self.model_name,
-            max_length=self.max_length,
-            cache_dir=cache_dir,
-        )
-        batch = batch.to(self.device)
-        outputs = self.model(**batch)
-        logits = outputs[self.output_key]
-        probabilities = torch.sigmoid(logits)
-        predictions = (probabilities > 0.5).float()
-        return predictions
+    # def predict_step(
+    #     self, text: str, cache_dir: str = Config.cache_dir
+    # ) -> torch.Tensor:
+    #     batch = tokenize_text(
+    #         batch=sequence,
+    #         model_name=self.model_name,
+    #         max_length=self.max_length,
+    #         cache_dir=cache_dir,
+    #     )
+    #     batch = batch.to(self.device)
+    #     outputs = self.model(**batch)
+    #     logits = outputs[self.output_key]
+    #     probabilities = torch.sigmoid(logits)
+    #     predictions = (probabilities > 0.5).float()
+    #     return predictions
 
     def configure_optimizers(self) -> OptimizerLRScheduler:
         optimizer = torch.optim.Adam(params=self.parameters(), lr=self.learning_rate)

@@ -1,6 +1,6 @@
 [project]
 name = "toxy-bot"
-version = "0.1.3"
+version = "0.1.4"
 description = "A trained Discord Bot to detect and handle toxic messages in text channels."
 readme = "README.md"
 authors = [
@@ -10,8 +10,10 @@ requires-python = ">=3.11"
 dependencies = [
     "datasets>=3.4.1",
     "lightning>=2.5.1",
+    "numpy>=1.26.4",
     "torch==2.2.0",
     "torcheval>=0.0.7",
+    "torchvision>=0.17.0",
     "transformers>=4.49.0",
 ]
 
@@ -31,5 +33,4 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [dependency-groups]
-dev = ["pandas-stubs>=2.2.3.241126"]
-
+dev = []
