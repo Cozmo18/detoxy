@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import Any, Optional
 
 import lightning.pytorch as pl
-from datasets import Dataset, load_dataset
+from datasets import load_dataset
 from lightning.pytorch.utilities.types import EVAL_DATALOADERS, TRAIN_DATALOADERS
 from lightning_utilities.core.rank_zero import rank_zero_info
 from torch.utils.data import DataLoader
@@ -49,6 +49,10 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
         self.num_workers = num_workers
         self.seed = seed
 
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            model_name, cache_dir=cache_dir, use_fast=True
+        )
+
     def prepare_data(self) -> None:
         pl.seed_everything(seed=self.seed)
 
@@ -74,10 +78,8 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
             )
 
     def setup(self, stage: str) -> None:
-        dataset = None
-
         if stage == "fit" or stage is None:
-            # Load and split training data
+            # Load and split
             dataset = load_dataset(
                 self.dataset_name,
                 split=self.train_split,
@@ -86,48 +88,35 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
             )
             dataset = dataset.train_test_split(train_size=self.train_size)  # type: ignore
 
-            # Prep train
-            self.train_data = preprocess(
-                dataset["train"],
-                self.text_col,
-                self.label_cols,
-                self.model_name,
-                self.cache_dir,
-                self.max_length,
-                self.columns,
+            self.train_data = dataset["train"].map(
+                self.preprocess,
+                batched=True,
+                batch_size=self.batch_size,
             )
+            self.train_data.set_format(type="torch", columns=self.columns)
 
-            # Prep val
-            self.val_data = preprocess(
-                dataset["test"],
-                self.text_col,
-                self.label_cols,
-                self.model_name,
-                self.cache_dir,
-                self.max_length,
-                self.columns,
+            self.val_data = dataset["test"].map(
+                self.preprocess,
+                batched=True,
+                batch_size=self.batch_size,
             )
+            self.val_data.set_format(type="torch", columns=self.columns)
+
+            del dataset
 
         if stage == "test" or stage is None:
-            dataset = load_dataset(
+            self.test_data = load_dataset(
                 self.dataset_name,
                 split=self.test_split,
                 cache_dir=self.cache_dir,
                 data_dir=self.data_dir,
             )
-            self.test_data = preprocess(
-                dataset,
-                self.text_col,
-                self.label_cols,
-                self.model_name,
-                self.cache_dir,
-                self.max_length,
-                self.columns,
+            self.test_data.map(
+                self.preprocess,
+                batched=True,
+                batch_size=self.batch_size,
             )
-
-        # Free memory from unneeded dataset obj
-        if dataset is not None:
-            del dataset
+            self.test_data.set_format(type="torch", columns=self.columns)
 
     def train_dataloader(self) -> TRAIN_DATALOADERS:
         return DataLoader(
@@ -151,60 +140,48 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
             num_workers=self.num_workers,
         )
 
+    def combine_labels(self, batch: Any) -> dict:
+        batch_size = len(batch[self.label_cols[0]])
+        labels_col = []
 
-def preprocess(
-    dataset: Dataset,
-    text_col: str,
-    label_cols: list[str],
-    model_name: str,
-    cache_dir: str,
-    max_length: int,
-    cols_to_keep: list[str],
-) -> Dataset:
-    # Combine labels and convert to float
-    prepared_dataset = dataset.map(
-        lambda example: {"labels": [float(example[label]) for label in label_cols]},
-        batched=False,
-    )
+        for i in range(batch_size):
+            labels = [batch[col][i] for col in self.label_cols]
+            labels_col.append(labels)
 
-    # Tokenize inputs
-    prepared_dataset = prepared_dataset.map(
-        function=tokenize_text,
-        batched=True,
-        batch_size=None,
-        fn_kwargs={
-            "text_col": text_col,
-            "model_name": model_name,
-            "cache_dir": cache_dir,
-            "max_length": max_length,
-        },
-    )
+        return {"labels": labels_col}
 
-    # Set format for PyTorch
-    prepared_dataset.set_format(type="torch", columns=cols_to_keep)
+    def preprocess(self, batch: str | dict) -> dict:
+        if isinstance(batch, str):
+            return self.tokenizer(
+                batch,
+                padding="max_length",
+                truncation=True,
+                max_length=self.max_length,
+                return_tensors="pt",
+            )
+        else:
+            # Tokenize the text
+            tokenized = self.tokenizer(
+                batch[self.text_col],
+                padding="max_length",
+                truncation=True,
+                max_length=self.max_length,
+                return_tensors=None,  # Don't return tensors yet. Use set_format(type="torch") instead.
+            )
 
-    return prepared_dataset
+            # Create a combined labels column
+            labels = []
+            for i in range(len(batch[self.text_col])):
+                row_labels = [batch[col][i] for col in self.label_cols]
+                labels.append(row_labels)
+
+            tokenized["labels"] = labels
+            return tokenized
 
 
-def tokenize_text(
-    batch: Any,  # TODO: fix type
-    *,
-    model_name: str,
-    cache_dir: str,
-    max_length: int,
-    text_col: Optional[str] = None,
-    # add_special_tokens: bool = True,
-    truncation: bool = True,
-    padding: str = "max_length",
-) -> Any:
-    tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=cache_dir)
-    text = batch if isinstance(batch, str) else batch[text_col]
+if __name__ == "__main__":
+    dm = AutoTokenizerDataModule()
+    dm.prepare_data()
+    dm.setup(stage="fit")
 
-    return tokenizer(
-        text,
-        # add_special_tokens=add_special_tokens,
-        padding=padding,
-        truncation=truncation,
-        max_length=max_length,
-        return_tensors="pt",
-    )
+    print(dm.train_data[0])

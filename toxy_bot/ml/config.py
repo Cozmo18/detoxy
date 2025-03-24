@@ -1,6 +1,7 @@
 import os
 from dataclasses import dataclass, field
-from multiprocessing import cpu_count
+
+# from multiprocessing import cpu_count
 from pathlib import Path
 from typing import Optional
 
@@ -26,12 +27,12 @@ class DataModuleConfig:
     text_col: str = "comment_text"
     label_cols: list[str] = field(default_factory=lambda: LABELS)
     num_labels: int = len(LABELS)
-    batch_size: int = 12
+    batch_size: int = 128
     max_length: int = 100
     train_split: str = "train"
     test_split: str = "test"
     train_size: float = 0.85
-    num_workers: int = cpu_count()
+    num_workers: int = 0
 
 
 @dataclass
