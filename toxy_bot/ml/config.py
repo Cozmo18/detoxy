@@ -13,8 +13,7 @@ LABELS = ["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate
 
 @dataclass
 class Config:
-    cache_dir: str = os.path.join(root_path, "data", "huggingface")
-    external_dir: Optional[str] = os.path.join(root_path, "data", "external")
+    cache_dir: str = os.path.join(root_path, "data")
     log_dir: str = os.path.join(root_path, "logs")
     ckpt_dir: str = os.path.join(root_path, "checkpoints")
     perf_dir: str = os.path.join(root_path, "logs", "perf")
@@ -23,7 +22,7 @@ class Config:
 
 @dataclass
 class DataModuleConfig:
-    dataset_name: str = "google/jigsaw_toxicity_pred"
+    dataset_name: str = "anitamaxvim/jigsaw-toxic-comments"
     text_col: str = "comment_text"
     label_cols: list[str] = field(default_factory=lambda: LABELS)
     num_labels: int = len(LABELS)

@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 import lightning.pytorch as pl
 from datasets import load_dataset
@@ -16,7 +16,6 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
     def __init__(
         self,
         dataset_name: str = DataModuleConfig.dataset_name,
-        data_dir: Optional[str] = Config.external_dir,
         cache_dir: str = Config.cache_dir,
         text_col: str = DataModuleConfig.text_col,
         label_cols: list[str] = DataModuleConfig().label_cols,
@@ -34,7 +33,6 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
         super().__init__()
 
         self.dataset_name = dataset_name
-        self.data_dir = data_dir
         self.cache_dir = cache_dir
         self.model_name = model_name
         self.text_col = text_col
@@ -66,12 +64,8 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
 
         if cache_dir_is_empty:
             rank_zero_info(f"[{str(datetime.now())}] Downloading dataset.")
-            load_dataset(
-                self.dataset_name,
-                cache_dir=self.cache_dir,
-                data_dir=self.data_dir,
-                trust_remote_code=True,
-            )
+
+            load_dataset(self.dataset_name, cache_dir=self.cache_dir)
         else:
             rank_zero_info(
                 f"[{str(datetime.now())}] Data cache exists. Loading from cache."
@@ -79,12 +73,9 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
 
     def setup(self, stage: str) -> None:
         if stage == "fit" or stage is None:
-            # Load and split
+            # Load and split training data
             dataset = load_dataset(
-                self.dataset_name,
-                split=self.train_split,
-                cache_dir=self.cache_dir,
-                data_dir=self.data_dir,
+                self.dataset_name, split=self.train_split, cache_dir=self.cache_dir
             )
             dataset = dataset.train_test_split(train_size=self.train_size)  # type: ignore
 
@@ -106,10 +97,7 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
 
         if stage == "test" or stage is None:
             self.test_data = load_dataset(
-                self.dataset_name,
-                split=self.test_split,
-                cache_dir=self.cache_dir,
-                data_dir=self.data_dir,
+                self.dataset_name, split=self.test_split, cache_dir=self.cache_dir
             )
             self.test_data.map(
                 self.preprocess,
