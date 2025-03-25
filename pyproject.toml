@@ -1,12 +1,12 @@
 [project]
 name = "toxy-bot"
-version = "0.1.10"
+version = "0.1.12"
 description = "A trained Discord Bot to detect and handle toxic messages in text channels."
 readme = "README.md"
 authors = [
     { name = "anitamaxvim", email = "107803920+anitamaxvim@users.noreply.github.com" },
 ]
-requires-python = "==3.11"
+requires-python = ">=3.11"
 dependencies = [
     "datasets==3.4.1",
     "lightning==2.5.1",
