@@ -1,6 +1,5 @@
 import os
 from datetime import datetime
-from typing import Any
 
 import lightning.pytorch as pl
 from datasets import load_dataset
@@ -51,6 +50,12 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
             model_name, cache_dir=cache_dir, use_fast=True
         )
 
+        self.format = {
+            "type": "torch",
+            # "format_kwargs": {"dtype": torch.float},
+            "columns": self.columns,
+        }
+
     def prepare_data(self) -> None:
         pl.seed_everything(seed=self.seed)
 
@@ -84,14 +89,14 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
                 batched=True,
                 batch_size=self.batch_size,
             )
-            self.train_data.set_format(type="torch", columns=self.columns)
+            self.train_data.set_format(**self.format)
 
             self.val_data = dataset["test"].map(
                 self.preprocess,
                 batched=True,
                 batch_size=self.batch_size,
             )
-            self.val_data.set_format(type="torch", columns=self.columns)
+            self.val_data.set_format(**self.format)
 
             del dataset
 
@@ -104,7 +109,7 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
                 batched=True,
                 batch_size=self.batch_size,
             )
-            self.test_data.set_format(type="torch", columns=self.columns)
+            self.test_data.set_format(**self.format)
 
     def train_dataloader(self) -> TRAIN_DATALOADERS:
         return DataLoader(
@@ -128,16 +133,6 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
             num_workers=self.num_workers,
         )
 
-    def combine_labels(self, batch: Any) -> dict:
-        batch_size = len(batch[self.label_cols[0]])
-        labels_col = []
-
-        for i in range(batch_size):
-            labels = [batch[col][i] for col in self.label_cols]
-            labels_col.append(labels)
-
-        return {"labels": labels_col}
-
     def preprocess(self, batch: str | dict) -> dict:
         if isinstance(batch, str):
             return self.tokenizer(
@@ -160,7 +155,7 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
             # Create a combined labels column
             labels = []
             for i in range(len(batch[self.text_col])):
-                row_labels = [batch[col][i] for col in self.label_cols]
+                row_labels = [float(batch[col][i]) for col in self.label_cols]
                 labels.append(row_labels)
 
             tokenized["labels"] = labels
@@ -171,5 +166,4 @@ if __name__ == "__main__":
     dm = AutoTokenizerDataModule()
     dm.prepare_data()
     dm.setup(stage="fit")
-
     print(dm.train_data[0])

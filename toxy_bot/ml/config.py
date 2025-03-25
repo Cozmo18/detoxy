@@ -1,7 +1,6 @@
 import os
 from dataclasses import dataclass, field
-
-# from multiprocessing import cpu_count
+from multiprocessing import cpu_count
 from pathlib import Path
 from typing import Optional
 
@@ -31,7 +30,7 @@ class DataModuleConfig:
     train_split: str = "train"
     test_split: str = "test"
     train_size: float = 0.85
-    num_workers: int = 0
+    num_workers: int = cpu_count()
 
 
 @dataclass
