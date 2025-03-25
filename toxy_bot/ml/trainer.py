@@ -52,7 +52,7 @@ def train(
         ]
     else:
         callbacks = [
-            EarlyStopping(monitor="val_acc", mode="min", patience=3),
+            EarlyStopping(monitor="val_accuracy", mode="min", patience=3),
             ModelCheckpoint(dirpath=CKPT_DIR, filename="model"),
         ]
 

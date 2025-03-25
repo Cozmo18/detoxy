@@ -26,7 +26,7 @@ class DataModuleConfig:
     label_cols: list[str] = field(default_factory=lambda: LABELS)
     num_labels: int = len(LABELS)
     batch_size: int = 128
-    max_length: int = 100
+    max_length: int = 256
     train_split: str = "train"
     test_split: str = "test"
     train_size: float = 0.85
