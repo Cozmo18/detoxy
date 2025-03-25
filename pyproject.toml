@@ -8,11 +8,11 @@ authors = [
 ]
 requires-python = ">=3.11"
 dependencies = [
-    "datasets==3.4.1",
-    "lightning==2.5.1",
-    "numpy==1.26.4",
-    "torch==2.2.2",
-    "transformers==4.50.1",
+    "datasets>=3.4.1",
+    "lightning>=2.5.1",
+    "torch>=2.2.2",
+    "torcheval>=0.0.7",
+    "transformers>=4.50.1",
 ]
 
 license = "MIT"
