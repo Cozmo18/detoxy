@@ -1065,7 +1065,7 @@ wheels = [
 
 [[package]]
 name = "toxy-bot"
-version = "0.1.8"
+version = "0.1.9"
 source = { editable = "." }
 dependencies = [
     { name = "datasets" },
@@ -1077,11 +1077,11 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "datasets", specifier = ">=3.4.1" },
-    { name = "lightning", specifier = ">=2.5.1" },
+    { name = "datasets", specifier = "==3.4.1" },
+    { name = "lightning", specifier = "==2.5.1" },
     { name = "numpy", specifier = "==1.26.4" },
     { name = "torch", specifier = "==2.2.2" },
-    { name = "transformers", specifier = ">=4.50.1" },
+    { name = "transformers", specifier = "==4.50.1" },
 ]
 
 [package.metadata.requires-dev]
