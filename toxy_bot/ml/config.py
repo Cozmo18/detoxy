@@ -59,4 +59,6 @@ class TrainerConfig:
     strategy: str = Field(default="auto")
     precision: str | None = Field(default="16-mixed")
     max_epochs: int = Field(default=1, ge=1)
-    num_sanity_val_steps: int | None = Field(default=1, ge=0)
+    deterministic: bool = Field(default=True)
+    log_every_n_steps: int | None = Field(default=50, ge=1)
+    num_sanity_val_steps: int | None = Field(default=1, ge=1)

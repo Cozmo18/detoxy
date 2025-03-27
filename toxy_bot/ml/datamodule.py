@@ -70,15 +70,19 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
         if not os.path.isdir(s=self.cache_dir):
             os.makedirs(self.cache_dir, exist_ok=True)
 
-        cache_dir_is_empty: bool = len(os.listdir(self.cache_dir)) == 0
+        cached_dir_dataset = os.path.join(
+            self.cache_dir, self.dataset_name.replace("/", "___")
+        )
+        dataset_cached = os.path.exists(cached_dir_dataset)
 
-        if cache_dir_is_empty:
-            rank_zero_info(f"[{str(datetime.now())}] Downloading dataset.")
-
+        if not dataset_cached:
+            rank_zero_info(
+                f"[{str(datetime.now())}] Downloading dataset {self.dataset_name}."
+            )
             load_dataset(self.dataset_name, cache_dir=self.cache_dir)
         else:
             rank_zero_info(
-                f"[{str(datetime.now())}] Data cache exists. Loading from cache."
+                f"[{str(datetime.now())}] Dataset {self.dataset_name} exists in cache. Loading from cache."
             )
 
     def setup(self, stage: str) -> None:

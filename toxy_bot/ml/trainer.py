@@ -39,6 +39,8 @@ def train(
     max_epochs: int = trainer_config.max_epochs,
     lr: float = module_config.learning_rate,
     batch_size: int = datamodule_config.batch_size,
+    deterministic: bool = trainer_config.deterministic,
+    log_every_n_steps: int | None = trainer_config.log_every_n_steps,
     num_sanity_val_steps: int | None = trainer_config.num_sanity_val_steps,
     perf: bool = False,
 ) -> None:
@@ -72,9 +74,10 @@ def train(
         strategy=strategy,
         precision=precision,
         max_epochs=max_epochs,
+        deterministic=deterministic,
         logger=logger,
         callbacks=callbacks,  # type: ignore
-        log_every_n_steps=50,
+        log_every_n_steps=log_every_n_steps,
         num_sanity_val_steps=num_sanity_val_steps,
     )
 
