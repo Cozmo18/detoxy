@@ -1,7 +1,6 @@
 import os
 from dataclasses import field
-
-# from multiprocessing import cpu_count
+from multiprocessing import cpu_count
 from pathlib import Path
 
 from pydantic import Field
@@ -40,7 +39,7 @@ class DataModuleConfig:
     train_split: str = Field(default="train")
     test_split: str = Field(default="test")
     train_size: float = Field(default=0.85, ge=0.0, le=1.0)
-    num_workers: int = Field(default=0, ge=0)
+    num_workers: int = Field(default=cpu_count(), ge=0)
 
 
 @dataclass
