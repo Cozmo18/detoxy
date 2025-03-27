@@ -10,24 +10,29 @@ from transformers import AutoTokenizer
 
 from toxy_bot.ml.config import Config, DataModuleConfig, ModuleConfig
 
+# Create instances of config classes
+config = Config()
+datamodule_config = DataModuleConfig()
+module_config = ModuleConfig()
+
 
 class AutoTokenizerDataModule(pl.LightningDataModule):
     def __init__(
         self,
-        dataset_name: str = DataModuleConfig.dataset_name,
-        cache_dir: str = Config.cache_dir,
-        text_col: str = DataModuleConfig.text_col,
-        label_cols: list[str] = DataModuleConfig().label_cols,
-        num_labels: int = DataModuleConfig.num_labels,
+        dataset_name: str = datamodule_config.dataset_name,
+        cache_dir: str = config.cache_dir,
+        text_col: str = datamodule_config.text_col,
+        label_cols: list[str] = datamodule_config.label_cols,
+        num_labels: int = datamodule_config.num_labels,
         columns: list[str] = ["input_ids", "attention_mask", "labels"],
-        model_name: str = ModuleConfig.model_name,
-        batch_size: int = DataModuleConfig.batch_size,
-        max_length: int = DataModuleConfig.max_length,
-        train_split: str = DataModuleConfig.train_split,
-        test_split: str = DataModuleConfig.test_split,
-        train_size: float = DataModuleConfig.train_size,
-        num_workers: int = DataModuleConfig.num_workers,
-        seed: int = Config.seed,
+        model_name: str = module_config.model_name,
+        batch_size: int = datamodule_config.batch_size,
+        max_length: int = datamodule_config.max_length,
+        train_split: str = datamodule_config.train_split,
+        test_split: str = datamodule_config.test_split,
+        train_size: float = datamodule_config.train_size,
+        num_workers: int = datamodule_config.num_workers,
+        seed: int = config.seed,
     ) -> None:
         super().__init__()
 

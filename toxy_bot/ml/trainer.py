@@ -1,4 +1,4 @@
-from typing import Optional
+from time import perf_counter
 
 import lightning.pytorch as pl
 import torch
@@ -8,30 +8,38 @@ from lightning.pytorch.loggers import CSVLogger
 from toxy_bot.ml.config import Config, DataModuleConfig, ModuleConfig, TrainerConfig
 from toxy_bot.ml.datamodule import AutoTokenizerDataModule
 from toxy_bot.ml.module import SequenceClassificationModule
-from toxy_bot.ml.utils import create_dirs
+from toxy_bot.ml.utils import create_dirs, log_perf
+
+# Config instances
+config = Config()
+datamodule_config = DataModuleConfig()
+module_config = ModuleConfig()
+trainer_config = TrainerConfig()
 
 # Constants
-MODEL_NAME: str = ModuleConfig.model_name
-DATASET_NAME: str = DataModuleConfig.dataset_name
+MODEL_NAME: str = module_config.model_name
+DATASET_NAME: str = datamodule_config.dataset_name
 
 # Paths
-CACHE_DIR: str = Config.cache_dir
-LOG_DIR: str = Config.log_dir
-CKPT_DIR: str = Config.ckpt_dir
+CACHE_DIR: str = config.cache_dir
+LOG_DIR: str = config.log_dir
+CKPT_DIR: str = config.ckpt_dir
+PERF_DIR: str = config.perf_dir
 
-create_dirs(dirs=[CACHE_DIR, LOG_DIR, CKPT_DIR])
+create_dirs(dirs=[CACHE_DIR, LOG_DIR, CKPT_DIR, PERF_DIR])
 
 torch.set_float32_matmul_precision(precision="medium")
 
 
 def train(
-    accelerator: str = TrainerConfig.accelerator,
-    devices: int | str = TrainerConfig.devices,
-    strategy: str = TrainerConfig.strategy,
-    precision: Optional[str] = TrainerConfig.precision,
-    max_epochs: int = TrainerConfig.max_epochs,
-    lr: float = ModuleConfig.learning_rate,
-    batch_size: int = DataModuleConfig.batch_size,
+    accelerator: str = trainer_config.accelerator,
+    devices: int | str = trainer_config.devices,
+    strategy: str = trainer_config.strategy,
+    precision: str | None = trainer_config.precision,
+    max_epochs: int = trainer_config.max_epochs,
+    lr: float = module_config.learning_rate,
+    batch_size: int = datamodule_config.batch_size,
+    num_sanity_val_steps: int | None = trainer_config.num_sanity_val_steps,
     perf: bool = False,
 ) -> None:
     lit_datamodule = AutoTokenizerDataModule(
@@ -50,9 +58,11 @@ def train(
         callbacks = [
             ModelCheckpoint(dirpath=CKPT_DIR, filename="model"),
         ]
+        # Force num_sanity_val_steps to None for accurate perf benchmarking
+        num_sanity_val_steps = None
     else:
         callbacks = [
-            EarlyStopping(monitor="val_accuracy", mode="min", patience=3),
+            EarlyStopping(monitor="val_loss", mode="min"),
             ModelCheckpoint(dirpath=CKPT_DIR, filename="model"),
         ]
 
@@ -60,15 +70,23 @@ def train(
         accelerator=accelerator,
         devices=devices,
         strategy=strategy,
-        precision=precision,  # type: ignore
+        precision=precision,
         max_epochs=max_epochs,
         logger=logger,
         callbacks=callbacks,  # type: ignore
         log_every_n_steps=50,
+        num_sanity_val_steps=num_sanity_val_steps,
     )
+
+    start = perf_counter()
+    lit_trainer.fit(model=lit_module, datamodule=lit_datamodule)
+    stop = perf_counter()
+
+    if perf:
+        log_perf(start, stop, PERF_DIR, lit_trainer)
 
     lit_trainer.fit(model=lit_module, datamodule=lit_datamodule)
 
 
 if __name__ == "__main__":
-    train()
+    train(perf=True)

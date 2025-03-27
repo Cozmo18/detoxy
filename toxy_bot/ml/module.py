@@ -9,17 +9,22 @@ from torchmetrics.classification import (
 )
 from transformers import BertForSequenceClassification
 
-from toxy_bot.ml.config import DataModuleConfig, ModuleConfig
+from toxy_bot.ml.config import Config, DataModuleConfig, ModuleConfig
+
+# Create instances of config classes
+config = Config()
+datamodule_config = DataModuleConfig()
+module_config = ModuleConfig()
 
 
 class SequenceClassificationModule(pl.LightningModule):
     def __init__(
         self,
-        model_name: str = ModuleConfig.model_name,
-        num_labels: int = DataModuleConfig.num_labels,
+        model_name: str = module_config.model_name,
+        num_labels: int = datamodule_config.num_labels,
         output_key: str = "logits",
         loss_key: str = "loss",
-        learning_rate: float = ModuleConfig.learning_rate,
+        learning_rate: float = module_config.learning_rate,
     ) -> None:
         super().__init__()
 
@@ -42,12 +47,12 @@ class SequenceClassificationModule(pl.LightningModule):
 
     def training_step(self, batch, batch_idx) -> torch.Tensor:
         outputs = self.model(**batch)
-        self.log(name="train_loss", value=outputs[self.loss_key])
+        self.log("train_loss", outputs[self.loss_key], prog_bar=True)
         return outputs[self.loss_key]
 
     def validation_step(self, batch, batch_idx) -> None:
         outputs = self.model(**batch)
-        self.log(name="val_loss", value=outputs[self.loss_key], prog_bar=True)
+        self.log("val_loss", outputs[self.loss_key], prog_bar=True)
 
         logits = outputs[self.output_key]
         probabilities = torch.sigmoid(logits)
@@ -58,10 +63,10 @@ class SequenceClassificationModule(pl.LightningModule):
         prec = self.precision(predictions, batch["labels"])
         rec = self.recall(predictions, batch["labels"])
 
-        self.log("val_accuracy", acc, prog_bar=True)
+        self.log("val_acc", acc, prog_bar=True)
         self.log("val_f1", f1, prog_bar=True)
-        self.log("val_precision", prec)
-        self.log("val_recall", rec)
+        self.log("val_prec", prec, prog_bar=True)
+        self.log("val_rec", rec, prog_bar=True)
 
     def test_step(self, batch, batch_idx) -> None:
         outputs = self.model(**batch)
@@ -74,10 +79,10 @@ class SequenceClassificationModule(pl.LightningModule):
         prec = self.precision(predictions, batch["labels"])
         rec = self.recall(predictions, batch["labels"])
 
-        self.log("test_accuracy", acc, prog_bar=True)
+        self.log("test_acc", acc, prog_bar=True)
         self.log("test_f1", f1, prog_bar=True)
-        self.log("test_precision", prec)
-        self.log("test_recall", rec)
+        self.log("test_prec", prec, prog_bar=True)
+        self.log("test_rec", rec, prog_bar=True)
 
     # def predict_step(
     #     self, text: str, cache_dir: str = Config.cache_dir
@@ -96,5 +101,5 @@ class SequenceClassificationModule(pl.LightningModule):
     #     return predictions
 
     def configure_optimizers(self) -> OptimizerLRScheduler:
-        optimizer = torch.optim.Adam(params=self.parameters(), lr=self.learning_rate)
+        optimizer = torch.optim.AdamW(params=self.parameters(), lr=self.learning_rate)
         return optimizer
