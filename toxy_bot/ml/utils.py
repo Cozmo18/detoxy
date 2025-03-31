@@ -1,10 +1,28 @@
 import json
 import os
 import shutil
+from datetime import datetime
 from pathlib import Path
 
 import torch
 from lightning.pytorch import Trainer
+
+
+def create_run_name(
+    model_name: str,
+    learning_rate: float,
+    batch_size: int,
+    max_length: int,
+) -> str:
+    if torch.cuda.is_available():
+        device_name = torch.cuda.get_device_name()
+    else:
+        device_name = "CPU"
+
+    model_str = model_name.replace("/", "_")
+    timestamp = datetime.now().isoformat()
+
+    return f"{model_str}_{device_name}_LR{learning_rate}_BS{batch_size}_ML{max_length}_{timestamp}"
 
 
 def log_perf(
@@ -12,27 +30,17 @@ def log_perf(
     stop: float,
     perf_dir: str | Path,
     trainer: Trainer,
+    run_name: str,
 ) -> None:
-    # Sync to last checkpoint
-    checkpoint_callbacks = [
-        callback
-        for callback in trainer.callbacks
-        if callback.__class__.__name__ == "ModelCheckpoint"
-    ]
+    if torch.cuda.is_available():
+        device_name = torch.cuda.get_device_name()
+    else:
+        device_name = "CPU"
 
-    if checkpoint_callbacks:
-        checkpoint_callback = checkpoint_callbacks[0]
-        checkpoint_path = checkpoint_callback._last_checkpoint_saved
-        checkpoint_filename = checkpoint_path.split("/")[-1]
-        checkpoint_version = checkpoint_filename.split(".")[0]
-    else:  # this should never be triggered since the example forces use of ModelCheckpoint
-        existing_perf_files = os.listdir(perf_dir)
-        checkpoint_version = f"version_{len(existing_perf_files)}"
-
-    performance_metrics = {
+    perf_metrics = {
         "perf": {
-            "device_name": torch.cuda.get_device_name(),
-            "num_mode": trainer.num_nodes,
+            "device_name": device_name,
+            "num_node": trainer.num_nodes,
             "num_devices:": trainer.num_devices,
             "strategy": trainer.strategy.__class__.__name__,
             "precision": trainer.precision,
@@ -48,12 +56,13 @@ def log_perf(
     if not os.path.isdir(perf_dir):
         os.mkdir(perf_dir)
 
-    performance_file_path = os.path.join(perf_dir, checkpoint_version + ".json")
-    with open(performance_file_path, "w") as perf_file:
-        json.dump(performance_metrics, perf_file, indent=4)
+    perf_file = f"{perf_dir}/{run_name}.json"
+
+    with open(perf_file, "w") as f:
+        json.dump(perf_metrics, f, indent=4)
 
 
-def create_dirs(dirs: str | list) -> None:
+def create_dirs(dirs: str | list[str]) -> None:
     if isinstance(dirs, str):
         dirs = [dirs]
 

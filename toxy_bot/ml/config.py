@@ -34,8 +34,8 @@ class DataModuleConfig:
     text_col: str = Field(default="comment_text")
     label_cols: list[str] = field(default_factory=lambda: LABELS)
     num_labels: int = Field(default=len(LABELS), ge=0)
-    batch_size: int = Field(default=16, ge=0)
-    max_length: int = Field(default=100, ge=0)
+    batch_size: int = Field(default=64, ge=0)
+    max_length: int = Field(default=256, ge=0)
     train_split: str = Field(default="train")
     test_split: str = Field(default="test")
     train_size: float = Field(default=0.85, ge=0.0, le=1.0)
@@ -44,7 +44,7 @@ class DataModuleConfig:
 
 @dataclass
 class ModuleConfig:
-    model_name: str = Field(default="google/bert_uncased_L-4_H-512_A-8")
+    model_name: str = Field(default="google/bert_uncased_L-2_H-128_A-2")
     learning_rate: float = Field(default=3e-5, ge=0.0)
     finetuned: str = Field(
         default="checkpoints/google/bert_uncased_L-4_H-512_A-8_finetuned.ckpt"
