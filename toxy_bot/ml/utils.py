@@ -19,7 +19,7 @@ def get_device_name() -> str:
         return str(torch.cpu.current_device().replace(" ", "-"))
 
 
-def create_run_name(
+def create_experiment_name(
     model_name: str,
     learning_rate: float,
     batch_size: int,
@@ -65,7 +65,7 @@ def log_perf(
             "max_epochs": trainer.max_epochs,
             "min_epochs": trainer.min_epochs,
             "batch_size": trainer.datamodule.batch_size,
-            "num_params": get_num_trainable_params(trainer.model.model),
+            "num_params": f"{get_num_trainable_params(trainer.model.model):,}",
             "runtime_min": f"{(stop - start) / 60:.2f}",
         }
     }
