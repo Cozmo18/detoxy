@@ -65,9 +65,8 @@ def log_perf(
             "max_epochs": trainer.max_epochs,
             "min_epochs": trainer.min_epochs,
             "batch_size": trainer.datamodule.batch_size,
-            "num_trainable_params": get_num_trainable_params(trainer.model),
+            "num_params": get_num_trainable_params(trainer.model),
             "runtime_min": (stop - start) / 60,
-            "num_parameters": trainer.model.parameters(),
         }
     }
 
