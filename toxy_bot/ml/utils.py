@@ -14,9 +14,9 @@ def get_num_trainable_params(model: torch.nn.Module) -> int:
 
 def get_device_name() -> str:
     if torch.cuda.is_available():
-        return torch.cuda.get_device_name().replace(" ", "-")
+        return str(torch.cuda.get_device_name().replace(" ", "-"))
     else:
-        return torch.cpu.current_device().replace(" ", "-")
+        return str(torch.cpu.current_device().replace(" ", "-"))
 
 
 def create_run_name(
@@ -65,7 +65,7 @@ def log_perf(
             "max_epochs": trainer.max_epochs,
             "min_epochs": trainer.min_epochs,
             "batch_size": trainer.datamodule.batch_size,
-            "num_params": get_num_trainable_params(trainer.model),
+            # "num_params": get_num_trainable_params(trainer.model),
             "runtime_min": (stop - start) / 60,
         }
     }
