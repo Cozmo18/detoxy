@@ -8,38 +8,54 @@ import torch
 from lightning.pytorch import Trainer
 
 
+def get_num_trainable_params(model: torch.nn.Module) -> int:
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+
+def get_device_name() -> str:
+    if torch.cuda.is_available():
+        return torch.cuda.get_device_name().replace(" ", "-")
+    else:
+        return torch.cpu.current_device().replace(" ", "-")
+
+
 def create_run_name(
     model_name: str,
     learning_rate: float,
     batch_size: int,
     max_length: int,
 ) -> str:
-    if torch.cuda.is_available():
-        device_name = torch.cuda.get_device_name()
-    else:
-        device_name = "CPU"
-
     model_str = model_name.replace("/", "_")
     timestamp = datetime.now().isoformat()
 
-    return f"{model_str}_{device_name}_LR{learning_rate}_BS{batch_size}_ML{max_length}_{timestamp}"
+    elements = {
+        "model": model_str,
+        "device": get_device_name(),
+        "lr": f"{learning_rate:.2e}",
+        "bs": str(batch_size),
+        "ml": str(max_length),
+        "time": timestamp,
+    }
+
+    # Join with '=' between key-value pairs and '__' between different elements
+    return "__".join(f"{k}={v}" for k, v in elements.items())
+
+
+def parse_run_name(run_name: str) -> dict:
+    """Parse a run name back into its constituent parts."""
+    return dict(element.split("=") for element in run_name.split("__"))
 
 
 def log_perf(
     start: float,
     stop: float,
-    perf_dir: str | Path,
     trainer: Trainer,
-    run_name: str,
+    perf_dir: str | Path,
+    version: str,
 ) -> None:
-    if torch.cuda.is_available():
-        device_name = torch.cuda.get_device_name()
-    else:
-        device_name = "CPU"
-
     perf_metrics = {
         "perf": {
-            "device_name": device_name,
+            "device_name": get_device_name(),
             "num_node": trainer.num_nodes,
             "num_devices:": trainer.num_devices,
             "strategy": trainer.strategy.__class__.__name__,
@@ -49,14 +65,16 @@ def log_perf(
             "max_epochs": trainer.max_epochs,
             "min_epochs": trainer.min_epochs,
             "batch_size": trainer.datamodule.batch_size,
+            "num_trainable_params": get_num_trainable_params(trainer.model),
             "runtime_min": (stop - start) / 60,
+            "num_parameters": trainer.model.parameters(),
         }
     }
 
     if not os.path.isdir(perf_dir):
         os.mkdir(perf_dir)
 
-    perf_file = f"{perf_dir}/{run_name}.json"
+    perf_file = f"{perf_dir}/{version}.json"
 
     with open(perf_file, "w") as f:
         json.dump(perf_metrics, f, indent=4)
