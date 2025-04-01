@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 
 import lightning.pytorch as pl
+import torch
 from datasets import load_dataset
 from lightning.pytorch.utilities.types import EVAL_DATALOADERS, TRAIN_DATALOADERS
 from lightning_utilities.core.rank_zero import rank_zero_info
@@ -92,6 +93,10 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
                 self.dataset_name, split=self.train_split, cache_dir=self.cache_dir
             )
             dataset = dataset.train_test_split(train_size=self.train_size)  # type: ignore
+
+            # Move tokenizer to GPU if available
+            if torch.cuda.is_available():
+                self.tokenizer.to(torch.device("cuda"))
 
             self.train_data = dataset["train"].map(
                 self.preprocess,
