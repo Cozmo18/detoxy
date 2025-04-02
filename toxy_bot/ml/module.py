@@ -23,7 +23,6 @@ class SequenceClassificationModule(pl.LightningModule):
         model_name: str = module_config.model_name,
         num_labels: int = datamodule_config.num_labels,
         learning_rate: float = module_config.learning_rate,
-        class_weights: list[float] | None = module_config.class_weights,
     ) -> None:
         super().__init__()
 
