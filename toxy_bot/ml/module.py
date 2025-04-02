@@ -49,7 +49,7 @@ class SequenceClassificationModule(pl.LightningModule):
     def training_step(self, batch, batch_idx) -> torch.Tensor:
         outputs = self.model(**batch)
         self.log("train_loss", outputs.loss, prog_bar=True)
-        return outputs[self.loss_key]
+        return outputs.loss
 
     def validation_step(self, batch, batch_idx) -> None:
         outputs = self.model(**batch)
