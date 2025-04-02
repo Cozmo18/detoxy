@@ -100,7 +100,7 @@ def train(
         check_val_every_n_epoch=check_val_every_n_epoch,
         log_every_n_steps=log_every_n_steps,
         num_sanity_val_steps=num_sanity_val_steps,
-        enable_model_summary=False,
+        enable_model_summary=False,  # summary already shows when model is initiated
     )
 
     start = perf_counter()

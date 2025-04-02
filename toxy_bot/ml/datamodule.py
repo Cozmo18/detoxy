@@ -41,7 +41,7 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
         self.model_name = model_name
         self.text_col = text_col
         self.label_cols = label_cols
-        self.num_lables = num_labels
+        self.num_labels = num_labels
         self.columns = columns
         self.batch_size = batch_size
         self.max_length = max_length
@@ -60,6 +60,10 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
             # "format_kwargs": {"dtype": torch.float},
             "columns": self.columns,
         }
+
+        self.train_data = None
+        self.val_data = None
+        self.test_data = None
 
     def prepare_data(self) -> None:
         pl.seed_everything(seed=self.seed)
@@ -175,4 +179,3 @@ if __name__ == "__main__":
     dm = AutoTokenizerDataModule()
     dm.prepare_data()
     dm.setup(stage="fit")
-    print(dm.train_data[0])
