@@ -34,10 +34,8 @@ def train(
     batch_size: int = datamodule_config.batch_size,
     max_length: int = datamodule_config.max_length,
     deterministic: bool = trainer_config.deterministic,
-    check_val_every_n_epoch: int
-    | float
-    | None = trainer_config.check_val_every_n_epoch,
-    val_check_interval: int | None = trainer_config.val_check_interval,
+    check_val_every_n_epoch: int | None = trainer_config.check_val_every_n_epoch,
+    val_check_interval: int | float | None = trainer_config.val_check_interval,
     num_sanity_val_steps: int | None = trainer_config.num_sanity_val_steps,
     log_every_n_steps: int | None = trainer_config.log_every_n_steps,
     perf: bool = False,
