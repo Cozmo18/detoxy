@@ -1,6 +1,6 @@
 [project]
 name = "toxy-bot"
-version = "0.1.19"
+version = "0.1.20"
 description = "A trained Discord Bot to detect and handle toxic messages in text channels."
 readme = "README.md"
 authors = [
@@ -15,7 +15,7 @@ dependencies = [
     "jsonargparse>=4.38.0",
     "lightning>=2.5.1",
     "nbformat>=5.10.4",
-    "numpy>=2",
+    "numpy<2",
     "plotly>=6.0.1",
     "pydantic>=2.6.1",
     "torch>=2.2.2",

@@ -76,7 +76,7 @@ def train(
     )
     logger = CometLogger(
         api_key=os.getenv("COMET_API_KEY"),
-        project_name="toxy-bot",
+        project="toxy-bot",
         workspace="anitamaxvim",
         name=experiment_name,
     )
@@ -106,7 +106,7 @@ def train(
         check_val_every_n_epoch=check_val_every_n_epoch,
         log_every_n_steps=log_every_n_steps,
         num_sanity_val_steps=num_sanity_val_steps,
-        enable_model_summary=False,  # summary already shows when model is initiated
+        # enable_model_summary=False,
     )
 
     start = perf_counter()
