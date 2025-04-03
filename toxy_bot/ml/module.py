@@ -22,12 +22,18 @@ class SequenceClassificationModule(pl.LightningModule):
         self,
         model_name: str = module_config.model_name,
         num_labels: int = datamodule_config.num_labels,
+        output_key: str = "logits",
+        loss_key: str = "loss",
+        label_key: str = "labels",
         learning_rate: float = module_config.learning_rate,
     ) -> None:
         super().__init__()
 
         self.model_name = model_name
         self.num_labels = num_labels
+        self.output_key = output_key
+        self.loss_key = loss_key
+        self.label_key = label_key
         self.learning_rate = learning_rate
 
         self.model = BertForSequenceClassification.from_pretrained(
@@ -50,22 +56,25 @@ class SequenceClassificationModule(pl.LightningModule):
         self, batch: dict[str, torch.Tensor], batch_idx: int
     ) -> torch.Tensor:
         outputs = self.model(**batch)
-        self.log("train_loss", outputs.loss, prog_bar=True)
-        return outputs.loss
+        self.log("train_loss", outputs[self.loss_key], prog_bar=True)
+        return outputs[self.loss_key]
 
     def validation_step(self, batch: dict[str, torch.Tensor], batch_idx: int) -> None:
         outputs = self.model(**batch)
-        self.log("val_loss", outputs.loss, prog_bar=True)
+        self.log("val_loss", outputs[self.loss_key], prog_bar=True)
+
+        logits = outputs[self.output_key]
+        labels = batch[self.label_key]
 
         # if outputs is a floating point tensor with values outside [0,1] range,
         # torchmetrics will consider the input to be logits and will
         # auto apply sigmoid per element.
 
         # Log macro average metrics
-        macro_acc = self.macro_avg_accuracy(outputs["logits"], batch["labels"])
-        macro_f1 = self.macro_avg_f1_score(outputs["logits"], batch["labels"])
-        macro_prec = self.macro_avg_precision(outputs["logits"], batch["labels"])
-        macro_rec = self.macro_avg_recall(outputs["logits"], batch["labels"])
+        macro_acc = self.macro_avg_accuracy(logits, labels)
+        macro_f1 = self.macro_avg_f1_score(logits, labels)
+        macro_prec = self.macro_avg_precision(logits, labels)
+        macro_rec = self.macro_avg_recall(logits, labels)
 
         self.log("val_macro_acc", macro_acc, prog_bar=True)
         self.log("val_macro_f1", macro_f1, prog_bar=True)
@@ -75,11 +84,14 @@ class SequenceClassificationModule(pl.LightningModule):
     def test_step(self, batch: dict[str, torch.Tensor], batch_idx: int) -> None:
         outputs = self.model(**batch)
 
+        logits = outputs[self.output_key]
+        labels = batch[self.label_key]
+
         # Calculate per-label metrics
-        acc = self.accuracy(outputs["logits"], batch["labels"])
-        f1 = self.f1_score(outputs["logits"], batch["labels"])
-        prec = self.precision(outputs["logits"], batch["labels"])
-        rec = self.recall(outputs["logits"], batch["labels"])
+        acc = self.accuracy(logits, labels)
+        f1 = self.f1_score(logits, labels)
+        prec = self.precision(logits, labels)
+        rec = self.recall(logits, labels)
 
         # Log per-label metrics
         self.log("test_acc", acc, prog_bar=True)
@@ -88,10 +100,10 @@ class SequenceClassificationModule(pl.LightningModule):
         self.log("test_rec", rec, prog_bar=True)
 
         # Calculate and log macro average metrics
-        macro_acc = self.macro_avg_accuracy(outputs["logits"], batch["labels"])
-        macro_f1 = self.macro_avg_f1_score(outputs["logits"], batch["labels"])
-        macro_prec = self.macro_avg_precision(outputs["logits"], batch["labels"])
-        macro_rec = self.macro_avg_recall(outputs["logits"], batch["labels"])
+        macro_acc = self.macro_avg_accuracy(logits, labels)
+        macro_f1 = self.macro_avg_f1_score(logits, labels)
+        macro_prec = self.macro_avg_precision(logits, labels)
+        macro_rec = self.macro_avg_recall(logits, labels)
 
         self.log("test_macro_acc", macro_acc, prog_bar=True)
         self.log("test_macro_f1", macro_f1, prog_bar=True)
@@ -107,7 +119,7 @@ class SequenceClassificationModule(pl.LightningModule):
     #         max_length=self.max_length,
     #         cache_dir=cache_dir,
     #     )
-    #     batch = batch.to(self.device)
+    #     batch = batch.to(self.dkevice)
     #     outputs = self.model(**batch)
     #     logits = outputs[self.output_key]
     #     probabilities = torch.sigmoid(logits)

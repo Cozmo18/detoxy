@@ -20,12 +20,12 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
     def __init__(
         self,
         dataset_name: str = datamodule_config.dataset_name,
+        model_name: str = module_config.model_name,
         cache_dir: str = config.cache_dir,
         text_col: str = datamodule_config.text_col,
         label_cols: list[str] = datamodule_config.label_cols,
         num_labels: int = datamodule_config.num_labels,
         columns: list[str] = ["input_ids", "attention_mask", "labels"],
-        model_name: str = module_config.model_name,
         batch_size: int = datamodule_config.batch_size,
         max_length: int = datamodule_config.max_length,
         train_split: str = datamodule_config.train_split,

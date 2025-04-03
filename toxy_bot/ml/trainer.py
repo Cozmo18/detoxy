@@ -22,9 +22,18 @@ datamodule_config = DataModuleConfig()
 module_config = ModuleConfig()
 trainer_config = TrainerConfig()
 
+# constants
+model_name = module_config.model_name
+dataset_name = datamodule_config.dataset_name
+
+# paths
+cache_dir = Config.cache_dir
+log_dir = Config.log_dir
+ckpt_dir = Config.ckpt_dir
+perf_dir = Config.perf_dir
+
 
 def train(
-    model_name: str = module_config.model_name,
     accelerator: str = trainer_config.accelerator,
     devices: int | str = trainer_config.devices,
     strategy: str = trainer_config.strategy,
@@ -39,9 +48,6 @@ def train(
     num_sanity_val_steps: int | None = trainer_config.num_sanity_val_steps,
     log_every_n_steps: int | None = trainer_config.log_every_n_steps,
     perf: bool = False,
-    log_dir: str = config.log_dir,
-    ckpt_dir: str = config.ckpt_dir,
-    perf_dir: str = config.perf_dir,
 ) -> None:
     torch.set_float32_matmul_precision(precision="medium")
 
@@ -58,11 +64,13 @@ def train(
 
     lit_datamodule = AutoTokenizerDataModule(
         model_name=model_name,
+        dataset_name=dataset_name,
+        cache_dir=cache_dir,
         batch_size=batch_size,
         max_length=max_length,
     )
 
-    lit_model = SequenceClassificationModule(
+    lit_module = SequenceClassificationModule(
         model_name=model_name,
         learning_rate=lr,
     )
@@ -102,7 +110,7 @@ def train(
     )
 
     start = perf_counter()
-    lit_trainer.fit(model=lit_model, datamodule=lit_datamodule)
+    lit_trainer.fit(model=lit_module, datamodule=lit_datamodule)
     stop = perf_counter()
 
     if perf:

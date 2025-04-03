@@ -57,7 +57,7 @@ class TrainerConfig:
     devices: int | str = Field(default="auto")
     strategy: str = Field(default="auto")
     precision: str | None = Field(default="16-mixed")
-    max_epochs: int = Field(default=1, ge=1)
+    max_epochs: int = Field(default=5, ge=1)
     deterministic: bool = Field(default=True)
     check_val_every_n_epoch: int | None = Field(default=1, ge=1)
     val_check_interval: int | float | None = Field(default=0.25, ge=1)
