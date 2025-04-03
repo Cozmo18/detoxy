@@ -110,4 +110,4 @@ def train(
 
 
 if __name__ == "__main__":
-    CLI(train, as_positional=False)
+    CLI(train, as_positional=False)  # type: ignore

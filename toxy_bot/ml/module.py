@@ -46,12 +46,14 @@ class SequenceClassificationModule(pl.LightningModule):
 
         self.save_hyperparameters()
 
-    def training_step(self, batch, batch_idx) -> torch.Tensor:
+    def training_step(
+        self, batch: dict[str, torch.Tensor], batch_idx: int
+    ) -> torch.Tensor:
         outputs = self.model(**batch)
         self.log("train_loss", outputs.loss, prog_bar=True)
         return outputs.loss
 
-    def validation_step(self, batch, batch_idx) -> None:
+    def validation_step(self, batch: dict[str, torch.Tensor], batch_idx: int) -> None:
         outputs = self.model(**batch)
         self.log("val_loss", outputs.loss, prog_bar=True)
 
@@ -70,7 +72,7 @@ class SequenceClassificationModule(pl.LightningModule):
         self.log("val_macro_prec", macro_prec, prog_bar=True)
         self.log("val_macro_rec", macro_rec, prog_bar=True)
 
-    def test_step(self, batch, batch_idx) -> None:
+    def test_step(self, batch: dict[str, torch.Tensor], batch_idx: int) -> None:
         outputs = self.model(**batch)
 
         # Calculate per-label metrics

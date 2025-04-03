@@ -53,7 +53,7 @@ def log_perf(
     perf_dir: str | Path,
     version: str,
 ) -> None:
-    perf_metrics = {
+    perf_metrics: dict[str, dict[str, str | int | float]] = {
         "perf": {
             "device_name": get_device_name(),
             "num_node": trainer.num_nodes,

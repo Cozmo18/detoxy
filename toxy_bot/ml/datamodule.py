@@ -146,7 +146,9 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
             num_workers=self.num_workers,
         )
 
-    def preprocess(self, batch: str | dict) -> dict:
+    def preprocess(
+        self, batch: str | dict[str, list[str | float]]
+    ) -> dict[str, list[int | float]]:
         if isinstance(batch, str):
             return self.tokenizer(
                 batch,
