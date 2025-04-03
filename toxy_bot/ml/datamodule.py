@@ -90,7 +90,7 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
             )
 
     def setup(self, stage: str) -> None:
-        if stage == "fit" or stage is None:
+        if stage == "fit":
             # Load and split training data
             dataset = load_dataset(
                 self.dataset_name, split=self.train_split, cache_dir=self.cache_dir
@@ -113,7 +113,7 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
 
             del dataset
 
-        if stage == "test" or stage is None:
+        if stage == "test":
             self.test_data = load_dataset(
                 self.dataset_name, split=self.test_split, cache_dir=self.cache_dir
             )
