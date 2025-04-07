@@ -61,5 +61,5 @@ class TrainerConfig:
     deterministic: bool = Field(default=True)
     check_val_every_n_epoch: int | None = Field(default=1, ge=1)
     val_check_interval: int | float | None = Field(default=0.25, ge=1)
-    num_sanity_val_steps: int | None = Field(default=1, ge=1)
+    num_sanity_val_steps: int | None = Field(default=2, ge=1)
     log_every_n_steps: int | None = Field(default=200, ge=1)

@@ -1,30 +1,53 @@
 [project]
 name = "toxy-bot"
-version = "0.1.20"
+version = "0.1.25"
 description = "A trained Discord Bot to detect and handle toxic messages in text channels."
 readme = "README.md"
 authors = [
     { name = "anitamaxvim", email = "107803920+anitamaxvim@users.noreply.github.com" },
 ]
-requires-python = ">=3.11"
-dependencies = [
-    "comet-ml==3.49.6",
-    "datasets==3.4.1",
-    "dotenv==0.9.9",
-    "ipykernel==6.29.5",
-    "jsonargparse==4.38.0",
-    "lightning==2.5.1",
-    "nbformat==5.10.4",
-    "numpy<2",
-    "plotly==6.0.1",
-    "pydantic==2.6.1",
-    "torch==2.2.2",
-    "torcheval==0.0.7",
-    "transformers==4.50.1",
-]
-
 license = "MIT"
 license-files = ["LICEN[CS]E*"]
+
+requires-python = ">=3.11"
+dependencies = [
+    "torch==2.2.2 ; sys_platform == 'darwin'",
+    "torchvision==0.17.2 ; sys_platform == 'darwin'",
+    "numpy==1.24 ; sys_platform == 'darwin'",
+
+    "torch>=2.6.0 ; sys_platform != 'darwin'",
+    "torchvision>=0.21.0 ; sys_platform != 'darwin'",
+    "numpy>=2.2.4 ; sys_platform != 'darwin'",
+
+    "comet-ml>=3.49.7",
+    "datasets>=3.5.0",
+    "dotenv>=0.9.9",
+    "jsonargparse>=4.38.0",
+    "lightning>=2.5.1",
+    "plotly>=6.0.1",
+    "pydantic>=2.11.2",
+    "transformers<4.51.0",
+]
+
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cpu", marker = "sys_platform != 'linux'" },
+  { index = "pytorch-cu124", marker = "sys_platform == 'linux'" },
+]
+torchvision = [
+  { index = "pytorch-cpu", marker = "sys_platform != 'linux'" },
+  { index = "pytorch-cu124", marker = "sys_platform == 'linux'" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu124"
+url = "https://download.pytorch.org/whl/cu124"
+explicit = true
 
 [project.scripts]
 toxy-bot = "toxy_bot:main"
@@ -35,3 +58,8 @@ build-backend = "hatchling.build"
 
 [dependency-groups]
 dev = []
+
+
+
+
+
