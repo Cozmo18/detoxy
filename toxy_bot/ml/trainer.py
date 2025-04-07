@@ -8,7 +8,6 @@ from jsonargparse import CLI
 from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint
 from pytorch_lightning.loggers import CometLogger
 
-# from lightning.pytorch.loggers import CSVLogger
 from toxy_bot.ml.config import Config, DataModuleConfig, ModuleConfig, TrainerConfig
 from toxy_bot.ml.datamodule import AutoTokenizerDataModule
 from toxy_bot.ml.module import SequenceClassificationModule
@@ -70,11 +69,11 @@ def train(
         max_length=max_length,
     )
 
-    lit_module = SequenceClassificationModule(
+    lit_model = SequenceClassificationModule(
         model_name=model_name,
         learning_rate=lr,
     )
-    logger = CometLogger(
+    comet_logger = CometLogger(
         api_key=os.getenv("COMET_API_KEY"),
         project="toxy-bot",
         workspace="anitamaxvim",
@@ -100,17 +99,16 @@ def train(
         precision=precision,
         max_epochs=max_epochs,
         deterministic=deterministic,
-        logger=logger,
+        logger=comet_logger,
         callbacks=callbacks,
         val_check_interval=val_check_interval,
         check_val_every_n_epoch=check_val_every_n_epoch,
         log_every_n_steps=log_every_n_steps,
         num_sanity_val_steps=num_sanity_val_steps,
-        # enable_model_summary=False,
     )
 
     start = perf_counter()
-    lit_trainer.fit(model=lit_module, datamodule=lit_datamodule)
+    lit_trainer.fit(model=lit_model, datamodule=lit_datamodule)
     stop = perf_counter()
 
     if perf:
