@@ -1,65 +1,57 @@
 import os
-from dataclasses import field
+from dataclasses import dataclass, field
 from multiprocessing import cpu_count
 from pathlib import Path
-
-from pydantic import Field
-from pydantic.dataclasses import dataclass
 
 this_file = Path(__file__)
 root_path = this_file.parents[2]
 
-LABELS: list[str] = [
-    "toxic",
-    "severe_toxic",
-    "obscene",
-    "threat",
-    "insult",
-    "identity_hate",
-]
-
-
-@dataclass
+@dataclass(frozen=True)
 class Config:
-    cache_dir: str = Field(default=os.path.join(root_path, "data"))
-    log_dir: str = Field(default=os.path.join(root_path, "logs"))
-    ckpt_dir: str = Field(default=os.path.join(root_path, "checkpoints"))
-    perf_dir: str = Field(default=os.path.join(root_path, "logs", "perf"))
-    seed: int = Field(default=42, ge=0)
+    cache_dir: str = field(default_factory=lambda: os.path.join(root_path, "data"))
+    log_dir: str = field(default_factory=lambda: os.path.join(root_path, "logs"))
+    ckpt_dir: str = field(default_factory=lambda: os.path.join(root_path, "checkpoints"))
+    perf_dir: str = field(default_factory=lambda: os.path.join(root_path, "logs", "perf"))
+    seed: int = 42
 
 
-@dataclass
+@dataclass(frozen=True)
 class DataModuleConfig:
-    dataset_name: str = Field(default="anitamaxvim/jigsaw-toxic-comments")
-    text_col: str = Field(default="comment_text")
-    label_cols: list[str] = field(default_factory=lambda: LABELS)
-    num_labels: int = Field(default=len(LABELS), ge=0)
-    batch_size: int = Field(default=64, ge=0)
-    max_length: int = Field(default=512, ge=0)
-    train_split: str = Field(default="balanced_train")
-    test_split: str = Field(default="test")
-    train_size: float = Field(default=0.85, ge=0.0, le=1.0)
-    num_workers: int = Field(default=cpu_count(), ge=0)
+    dataset_name: str = "anitamaxvim/jigsaw-toxic-comments"
+    text_col: str = "comment_text"
+    label_cols: list[str] = field(default_factory=lambda: ["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"])
+    num_labels: int = 6 
+    train_split: str = "balanced_train"
+    test_split: str = "test"
+    batch_size: int = 64
+    max_length: int = 512
+    train_size: float = 0.85
+    num_workers: int = field(default_factory=cpu_count)
 
 
-@dataclass
+@dataclass(frozen=True)
 class ModuleConfig:
-    model_name: str = Field(default="google-bert/bert-base-uncased")
-    learning_rate: float = Field(default=3e-5, ge=0.0)
-    finetuned: str = Field(
-        default="checkpoints/google/bert_uncased_L-4_H-512_A-8_finetuned.ckpt"
-    )
+    model_name: str = "google-bert/bert-base-uncased"
+    learning_rate: float = 3e-5
+    warmup_ratio: float | None = 0.05
+    finetuned: str = "checkpoints/google/bert_uncased_L-4_H-512_A-8_finetuned.ckpt"
 
 
-@dataclass
+@dataclass(frozen=True)
 class TrainerConfig:
-    accelerator: str = Field(default="auto")
-    devices: int | str = Field(default="auto")
-    strategy: str = Field(default="auto")
-    precision: str | None = Field(default="16-mixed")
-    max_epochs: int = Field(default=5, ge=1)
-    deterministic: bool = Field(default=True)
-    check_val_every_n_epoch: int | None = Field(default=1, ge=1)
-    val_check_interval: int | float | None = Field(default=None, ge=1)
-    num_sanity_val_steps: int | None = Field(default=2, ge=1)
-    log_every_n_steps: int | None = Field(default=200, ge=1)
+    accelerator: str = "auto"
+    devices: int | str = "auto"
+    strategy: str = "auto"
+    precision: str | None = "16-mixed"
+    max_epochs: int = 5
+    deterministic: bool = True
+    check_val_every_n_epoch: int | None = 1
+    val_check_interval: int | float | None = None
+    num_sanity_val_steps: int | None = 2
+    log_every_n_steps: int | None = 200
+    
+CONFIG = Config()
+DATAMODULE_CONFIG = DataModuleConfig()
+MODULE_CONFIG = ModuleConfig()
+TRAINER_CONFIG = TrainerConfig()
+

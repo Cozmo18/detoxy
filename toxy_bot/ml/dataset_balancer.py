@@ -4,7 +4,7 @@ from typing import List, Optional
 import pandas as pd
 from datasets import Dataset, DatasetDict, load_dataset
 
-from toxy_bot.ml.config import Config, DataModuleConfig
+from toxy_bot.ml.config import CONFIG, DATAMODULE_CONFIG
 
 
 def load_and_prepare_dataset(
@@ -106,8 +106,8 @@ def save_dataset_splits(
 
 
 def create_balanced_dataset(
-    config: Config,
-    dm_config: DataModuleConfig,
+    config: CONFIG,
+    dm_config: DATAMODULE_CONFIG,
     pos_neg_ratio: float = 0.3,
 ) -> DatasetDict:
     """
@@ -121,50 +121,34 @@ def create_balanced_dataset(
     Returns:
         DatasetDict containing the original and balanced splits
     """
-    # Load and validate the dataset
-    dataset = load_and_prepare_dataset(
+    # Load the dataset
+    dataset = load_dataset(
         dataset_name=dm_config.dataset_name,
         cache_dir=config.cache_dir,
-        label_cols=dm_config.label_cols,
     )
-
-    # Balance the train dataset
-    train_df = dataset["train"].to_pandas()
-    balanced_train_df = balance_dataset(
-        df=train_df,
-        labels=dm_config.label_cols,
-        pos_neg_ratio=pos_neg_ratio,
+    
+    # Get the labels
+    labels = dm_config.label_cols
+    
+    # Create a balanced dataset
+    balanced_dataset = balance_dataset(
+        dataset,
+        labels=labels,
         random_state=config.seed,
     )
-
-    # Create balanced dataset
-    balanced_train_dataset = Dataset.from_pandas(balanced_train_df)
-    new_dataset_dict = DatasetDict(
-        {
-            "train": dataset["train"],
-            "test": dataset["test"],
-            "balanced_train": balanced_train_dataset,
-        }
-    )
-
-    # Save the dataset splits
-    save_dataset_splits(new_dataset_dict, config.cache_dir)
-
-    return new_dataset_dict
+    
+    # Save the balanced dataset
+    save_dataset_splits(balanced_dataset, config.cache_dir)
+    
+    return balanced_dataset
 
 
 if __name__ == "__main__":
-    config = Config()
-    dm_config = DataModuleConfig()
+    # Test the dataset balancer
+    # Create a balanced dataset
+    balanced_dataset = create_balanced_dataset(CONFIG, DATAMODULE_CONFIG)
 
-    try:
-        new_dataset_dict = create_balanced_dataset(config, dm_config)
-
-        print("\nBalanced dataset statistics:")
-        for split in new_dataset_dict:
-            n_samples = len(new_dataset_dict[split])
-            print(f"{split}: {n_samples} samples")
-
-    except Exception as e:
-        print(f"Error creating balanced dataset: {str(e)}")
-        raise
+    print("\nBalanced dataset statistics:")
+    for split in balanced_dataset:
+        n_samples = len(balanced_dataset[split])
+        print(f"{split}: {n_samples} samples")

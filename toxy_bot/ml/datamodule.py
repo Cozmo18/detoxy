@@ -9,31 +9,24 @@ from lightning_utilities.core.rank_zero import rank_zero_info
 from torch.utils.data import DataLoader
 from transformers import AutoTokenizer
 
-from toxy_bot.ml.config import Config, DataModuleConfig, ModuleConfig
-
-# Create instances of config classes
-config = Config()
-datamodule_config = DataModuleConfig()
-module_config = ModuleConfig()
-
+from toxy_bot.ml.config import CONFIG, DATAMODULE_CONFIG, MODULE_CONFIG
 
 class AutoTokenizerDataModule(pl.LightningDataModule):
     def __init__(
         self,
-        dataset_name: str = datamodule_config.dataset_name,
-        model_name: str = module_config.model_name,
-        cache_dir: str = config.cache_dir,
-        text_col: str = datamodule_config.text_col,
-        label_cols: list[str] = datamodule_config.label_cols,
-        num_labels: int = datamodule_config.num_labels,
+        dataset_name: str = DATAMODULE_CONFIG.dataset_name,
+        model_name: str = MODULE_CONFIG.model_name,
+        cache_dir: str = CONFIG.cache_dir,
+        text_col: str = DATAMODULE_CONFIG.text_col,
+        label_cols: list[str] = DATAMODULE_CONFIG.label_cols,
         columns: list[str] = ["input_ids", "attention_mask", "labels"],
-        batch_size: int = datamodule_config.batch_size,
-        max_length: int = datamodule_config.max_length,
-        train_split: str = datamodule_config.train_split,
-        test_split: str = datamodule_config.test_split,
-        train_size: float = datamodule_config.train_size,
-        num_workers: int = datamodule_config.num_workers,
-        seed: int = config.seed,
+        batch_size: int = DATAMODULE_CONFIG.batch_size,
+        max_length: int = DATAMODULE_CONFIG.max_length,
+        train_split: str = DATAMODULE_CONFIG.train_split,
+        test_split: str = DATAMODULE_CONFIG.test_split,
+        train_size: float = DATAMODULE_CONFIG.train_size,
+        num_workers: int = DATAMODULE_CONFIG.num_workers,
+        seed: int = CONFIG.seed,
     ) -> None:
         super().__init__()
 
@@ -42,7 +35,6 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
         self.model_name = model_name
         self.text_col = text_col
         self.label_cols = label_cols
-        self.num_labels = num_labels
         self.columns = columns
         self.batch_size = batch_size
         self.max_length = max_length
@@ -51,7 +43,7 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
         self.train_size = train_size
         self.num_workers = num_workers
         self.seed = seed
-
+        
         self.train_data = None
         self.val_data = None
         self.test_data = None
@@ -90,8 +82,9 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
 
             # First, process the labels
             self.train_data = dataset["train"].map(
-                add_combined_labels,
+                combine_labels,
                 batched=True,
+                remove_columns=self.label_cols,
                 fn_kwargs={"label_cols": self.label_cols},
             )
 
@@ -111,8 +104,9 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
 
             # And similarly for validation data:
             self.val_data = dataset["test"].map(
-                add_combined_labels,
+                combine_labels,
                 batched=True,
+                remove_columns=self.label_cols,
                 fn_kwargs={"label_cols": self.label_cols},
             )
 
@@ -179,17 +173,17 @@ def tokenize_text(
 
     return tokenizer(
         text,
-        max_length=max_length,
         truncation=truncation,
         add_special_tokens=add_special_tokens,
         return_attention_mask=return_attention_mask,
         return_token_type_ids=return_token_type_ids,
         padding=padding,
+        max_length=max_length,
         return_tensors="pt",
     )
+    
 
-
-def add_combined_labels(
+def combine_labels(
     batch: dict,
     *,
     label_cols: list[str],
@@ -203,3 +197,43 @@ def add_combined_labels(
 
     batch["labels"] = labels
     return batch
+
+
+if __name__ == "__main__":
+    # Test the AutoTokenizerDataModule
+    print("Testing AutoTokenizerDataModule...")
+    
+    # Initialize the datamodule with test parameters
+    test_datamodule = AutoTokenizerDataModule(
+        batch_size=8,
+        max_length=128,
+        train_size=0.8,
+        num_workers=0  # Set to 0 for testing to avoid multiprocessing issues
+    )
+    
+    # Test prepare_data
+    print("Testing prepare_data...")
+    test_datamodule.prepare_data()
+    
+    # Test setup
+    print("Testing setup...")
+    test_datamodule.setup(stage="fit")
+    
+    # Test dataloaders
+    print("Testing dataloaders...")
+    train_loader = test_datamodule.train_dataloader()
+    val_loader = test_datamodule.val_dataloader()
+    
+    # Print some basic information
+    print(f"Number of training batches: {len(train_loader)}")
+    print(f"Number of validation batches: {len(val_loader)}")
+    
+    # Test a single batch
+    print("\nTesting a single batch...")
+    batch = next(iter(train_loader))
+    print(f"Batch keys: {batch.keys()}")
+    print(f"Input IDs shape: {batch['input_ids'].shape}")
+    print(f"Attention mask shape: {batch['attention_mask'].shape}")
+    print(f"Labels shape: {batch['labels'].shape}")
+    
+    print("\nTest completed successfully!")
