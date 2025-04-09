@@ -58,7 +58,6 @@ def train(
         learning_rate=lr,
     )
     comet_logger = CometLogger(
-        api_key=os.getenv("COMET_API_KEY"),
         project="toxy-bot",
         workspace="anitamaxvim",
     )
