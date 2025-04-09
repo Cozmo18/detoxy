@@ -11,23 +11,19 @@ from pytorch_lightning.loggers import CometLogger
 from toxy_bot.ml.config import CONFIG, DATAMODULE_CONFIG, MODULE_CONFIG, TRAINER_CONFIG
 from toxy_bot.ml.datamodule import AutoTokenizerDataModule
 from toxy_bot.ml.module import SequenceClassificationModule
-from toxy_bot.ml.utils import create_dirs, create_experiment_name, log_perf
+from toxy_bot.ml.utils import create_dirs, log_perf
 
 load_dotenv()
 
-# Config instances
 # constants
 model_name = MODULE_CONFIG.model_name
 dataset_name = DATAMODULE_CONFIG.dataset_name
 
-# paths
-cache_dir = CONFIG.cache_dir
-log_dir = CONFIG.log_dir
-ckpt_dir = CONFIG.ckpt_dir
-perf_dir = CONFIG.perf_dir
-
-
 def train(
+    cache_dir: str = CONFIG.cache_dir,
+    log_dir: str = CONFIG.log_dir,
+    ckpt_dir: str = CONFIG.ckpt_dir,
+    perf_dir: str = CONFIG.perf_dir,
     accelerator: str = TRAINER_CONFIG.accelerator,
     devices: int | str = TRAINER_CONFIG.devices,
     strategy: str = TRAINER_CONFIG.strategy,
@@ -49,14 +45,6 @@ def train(
     # Create required directories
     create_dirs([log_dir, ckpt_dir, perf_dir])
 
-    # Create unique run/experiment name
-    experiment_name = create_experiment_name(
-        model_name=model_name,
-        learning_rate=lr,
-        batch_size=batch_size,
-        max_length=max_length,
-    )
-
     lit_datamodule = AutoTokenizerDataModule(
         model_name=model_name,
         dataset_name=dataset_name,
@@ -73,18 +61,25 @@ def train(
         api_key=os.getenv("COMET_API_KEY"),
         project="toxy-bot",
         workspace="anitamaxvim",
-        name=experiment_name,
+    )
+
+    # Configure ModelCheckpoint with Lightning's versioning
+    checkpoint_callback = ModelCheckpoint(
+        dirpath=ckpt_dir,
+        filename="checkpoint_{epoch:02d}-{val_loss:.2f}",
+        monitor="val_loss",
+        mode="min",
     )
 
     # do not use EarlyStopping if getting perf benchmark
     # do not perform sanity checking if getting perf benchmark
     if perf:
-        callbacks = [ModelCheckpoint(dirpath=ckpt_dir, filename=experiment_name)]
+        callbacks = [checkpoint_callback]
         num_sanity_val_steps = 0
     else:
         callbacks = [
             EarlyStopping(monitor="val_loss", mode="min"),
-            ModelCheckpoint(dirpath=ckpt_dir, filename=experiment_name),
+            checkpoint_callback,
         ]
 
     lit_trainer = pl.Trainer(
@@ -108,7 +103,9 @@ def train(
     stop = perf_counter()
 
     if perf:
-        log_perf(start, stop, lit_trainer, perf_dir, experiment_name)
+        # Use the version number from the logger for performance logging
+        version = comet_logger.version
+        log_perf(start, stop, lit_trainer, perf_dir, version)
 
 
 if __name__ == "__main__":

@@ -55,6 +55,7 @@ def log_perf(
 ) -> None:
     perf_metrics: dict[str, dict[str, str | int | float]] = {
         "perf": {
+            "version": version,
             "device_name": get_device_name(),
             "num_node": trainer.num_nodes,
             "num_devices:": trainer.num_devices,
@@ -73,7 +74,7 @@ def log_perf(
     if not os.path.isdir(perf_dir):
         os.mkdir(perf_dir)
 
-    perf_file = f"{perf_dir}/{version}.json"
+    perf_file = f"{perf_dir}/version_{version}.json"
 
     with open(perf_file, "w") as f:
         json.dump(perf_metrics, f, indent=4)
