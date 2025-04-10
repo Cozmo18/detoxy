@@ -19,7 +19,7 @@ DATASET_NAME = DATAMODULE_CONFIG.dataset_name
 def train(
     model_name = MODULE_CONFIG.model_name,
     lr: float = MODULE_CONFIG.learning_rate,
-    warmup_ratio: float = MODULE_CONFIG.warmup_ratio,
+    warmup_ratio: float | None = MODULE_CONFIG.warmup_ratio,
     max_epochs: int = TRAINER_CONFIG.max_epochs,
     train_size: float = DATAMODULE_CONFIG.train_size,
     batch_size: int = DATAMODULE_CONFIG.batch_size,
