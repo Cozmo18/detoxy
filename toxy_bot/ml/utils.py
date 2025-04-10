@@ -19,43 +19,23 @@ def get_device_name() -> str:
         return str(torch.cpu.current_device().replace(" ", "-"))
 
 
-def create_experiment_name(
-    model_name: str,
-    learning_rate: float,
-    batch_size: int,
-    max_token_len: int,
-) -> str:
-    model_str = model_name.replace("/", "_")
-    timestamp = datetime.now().isoformat()
-
-    elements = {
-        "model": model_str,
-        "device": get_device_name(),
-        "lr": f"{learning_rate:.2e}",
-        "bs": str(batch_size),
-        "ml": str(max_token_len),
-        "time": timestamp,
-    }
-
-    # Join with '=' between key-value pairs and '__' between different elements
-    return "__".join(f"{k}={v}" for k, v in elements.items())
-
-
-def parse_run_name(run_name: str) -> dict:
-    """Parse a run name back into its constituent parts."""
-    return dict(element.split("=") for element in run_name.split("__"))
-
-
 def log_perf(
     start: float,
     stop: float,
     trainer: Trainer,
     perf_dir: str | Path,
-    version: str,
 ) -> None:
+    # sync to last checkpoint
+    mc = [i for i in trainer.callbacks if i.__class__.__name__ == "ModelCheckpoint"]
+    if mc:
+        mc = mc[0]
+        version = mc._last_checkpoint_saved.split("/")[-1].split(".")[0]
+    else: # this should never be triggered since the example forces use of ModelCheckpoint
+        perfs = os.listdir(perf_dir)
+        version = f"version_{len(perfs)}"
+        
     perf_metrics: dict[str, dict[str, str | int | float]] = {
         "perf": {
-            "version": version,
             "device_name": get_device_name(),
             "num_node": trainer.num_nodes,
             "num_devices:": trainer.num_devices,
@@ -73,11 +53,11 @@ def log_perf(
 
     if not os.path.isdir(perf_dir):
         os.mkdir(perf_dir)
+        
 
-    perf_file = f"{perf_dir}/version_{version}.json"
+    with open(os.path.join(perf_dir, version + ".json"), "w") as perf_file:
+        json.dump(perf_metrics, perf_file, indent=4)
 
-    with open(perf_file, "w") as f:
-        json.dump(perf_metrics, f, indent=4)
 
 
 def create_dirs(dirs: str | list[str]) -> None:

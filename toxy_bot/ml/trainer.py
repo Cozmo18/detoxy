@@ -1,8 +1,9 @@
 from time import perf_counter
+import os
+from datetime import datetime
 
 import lightning.pytorch as pl
 import torch
-from dotenv import load_dotenv
 from jsonargparse import CLI
 from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint
 from pytorch_lightning.loggers import CometLogger
@@ -19,7 +20,7 @@ DATASET_NAME = DATAMODULE_CONFIG.dataset_name
 def train(
     model_name = MODULE_CONFIG.model_name,
     lr: float = MODULE_CONFIG.learning_rate,
-    warmup_ratio: float | None = MODULE_CONFIG.warmup_ratio,
+    warmup_ratio: float = MODULE_CONFIG.warmup_ratio,
     max_epochs: int = TRAINER_CONFIG.max_epochs,
     train_size: float = DATAMODULE_CONFIG.train_size,
     batch_size: int = DATAMODULE_CONFIG.batch_size,
@@ -42,10 +43,6 @@ def train(
 ) -> None:
     torch.set_float32_matmul_precision(precision="medium")
     
-    # Load env vars
-    load_dotenv()
-
-    # Create required directories
     create_dirs([log_dir, ckpt_dir, perf_dir])
 
     lit_datamodule = AutoTokenizerDataModule(
@@ -63,15 +60,21 @@ def train(
         warmup_ratio=warmup_ratio,
     )
     
-    comet_logger = CometLogger(
-        project="toxy-bot",
-        workspace="anitamaxvim",
-    )
+    current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
+    model_short_name = model_name.split("/")[-1].replace("-", "_")
+    filename=f"model={model_short_name}-{{epoch:02d}}-{{val_loss:.2f}}-date={current_time}"
     
+    comet_logger = CometLogger(
+        api_key=os.environ.get("COMET_API_KEY"),
+        workspace=os.environ.get("COMET_WORKSPACE"),
+        project="toxy-bot",
+        mode="create",
+    )
+
     # Configure ModelCheckpoint with Lightning's versioning
     checkpoint_callback = ModelCheckpoint(
         dirpath=ckpt_dir,
-        filename="best_checkpoint_{epoch:02d}-{val_loss:.2f}",
+        filename=filename,
         monitor="val_loss",
         mode="min",
         save_top_k=1,
@@ -110,9 +113,7 @@ def train(
     stop = perf_counter()
 
     if perf:
-        # Use the version number from the logger for performance logging
-        version = comet_logger.version
-        log_perf(start, stop, lit_trainer, perf_dir, version)
+        log_perf(start, stop, lit_trainer, perf_dir, filename)
 
 
 if __name__ == "__main__":
