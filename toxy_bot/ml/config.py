@@ -23,8 +23,8 @@ class DataModuleConfig:
     num_labels: int = 6 
     train_split: str = "balanced_train"
     test_split: str = "test"
-    batch_size: int = 64
-    max_token_len: int = 512
+    batch_size: int = 128
+    max_token_len: int = 256
     train_size: float = 0.85
     num_workers: int = field(default_factory=cpu_count)
 
@@ -45,10 +45,10 @@ class TrainerConfig:
     precision: str | None = "16-mixed"
     max_epochs: int = 5
     deterministic: bool = True
-    check_val_every_n_epoch: int | None = 1
+    check_val_every_n_epoch: int | None = 0.5 # x2 per epoch
     val_check_interval: int | float | None = None
     num_sanity_val_steps: int | None = 2
-    log_every_n_steps: int | None = 200
+    log_every_n_steps: int | None = 50
     
 CONFIG = Config()
 DATAMODULE_CONFIG = DataModuleConfig()

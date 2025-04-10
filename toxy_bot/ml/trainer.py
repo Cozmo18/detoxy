@@ -13,24 +13,26 @@ from toxy_bot.ml.module import SequenceClassificationModule
 from toxy_bot.ml.utils import create_dirs, log_perf
 
 
-# constants
-dataset_name = DATAMODULE_CONFIG.dataset_name
+# Constants
+DATASET_NAME = DATAMODULE_CONFIG.dataset_name
 
 def train(
     model_name = MODULE_CONFIG.model_name,
-    accelerator: str = TRAINER_CONFIG.accelerator,
-    devices: int | str = TRAINER_CONFIG.devices,
-    strategy: str = TRAINER_CONFIG.strategy,
-    precision: str | None = TRAINER_CONFIG.precision,
-    max_epochs: int = TRAINER_CONFIG.max_epochs,
     lr: float = MODULE_CONFIG.learning_rate,
+    warmup_ratio: float = MODULE_CONFIG.warmup_ratio,
+    max_epochs: int = TRAINER_CONFIG.max_epochs,
+    train_size: float = DATAMODULE_CONFIG.train_size,
     batch_size: int = DATAMODULE_CONFIG.batch_size,
     max_token_len: int = DATAMODULE_CONFIG.max_token_len,
-    deterministic: bool = TRAINER_CONFIG.deterministic,
     check_val_every_n_epoch: int | None = TRAINER_CONFIG.check_val_every_n_epoch,
     val_check_interval: int | float | None = TRAINER_CONFIG.val_check_interval,
     num_sanity_val_steps: int | None = TRAINER_CONFIG.num_sanity_val_steps,
     log_every_n_steps: int | None = TRAINER_CONFIG.log_every_n_steps,
+    accelerator: str = TRAINER_CONFIG.accelerator,
+    devices: int | str = TRAINER_CONFIG.devices,
+    strategy: str = TRAINER_CONFIG.strategy,
+    precision: str | None = TRAINER_CONFIG.precision,
+    deterministic: bool = TRAINER_CONFIG.deterministic,
     perf: bool = False,
     fast_dev_run: bool = False,
     cache_dir: str = CONFIG.cache_dir,
@@ -47,17 +49,20 @@ def train(
     create_dirs([log_dir, ckpt_dir, perf_dir])
 
     lit_datamodule = AutoTokenizerDataModule(
+        dataset_name=DATASET_NAME,
         model_name=model_name,
-        dataset_name=dataset_name,
         cache_dir=cache_dir,
         batch_size=batch_size,
+        train_size=train_size,
         max_token_len=max_token_len,
     )
 
     lit_model = SequenceClassificationModule(
         model_name=model_name,
         learning_rate=lr,
+        warmup_ratio=warmup_ratio,
     )
+    
     comet_logger = CometLogger(
         project="toxy-bot",
         workspace="anitamaxvim",
