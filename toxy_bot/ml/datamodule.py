@@ -21,7 +21,7 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
         label_cols: list[str] = DATAMODULE_CONFIG.label_cols,
         columns: list[str] = ["input_ids", "attention_mask", "labels"],
         batch_size: int = DATAMODULE_CONFIG.batch_size,
-        max_length: int = DATAMODULE_CONFIG.max_length,
+        max_token_len: int = DATAMODULE_CONFIG.max_token_len,
         train_split: str = DATAMODULE_CONFIG.train_split,
         test_split: str = DATAMODULE_CONFIG.test_split,
         train_size: float = DATAMODULE_CONFIG.train_size,
@@ -37,7 +37,7 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
         self.label_cols = label_cols
         self.columns = columns
         self.batch_size = batch_size
-        self.max_length = max_length
+        self.max_token_len = max_token_len
         self.train_split = train_split
         self.test_split = test_split
         self.train_size = train_size
@@ -95,7 +95,7 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
                 fn_kwargs={
                     "model_name": self.model_name,
                     "cache_dir": self.cache_dir,
-                    "max_length": self.max_length,
+                    "max_token_len": self.max_token_len,
                     "text_col": self.text_col,
                 },
             )
@@ -116,7 +116,7 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
                 fn_kwargs={
                     "model_name": self.model_name,
                     "cache_dir": self.cache_dir,
-                    "max_length": self.max_length,
+                    "max_token_len": self.max_token_len,
                     "text_col": self.text_col,
                 },
             )
@@ -152,7 +152,7 @@ def tokenize_text(
     *,
     model_name: str,
     cache_dir: str | Path,
-    max_length: int,
+    max_token_len: int,
     text_col: str | None = None,
     truncation: bool = True,
     add_special_tokens: bool = True,
@@ -178,7 +178,7 @@ def tokenize_text(
         return_attention_mask=return_attention_mask,
         return_token_type_ids=return_token_type_ids,
         padding=padding,
-        max_length=max_length,
+        max_length=max_token_len,
         return_tensors="pt",
     )
     
@@ -206,7 +206,7 @@ if __name__ == "__main__":
     # Initialize the datamodule with test parameters
     test_datamodule = AutoTokenizerDataModule(
         batch_size=8,
-        max_length=128,
+        max_token_len=128,
         train_size=0.8,
         num_workers=0  # Set to 0 for testing to avoid multiprocessing issues
     )

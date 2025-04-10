@@ -117,15 +117,13 @@ class SequenceClassificationModule(pl.LightningModule):
         sequence: str,
         cache_dir: str | Path = CONFIG.cache_dir,
         label_cols: list[str] = DATAMODULE_CONFIG.label_cols,
-        max_length: int = DATAMODULE_CONFIG.max_length,
+        max_token_len: int = DATAMODULE_CONFIG.max_token_len,
     ) -> torch.Tensor:
         batch = tokenize_text(
             sequence,
             model_name=self.model_name,
             cache_dir=cache_dir,
-            max_length=max_length,
-
-            
+            max_length=max_token_len,
         )
         # Autotokenizer may cause tokens to lose device type and cause failure
         batch = batch.to(self.device)

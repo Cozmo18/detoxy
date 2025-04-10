@@ -1,4 +1,3 @@
-import os
 from time import perf_counter
 
 import lightning.pytorch as pl
@@ -13,17 +12,12 @@ from toxy_bot.ml.datamodule import AutoTokenizerDataModule
 from toxy_bot.ml.module import SequenceClassificationModule
 from toxy_bot.ml.utils import create_dirs, log_perf
 
-load_dotenv()
 
 # constants
-model_name = MODULE_CONFIG.model_name
 dataset_name = DATAMODULE_CONFIG.dataset_name
 
 def train(
-    cache_dir: str = CONFIG.cache_dir,
-    log_dir: str = CONFIG.log_dir,
-    ckpt_dir: str = CONFIG.ckpt_dir,
-    perf_dir: str = CONFIG.perf_dir,
+    model_name = MODULE_CONFIG.model_name,
     accelerator: str = TRAINER_CONFIG.accelerator,
     devices: int | str = TRAINER_CONFIG.devices,
     strategy: str = TRAINER_CONFIG.strategy,
@@ -31,7 +25,7 @@ def train(
     max_epochs: int = TRAINER_CONFIG.max_epochs,
     lr: float = MODULE_CONFIG.learning_rate,
     batch_size: int = DATAMODULE_CONFIG.batch_size,
-    max_length: int = DATAMODULE_CONFIG.max_length,
+    max_token_len: int = DATAMODULE_CONFIG.max_token_len,
     deterministic: bool = TRAINER_CONFIG.deterministic,
     check_val_every_n_epoch: int | None = TRAINER_CONFIG.check_val_every_n_epoch,
     val_check_interval: int | float | None = TRAINER_CONFIG.val_check_interval,
@@ -39,8 +33,15 @@ def train(
     log_every_n_steps: int | None = TRAINER_CONFIG.log_every_n_steps,
     perf: bool = False,
     fast_dev_run: bool = False,
+    cache_dir: str = CONFIG.cache_dir,
+    log_dir: str = CONFIG.log_dir,
+    ckpt_dir: str = CONFIG.ckpt_dir,
+    perf_dir: str = CONFIG.perf_dir,
 ) -> None:
     torch.set_float32_matmul_precision(precision="medium")
+    
+    # Load env vars
+    load_dotenv()
 
     # Create required directories
     create_dirs([log_dir, ckpt_dir, perf_dir])
@@ -50,7 +51,7 @@ def train(
         dataset_name=dataset_name,
         cache_dir=cache_dir,
         batch_size=batch_size,
-        max_length=max_length,
+        max_token_len=max_token_len,
     )
 
     lit_model = SequenceClassificationModule(
@@ -61,13 +62,15 @@ def train(
         project="toxy-bot",
         workspace="anitamaxvim",
     )
-
+    
     # Configure ModelCheckpoint with Lightning's versioning
     checkpoint_callback = ModelCheckpoint(
         dirpath=ckpt_dir,
-        filename="checkpoint_{epoch:02d}-{val_loss:.2f}",
+        filename="best_checkpoint_{epoch:02d}-{val_loss:.2f}",
         monitor="val_loss",
         mode="min",
+        save_top_k=1,
+        verbose=True,   
     )
 
     # do not use EarlyStopping if getting perf benchmark
@@ -77,7 +80,7 @@ def train(
         num_sanity_val_steps = 0
     else:
         callbacks = [
-            EarlyStopping(monitor="val_loss", mode="min"),
+            EarlyStopping(monitor="val_loss", mode="min", patience=2),
             checkpoint_callback,
         ]
 

@@ -23,7 +23,7 @@ def create_experiment_name(
     model_name: str,
     learning_rate: float,
     batch_size: int,
-    max_length: int,
+    max_token_len: int,
 ) -> str:
     model_str = model_name.replace("/", "_")
     timestamp = datetime.now().isoformat()
@@ -33,7 +33,7 @@ def create_experiment_name(
         "device": get_device_name(),
         "lr": f"{learning_rate:.2e}",
         "bs": str(batch_size),
-        "ml": str(max_length),
+        "ml": str(max_token_len),
         "time": timestamp,
     }
 
