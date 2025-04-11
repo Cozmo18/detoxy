@@ -123,6 +123,31 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
             self.val_data.set_format("torch", columns=self.columns)
 
             del dataset  # Free memory
+            
+        if stage == "test":
+            self.test_data = load_dataset(
+                self.dataset_name, split=self.test_split, cache_dir=self.cache_dir
+            )
+            
+            self.test_data = self.test_data.map(
+                combine_labels,
+                batched=True,
+                remove_columns=self.label_cols,
+                fn_kwargs={"label_cols": self.label_cols},
+            )
+
+            self.test_data = self.test_data.map(
+                tokenize_text,
+                batched=True,
+                fn_kwargs={
+                    "model_name": self.model_name,
+                    "cache_dir": self.cache_dir,
+                    "max_token_len": self.max_token_len,
+                    "text_col": self.text_col,
+                },
+            )
+            self.test_data.set_format("torch", columns=self.columns)
+
 
     def train_dataloader(self) -> TRAIN_DATALOADERS:
         return DataLoader(

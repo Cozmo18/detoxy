@@ -61,7 +61,7 @@ def train(
     )
     
     current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    filename = f"{model_name}__finetuned__{current_time}"
+    filename = f"{model_name}_finetuned__{current_time}"
     
     comet_logger = CometLogger(
         api_key=os.environ.get("COMET_API_KEY"),
