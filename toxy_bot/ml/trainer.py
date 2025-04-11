@@ -61,19 +61,19 @@ def train(
     )
     
     current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    filename = f"{model_name}_finetuned__{current_time}"
+    exp_name = f"{model_name}_finetuned_{current_time}"
     
     comet_logger = CometLogger(
         api_key=os.environ.get("COMET_API_KEY"),
         workspace=os.environ.get("COMET_WORKSPACE"),
         project="toxy-bot",
         mode="create",
-        name=filename,
+        name=exp_name,
     )
 
     checkpoint_callback = ModelCheckpoint(
         dirpath=ckpt_dir,
-        filename=filename,
+        filename=exp_name,
         monitor="val_loss",
         mode="min",
         save_top_k=1,
@@ -116,7 +116,7 @@ def train(
     stop = perf_counter()
 
     if perf:
-        log_perf(start, stop, lit_trainer, perf_dir, filename)
+        log_perf(start, stop, lit_trainer, perf_dir, exp_name)
         
     lit_trainer.test(model=lit_model, datamodule=lit_datamodule)
 
