@@ -31,10 +31,10 @@ class DataModuleConfig:
 
 @dataclass(frozen=True)
 class ModuleConfig:
-    model_name: str = "google-bert/bert-base-uncased"
+    model_name: str = "google/bert_uncased_L-2_H-128_A-2" # "google-bert/bert-base-uncased"
     learning_rate: float = 3e-5
     warmup_ratio: float | None = 0.05
-    finetuned: str = "checkpoints/google/bert_uncased_L-4_H-512_A-8_finetuned.ckpt"
+    # finetuned: str = "checkpoints/google/bert_uncased_L-4_H-512_A-8_finetuned.ckpt"
 
 
 @dataclass(frozen=True)

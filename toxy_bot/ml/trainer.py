@@ -5,7 +5,7 @@ from datetime import datetime
 import lightning.pytorch as pl
 import torch
 from jsonargparse import CLI
-from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint
+from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint, LearningRateMonitor
 from pytorch_lightning.loggers import CometLogger
 
 from toxy_bot.ml.config import CONFIG, DATAMODULE_CONFIG, MODULE_CONFIG, TRAINER_CONFIG
@@ -60,18 +60,17 @@ def train(
         warmup_ratio=warmup_ratio,
     )
     
-    current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
-    model_short_name = model_name.split("/")[-1].replace("-", "_")
-    filename=f"model={model_short_name}-{{epoch:02d}}-{{val_loss:.2f}}-date={current_time}"
+    current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    filename = f"{model_name}__finetuned__{current_time}"
     
     comet_logger = CometLogger(
         api_key=os.environ.get("COMET_API_KEY"),
         workspace=os.environ.get("COMET_WORKSPACE"),
         project="toxy-bot",
         mode="create",
+        name=filename,
     )
 
-    # Configure ModelCheckpoint with Lightning's versioning
     checkpoint_callback = ModelCheckpoint(
         dirpath=ckpt_dir,
         filename=filename,
@@ -80,16 +79,19 @@ def train(
         save_top_k=1,
         verbose=True,   
     )
+    
+    lr_monitor = LearningRateMonitor(logging_interval='step')
 
     # do not use EarlyStopping if getting perf benchmark
     # do not perform sanity checking if getting perf benchmark
     if perf:
-        callbacks = [checkpoint_callback]
+        callbacks = [checkpoint_callback, lr_monitor]
         num_sanity_val_steps = 0
     else:
         callbacks = [
-            EarlyStopping(monitor="val_loss", mode="min", patience=2),
+            EarlyStopping(monitor="val_loss", mode="min", patience=3),
             checkpoint_callback,
+            lr_monitor,
         ]
 
     lit_trainer = pl.Trainer(
@@ -108,12 +110,15 @@ def train(
         fast_dev_run=fast_dev_run,
     )
 
+    # Time training
     start = perf_counter()
     lit_trainer.fit(model=lit_model, datamodule=lit_datamodule)
     stop = perf_counter()
 
     if perf:
         log_perf(start, stop, lit_trainer, perf_dir, filename)
+        
+    lit_trainer.test(model=lit_model, datamodule=lit_datamodule)
 
 
 if __name__ == "__main__":
