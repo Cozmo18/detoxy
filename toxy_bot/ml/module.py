@@ -4,6 +4,7 @@ import torch
 from torch.optim import AdamW
 from lightning.pytorch.utilities.types import OptimizerLRScheduler
 from torchmetrics.classification import (
+    MultilabelAUROC,
     MultilabelAccuracy,
     MultilabelF1Score,
     MultilabelPrecision,
@@ -11,7 +12,7 @@ from torchmetrics.classification import (
 )
 from transformers import BertForSequenceClassification, get_linear_schedule_with_warmup
 
-from toxy_bot.ml.config import CONFIG, DATAMODULE_CONFIG, MODULE_CONFIG, TRAINER_CONFIG
+from toxy_bot.ml.config import CONFIG, DATAMODULE_CONFIG, MODULE_CONFIG
 from toxy_bot.ml.datamodule import tokenize_text
 
 
@@ -21,22 +22,27 @@ class SequenceClassificationModule(pl.LightningModule):
         self,
         model_name: str = MODULE_CONFIG.model_name,
         num_labels: int = DATAMODULE_CONFIG.num_labels,
-        learning_rate: float = MODULE_CONFIG.learning_rate,
-        warmup_ratio: float | None = MODULE_CONFIG.warmup_ratio,
+        max_token_len: int = DATAMODULE_CONFIG.max_token_len,
+        input_key: str = "input_ids",
+        labels_key: str = "labels",
+        mask_key: str = "attention_mask",
         output_key: str = "logits",
         loss_key: str = "loss",
-        label_key: str = "labels",
+        learning_rate: float = MODULE_CONFIG.learning_rate,
+        warmup_ratio: float | None = MODULE_CONFIG.warmup_ratio,
     ) -> None:
         super().__init__()
 
         self.model_name = model_name
         self.num_labels = num_labels
-        self.learning_rate = learning_rate
-        self.warmup_ratio = warmup_ratio
-
+        self.max_token_len = max_token_len
+        self.input_key = input_key
+        self.labels_key = labels_key
+        self.mask_key = mask_key
         self.output_key = output_key
         self.loss_key = loss_key
-        self.label_key = label_key
+        self.learning_rate = learning_rate
+        self.warmup_ratio = warmup_ratio
 
         self.model = BertForSequenceClassification.from_pretrained(
             model_name, num_labels=num_labels, problem_type="multi_label_classification"
@@ -46,6 +52,7 @@ class SequenceClassificationModule(pl.LightningModule):
         self.n_training_steps = None
         self.n_warmup_steps = None
 
+        self.auroc = MultilabelAUROC(num_labels=self.num_labels)
         self.accuracy = MultilabelAccuracy(num_labels=self.num_labels)
         self.f1_score = MultilabelF1Score(num_labels=self.num_labels)
         self.precision = MultilabelPrecision(num_labels=self.num_labels)
@@ -72,66 +79,69 @@ class SequenceClassificationModule(pl.LightningModule):
             else:
                 self.n_warmup_steps = 0
 
-    def training_step(
-        self, batch: dict[str, torch.Tensor], batch_idx: int
-    ) -> torch.Tensor:
-        outputs = self.model(**batch)
-        self.log("train_loss", outputs[self.loss_key], prog_bar=True)
-        return outputs[self.loss_key]
-
-    def validation_step(self, batch: dict[str, torch.Tensor], batch_idx: int) -> None:
-        outputs = self.model(**batch)
-        self.log("val_loss", outputs[self.loss_key], prog_bar=True)
-
-        logits = outputs[self.output_key]
-        labels = batch[self.label_key]
-
-        acc = self.accuracy(logits, labels)
-        f1 = self.f1_score(logits, labels)
-        prec = self.precision(logits, labels)
-        rec = self.recall(logits, labels)
-
-        self.log("val_acc", acc, prog_bar=True)
-        self.log("val_f1", f1, prog_bar=True)
-        self.log("val_prec", prec, prog_bar=True)
-        self.log("val_rec", rec, prog_bar=True)
-
-    def test_step(self, batch: dict[str, torch.Tensor], batch_idx: int) -> None:
-        outputs = self.model(**batch)
-
-        logits = outputs[self.output_key]
-        labels = batch[self.label_key]
-
-        acc = self.accuracy(logits, labels)
-        f1 = self.f1_score(logits, labels)
-        prec = self.precision(logits, labels)
-        rec = self.recall(logits, labels)
-
-        self.log("test_acc", acc, prog_bar=True)
-        self.log("test_f1", f1, prog_bar=True)
-        self.log("test_prec", prec, prog_bar=True)
-        self.log("test_rec", rec, prog_bar=True)
-
-    def predict_step(
-        self,
-        sequence: str,
-        cache_dir: str | Path = CONFIG.cache_dir,
-        label_cols: list[str] = DATAMODULE_CONFIG.label_cols,
-        max_token_len: int = DATAMODULE_CONFIG.max_token_len,
-    ) -> torch.Tensor:
+    def training_step(self, batch, batch_idx):
+        outputs = self.model(
+            batch[self.input_key],
+            attention_mask=batch[self.mask_key],
+            labels=batch[self.label_key],
+        )
+        loss = outputs[self.loss_key]
+        self.log("train_loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
+        return loss
+    
+    def validation_step(self, batch, batch_idx):
+        loss, auroc, acc, f1, prec, rec = self._shared_eval_step(batch, batch_idx)
+        metrics = {
+            "val_loss": loss, 
+            "val_auroc": auroc,
+            "val_acc": acc, 
+            "val_f1": f1, 
+            "val_prec": prec, 
+            "val_rec": rec,
+        }
+        self.log_dict(metrics, prog_bar=True, logger=True)
+        return metrics
+    
+    def test_step(self, batch, batch_idx):
+        loss, auroc, acc, f1, prec, rec = self._shared_eval_step(batch, batch_idx)
+        metrics = {
+            "test_loss": loss, 
+            "test_auroc": auroc,
+            "test_acc": acc, 
+            "test_f1": f1, 
+            "test_prec": prec, 
+            "test_rec": rec,
+        }
+        self.log_dict(metrics, prog_bar=True, logger=True)
+        return metrics
+        
+    def _shared_eval_step(self, batch, batch_idx):
+        outputs = self.model(
+            batch[self.input_key],
+            attention_mask=batch[self.mask_key],
+            labels=batch[self.label_key],
+        )
+        loss = outputs[self.loss_key]
+        # If logits are provided, metrics still work
+        auroc = self.auroc(outputs[self.output_key], batch[self.labels_key])
+        acc = self.accuracy(outputs[self.output_key], batch[self.labels_key])
+        f1 = self.f1_score(outputs[self.output_key], batch[self.labels_key])
+        prec = self.precision(outputs[self.output_key], batch[self.labels_key])
+        rec = self.recall(outputs[self.output_key], batch[self.labels_key])
+        return loss, auroc, acc, f1, prec, rec
+        
+    def predict_step(self, sequence: str, cache_dir: str | Path = CONFIG.cache_dir):
         batch = tokenize_text(
             sequence,
             model_name=self.model_name,
+            max_token_len=self.max_token_len,
             cache_dir=cache_dir,
-            max_length=max_token_len,
         )
         # Autotokenizer may cause tokens to lose device type and cause failure
         batch = batch.to(self.device)
         outputs = self.model(**batch)
         logits = outputs[self.output_key]
-        probabilities = torch.sigmoid(logits)
-        predictions = (probabilities > 0.5).float()
-        return predictions
+        return torch.sigmoid(logits)
 
     def configure_optimizers(self) -> OptimizerLRScheduler:
         optimizer = AdamW(self.parameters(), lr=self.learning_rate)

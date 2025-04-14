@@ -24,8 +24,8 @@ class DataModuleConfig:
     train_split: str = "balanced_train"
     test_split: str = "test"
     batch_size: int = 128
-    max_token_len: int = 256
-    train_size: float = 0.85
+    max_token_len: int = 512
+    train_size: float = 0.80
     num_workers: int = field(default_factory=cpu_count)
 
 

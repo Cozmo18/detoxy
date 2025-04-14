@@ -58,6 +58,7 @@ def train(
         model_name=model_name,
         learning_rate=lr,
         warmup_ratio=warmup_ratio,
+        max_token_len=max_token_len,
     )
     
     current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
