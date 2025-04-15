@@ -24,16 +24,19 @@ class DataModuleConfig:
     train_split: str = "balanced_train"
     test_split: str = "test"
     batch_size: int = 128
-    max_token_len: int = 512
+    max_seq_length: int = 512
     train_size: float = 0.80
+    stratify_by_column: str = "toxic"
     num_workers: int = field(default_factory=cpu_count)
 
 
 @dataclass(frozen=True)
 class ModuleConfig:
-    model_name: str = "google/bert_uncased_L-2_H-128_A-2" # "google-bert/bert-base-uncased"
-    learning_rate: float = 3e-5
-    warmup_ratio: float | None = 0.05
+    model_name: str = "google/bert_uncased_L-2_H-128_A-2" #"google-bert/bert-base-uncased"
+    learning_rate: float = 2e-5
+    adam_epsilon: float = 1e-8
+    warmup_steps: int = 0
+    weight_decay: float = 0
     # finetuned: str = "checkpoints/google/bert_uncased_L-4_H-512_A-8_finetuned.ckpt"
 
 

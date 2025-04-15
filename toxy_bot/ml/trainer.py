@@ -20,11 +20,14 @@ DATASET_NAME = DATAMODULE_CONFIG.dataset_name
 def train(
     model_name = MODULE_CONFIG.model_name,
     lr: float = MODULE_CONFIG.learning_rate,
-    warmup_ratio: float = MODULE_CONFIG.warmup_ratio,
-    max_epochs: int = TRAINER_CONFIG.max_epochs,
+    adam_epsilon: float = MODULE_CONFIG.adam_epsilon,
+    warmup_steps: int = MODULE_CONFIG.warmup_steps,
+    weight_decay: float = MODULE_CONFIG.weight_decay,
+    train_split: str = DATAMODULE_CONFIG.train_split,
     train_size: float = DATAMODULE_CONFIG.train_size,
     batch_size: int = DATAMODULE_CONFIG.batch_size,
-    max_token_len: int = DATAMODULE_CONFIG.max_token_len,
+    max_seq_length: int = DATAMODULE_CONFIG.max_seq_length,
+    max_epochs: int = TRAINER_CONFIG.max_epochs,
     check_val_every_n_epoch: int | None = TRAINER_CONFIG.check_val_every_n_epoch,
     val_check_interval: int | float | None = TRAINER_CONFIG.val_check_interval,
     num_sanity_val_steps: int | None = TRAINER_CONFIG.num_sanity_val_steps,
@@ -34,12 +37,12 @@ def train(
     strategy: str = TRAINER_CONFIG.strategy,
     precision: str | None = TRAINER_CONFIG.precision,
     deterministic: bool = TRAINER_CONFIG.deterministic,
-    perf: bool = False,
-    fast_dev_run: bool = False,
     cache_dir: str = CONFIG.cache_dir,
     log_dir: str = CONFIG.log_dir,
     ckpt_dir: str = CONFIG.ckpt_dir,
     perf_dir: str = CONFIG.perf_dir,
+    perf: bool = False,
+    fast_dev_run: bool = False,
 ) -> None:
     torch.set_float32_matmul_precision(precision="medium")
     
@@ -47,34 +50,36 @@ def train(
 
     lit_datamodule = AutoTokenizerDataModule(
         dataset_name=DATASET_NAME,
+        train_split=train_split,
         model_name=model_name,
         cache_dir=cache_dir,
         batch_size=batch_size,
         train_size=train_size,
-        max_token_len=max_token_len,
+        max_seq_length=max_seq_length,
     )
 
     lit_model = SequenceClassificationModule(
         model_name=model_name,
         learning_rate=lr,
-        warmup_ratio=warmup_ratio,
-        max_token_len=max_token_len,
+        adam_epsilon=adam_epsilon,
+        warmup_steps=warmup_steps,
+        weight_decay=weight_decay,
     )
     
-    current_time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    exp_name = f"{model_name}_finetuned_{current_time}"
+    date = datetime.now().strftime("%d-%m-%Y_%H-%M-%S") 
+    experiment_id = f"{model_name}_finetuned_{date}"
     
     comet_logger = CometLogger(
         api_key=os.environ.get("COMET_API_KEY"),
         workspace=os.environ.get("COMET_WORKSPACE"),
         project="toxy-bot",
         mode="create",
-        name=exp_name,
+        name=experiment_id,
     )
 
     checkpoint_callback = ModelCheckpoint(
         dirpath=ckpt_dir,
-        filename=exp_name,
+        filename=experiment_id,
         monitor="val_loss",
         mode="min",
         save_top_k=1,
@@ -83,8 +88,6 @@ def train(
     
     lr_monitor = LearningRateMonitor(logging_interval='step')
 
-    # do not use EarlyStopping if getting perf benchmark
-    # do not perform sanity checking if getting perf benchmark
     if perf:
         callbacks = [checkpoint_callback, lr_monitor]
         num_sanity_val_steps = 0
@@ -117,9 +120,10 @@ def train(
     stop = perf_counter()
 
     if perf:
-        log_perf(start, stop, lit_trainer, perf_dir, exp_name)
+        log_perf(start, stop, lit_trainer, perf_dir, experiment_id)
         
-    lit_trainer.test(model=lit_model, datamodule=lit_datamodule)
+    if not fast_dev_run:
+        lit_trainer.test(ckpt_path="best", datamodule=lit_datamodule)
 
 
 if __name__ == "__main__":
