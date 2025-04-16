@@ -11,7 +11,7 @@ from pytorch_lightning.loggers import CometLogger
 from toxy_bot.ml.config import CONFIG, DATAMODULE_CONFIG, MODULE_CONFIG, TRAINER_CONFIG
 from toxy_bot.ml.datamodule import AutoTokenizerDataModule
 from toxy_bot.ml.module import SequenceClassificationModule
-from toxy_bot.ml.utils import create_dirs, log_perf
+from toxy_bot.ml.utils import create_dirs
 
 
 # Constants
@@ -37,13 +37,17 @@ def train(
     cache_dir: str = CONFIG.cache_dir,
     log_dir: str = CONFIG.log_dir,
     ckpt_dir: str = CONFIG.ckpt_dir,
-    perf_dir: str = CONFIG.perf_dir,
-    perf: bool = False,
     fast_dev_run: bool = False,
+    experiment_tag: str | None = None,
 ) -> None:
     torch.set_float32_matmul_precision(precision="medium")
     
-    create_dirs([log_dir, ckpt_dir, perf_dir])
+    create_dirs([log_dir, ckpt_dir])
+    
+    date = datetime.now().strftime("%d-%m-%Y_%H-%M-%S") 
+    experiment_id = f"{model_name}_{date}".replace("/", "_")
+    if experiment_tag:
+        experiment_id = f"{experiment_id}_{experiment_tag}"
 
     lit_datamodule = AutoTokenizerDataModule(
         dataset_name=DATASET_NAME,
@@ -63,20 +67,17 @@ def train(
         weight_decay=weight_decay,
     )
     
-    date = datetime.now().strftime("%d-%m-%Y_%H-%M-%S") 
-    experiment_id = f"{model_name}_finetuned_{date}"
-    
     comet_logger = CometLogger(
         api_key=os.environ.get("COMET_API_KEY"),
         workspace=os.environ.get("COMET_WORKSPACE"),
         project="toxy-bot",
         mode="create",
-        name=experiment_id,
+        name=experiment_tag,
     )
 
     checkpoint_callback = ModelCheckpoint(
         dirpath=ckpt_dir,
-        filename=experiment_id,
+        filename=f"{experiment_tag}" + "_{epoch:02d}_{val_loss:.3f}",
         monitor="val_loss",
         mode="min",
         save_top_k=1,
@@ -85,14 +86,11 @@ def train(
     
     lr_monitor = LearningRateMonitor(logging_interval='step')
 
-    if perf:
-        callbacks = [checkpoint_callback, lr_monitor]
-    else:
-        callbacks = [
-            EarlyStopping(monitor="val_loss", mode="min", patience=3),
-            checkpoint_callback,
-            lr_monitor,
-        ]
+    callbacks = [
+        EarlyStopping(monitor="val_loss", mode="min", patience=3),
+        checkpoint_callback,
+        lr_monitor,
+    ]
 
     lit_trainer = pl.Trainer(
         accelerator=accelerator,
@@ -107,16 +105,10 @@ def train(
         fast_dev_run=fast_dev_run,
     )
 
-    # Time training
-    start = perf_counter()
     lit_trainer.fit(model=lit_model, datamodule=lit_datamodule)
-    stop = perf_counter()
 
-    if perf:
-        log_perf(start, stop, lit_trainer, perf_dir, experiment_id)
-        
     if not fast_dev_run:
-        lit_trainer.test(ckpt_path="best", datamodule=lit_datamodule)
+        lit_trainer.test(datamodule=lit_datamodule)
 
 
 if __name__ == "__main__":

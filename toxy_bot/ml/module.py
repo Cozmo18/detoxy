@@ -4,6 +4,7 @@ from torch.optim import AdamW
 from torchmetrics.classification import MultilabelAccuracy, MultilabelF1Score
 from transformers import BertForSequenceClassification
 from transformers import get_cosine_schedule_with_warmup
+import torch
 
 from toxy_bot.ml.config import CONFIG, DATAMODULE_CONFIG, MODULE_CONFIG, TRAINER_CONFIG
 
@@ -49,7 +50,7 @@ class SequenceClassificationModule(pl.LightningModule):
     def training_step(self, batch, batch_idx):
         outputs = self.model(**batch)
         loss = outputs[0]
-        self.log("train_loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True) # ON EPOCH?!
+        self.log("train_loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True)
         return loss
     
     def validation_step(self, batch, batch_idx):
@@ -74,23 +75,23 @@ class SequenceClassificationModule(pl.LightningModule):
         
         return loss, acc, f1
         
-    # def predict_step(
-    #     self, 
-    #     sequence: str, 
-    #     max_seq_length: int = DATAMODULE_CONFIG.max_seq_length,
-    #     cache_dir: str | Path = CONFIG.cache_dir,
-    # ):
-    #     batch = tokenize_text(
-    #         sequence,
-    #         model_name=self.model_name,
-    #         cache_dir=cache_dir,
-    #         max_seq_length=max_seq_length,
-    #     )
-    #     # Autotokenizer may cause tokens to lose device type and cause failure
-    #     batch = batch.to(self.device)
-    #     outputs = self.model(**batch)
-    #     probs = torch.sigmoid(outputs["logits"]).detach().cpu().numpy()
-    #     return probs
+    def predict_step(
+        self, 
+        sequence: str | list[str],
+    ):
+        features = self.trainer.datamodule.tokenizer.batch_encode_plus(
+            sequence,
+            max_length=self.trainer.datamodule.max_seq_length,
+            padding="max_length",
+            truncation=True,
+            return_tensors="pt", 
+        )
+        
+        # Autotokenizer may cause tokens to lose device type and cause failure
+        features = features.to(self.device)
+        outputs = self.model(**features)
+        probs = torch.sigmoid(outputs["logits"]).detach().cpu().numpy()
+        return probs
     
     def configure_optimizers(self):
         """Prepare optimizer and schedule (linear warmup and decay)."""

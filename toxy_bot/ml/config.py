@@ -11,8 +11,7 @@ class Config:
     cache_dir: str = field(default_factory=lambda: os.path.join(root_path, "data"))
     log_dir: str = field(default_factory=lambda: os.path.join(root_path, "logs"))
     ckpt_dir: str = field(default_factory=lambda: os.path.join(root_path, "checkpoints"))
-    perf_dir: str = field(default_factory=lambda: os.path.join(root_path, "logs", "perf"))
-    seed: int = 42
+    seed: int = 0
 
 
 @dataclass(frozen=True)
@@ -23,7 +22,7 @@ class DataModuleConfig:
     num_labels: int = 6 
     train_split: str = "balanced_train"
     test_split: str = "test"
-    batch_size: int = 128
+    batch_size: int = 64
     max_seq_length: int = 512
     train_size: float = 0.80
     stratify_by_column: str = "toxic"
@@ -33,10 +32,10 @@ class DataModuleConfig:
 @dataclass(frozen=True)
 class ModuleConfig:
     model_name: str = "google/bert_uncased_L-2_H-128_A-2" #"google-bert/bert-base-uncased"
-    learning_rate: float = 3e-5
+    learning_rate: float = 2e-5
     adam_epsilon: float = 1e-8
     warmup_ratio: float = 0.1
-    weight_decay: float = 0
+    weight_decay: float = 1e-6
     # finetuned: str = "checkpoints/google/bert_uncased_L-4_H-512_A-8_finetuned.ckpt"
 
 
