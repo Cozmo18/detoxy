@@ -1,6 +1,6 @@
 [project]
 name = "toxy-bot"
-version = "0.3.2"
+version = "0.3.3"
 description = "A trained Discord Bot to detect and handle toxic messages in text channels."
 readme = "README.md"
 authors = [
@@ -22,6 +22,7 @@ dependencies = [
     "lightning>=2.5.1",
     "pydantic>=2.11.2",
     "transformers<4.51.0",
+    "lightning-bolts>=0.7.0",
 ]
 
 [tool.uv.sources]
