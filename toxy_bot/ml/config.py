@@ -47,11 +47,8 @@ class TrainerConfig:
     strategy: str = "auto"
     precision: str | None = "16-mixed"
     max_epochs: int = 5
+    log_every_n_steps: int | None = 20
     deterministic: bool = True
-    check_val_every_n_epoch: int | None = 1
-    val_check_interval: int | float | None = 0.5 # x2 per training epoch
-    num_sanity_val_steps: int | None = 2
-    log_every_n_steps: int | None = 50
     
 CONFIG = Config()
 DATAMODULE_CONFIG = DataModuleConfig()

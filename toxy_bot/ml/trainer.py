@@ -28,9 +28,6 @@ def train(
     batch_size: int = DATAMODULE_CONFIG.batch_size,
     max_seq_length: int = DATAMODULE_CONFIG.max_seq_length,
     max_epochs: int = TRAINER_CONFIG.max_epochs,
-    check_val_every_n_epoch: int | None = TRAINER_CONFIG.check_val_every_n_epoch,
-    val_check_interval: int | float | None = TRAINER_CONFIG.val_check_interval,
-    num_sanity_val_steps: int | None = TRAINER_CONFIG.num_sanity_val_steps,
     log_every_n_steps: int | None = TRAINER_CONFIG.log_every_n_steps,
     accelerator: str = TRAINER_CONFIG.accelerator,
     devices: int | str = TRAINER_CONFIG.devices,
@@ -90,7 +87,6 @@ def train(
 
     if perf:
         callbacks = [checkpoint_callback, lr_monitor]
-        num_sanity_val_steps = 0
     else:
         callbacks = [
             EarlyStopping(monitor="val_loss", mode="min", patience=3),
@@ -107,10 +103,7 @@ def train(
         deterministic=deterministic,
         logger=comet_logger,
         callbacks=callbacks,
-        val_check_interval=val_check_interval,
-        check_val_every_n_epoch=check_val_every_n_epoch,
         log_every_n_steps=log_every_n_steps,
-        num_sanity_val_steps=num_sanity_val_steps,
         fast_dev_run=fast_dev_run,
     )
 

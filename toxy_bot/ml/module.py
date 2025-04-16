@@ -3,7 +3,7 @@ from pathlib import Path
 from torch.optim import AdamW
 from torchmetrics.classification import MultilabelAccuracy, MultilabelF1Score
 from transformers import BertForSequenceClassification
-from pl_bolts.optimizers.lr_scheduler import LinearWarmupCosineAnnealingLR
+from transformers import get_cosine_schedule_with_warmup
 
 from lightning.pytorch.utilities import disable_possible_user_warnings
 
@@ -57,10 +57,10 @@ class SequenceClassificationModule(pl.LightningModule):
              batch_size = self.trainer.datamodule.batch_size
              
              steps_per_epoch = (num_training_samples + batch_size - 1) // batch_size  # Ceiling division
-             num_training_steps = steps_per_epoch * num_epochs
+             self.num_training_steps = steps_per_epoch * num_epochs
              
              if self.warmup_ratio > 0:
-                 self.num_warmup_steps = int(num_training_steps * self.warmup_ratio)
+                 self.num_warmup_steps = int(self.num_training_steps * self.warmup_ratio)
              else:
                  self.num_warmup_steps = 0
         
@@ -116,7 +116,8 @@ class SequenceClassificationModule(pl.LightningModule):
     
     def configure_optimizers(self):
         optimizer = AdamW(self.parameters(), lr=self.learning_rate, eps=self.adam_epsilon)
-        scheduler =  LinearWarmupCosineAnnealingLR(optimizer, warmup_epochs=self.num_warmup_steps, max_epochs=self.max_epochs)
+        scheduler = get_cosine_schedule_with_warmup(optimizer, num_warmup_steps=self.num_warmup_steps, num_training_steps=self.num_training_steps)
+        # scheduler =  LinearWarmupCosineAnnealingLR(optimizer, warmup_epochs=self.num_warmup_steps, max_epochs=self.max_epochs)
         
         return {
             "optimizer": optimizer,
@@ -126,3 +127,4 @@ class SequenceClassificationModule(pl.LightningModule):
                 "frequency": 1,
             },
         }
+        
