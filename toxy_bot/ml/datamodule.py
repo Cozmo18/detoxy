@@ -91,35 +91,19 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
         
     def convert_to_features(self, batch, indices=None):
         # Tokenize text
-        features = tokenize_text(
+        features = self.tokenizer.batch_encode_plus(
             batch[self.text_col],
-            model_name=self.model_name, 
-            cache_dir=self.cache_dir, 
-            max_seq_length=self.max_seq_length,
+            max_length=self.max_seq_length,
+            padding="max_length",
+            truncation=True,
+            return_tensors="pt", 
         )
         
         # Combine labels
         features["labels"] = [[float(batch[col][i]) for col in self.label_cols] for i in range(len(batch[self.text_col]))]
         
         return features
-        
-
-def tokenize_text(
-    text: str | list[str],
-    *,
-    model_name: str,
-    cache_dir: str | Path,
-    max_seq_length: int,
-) -> dict[str, list[int | float]]:
-    tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=cache_dir, use_fast=True)
-
-    return tokenizer.batch_encode_plus(
-        text,
-        max_length=max_seq_length,
-        padding="max_length",
-        truncation=True,
-        return_tensors="pt",
-    )
+       
 
 if __name__ == "__main__":
     # Test the AutoTokenizerDataModule

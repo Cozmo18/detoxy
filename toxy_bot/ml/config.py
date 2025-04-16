@@ -35,7 +35,7 @@ class ModuleConfig:
     model_name: str = "google/bert_uncased_L-2_H-128_A-2" #"google-bert/bert-base-uncased"
     learning_rate: float = 2e-5
     adam_epsilon: float = 1e-8
-    warmup_steps: int = 0
+    warmup_ratio: float = 0.1
     weight_decay: float = 0
     # finetuned: str = "checkpoints/google/bert_uncased_L-4_H-512_A-8_finetuned.ckpt"
 

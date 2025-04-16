@@ -21,7 +21,7 @@ def train(
     model_name = MODULE_CONFIG.model_name,
     lr: float = MODULE_CONFIG.learning_rate,
     adam_epsilon: float = MODULE_CONFIG.adam_epsilon,
-    warmup_steps: int = MODULE_CONFIG.warmup_steps,
+    warmup_ratio: float = MODULE_CONFIG.warmup_ratio,
     weight_decay: float = MODULE_CONFIG.weight_decay,
     train_split: str = DATAMODULE_CONFIG.train_split,
     train_size: float = DATAMODULE_CONFIG.train_size,
@@ -62,7 +62,7 @@ def train(
         model_name=model_name,
         learning_rate=lr,
         adam_epsilon=adam_epsilon,
-        warmup_steps=warmup_steps,
+        warmup_ratio=warmup_ratio,
         weight_decay=weight_decay,
     )
     
