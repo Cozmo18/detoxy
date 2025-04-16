@@ -5,7 +5,11 @@ from datetime import datetime
 import lightning.pytorch as pl
 import torch
 from jsonargparse import CLI
-from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint, LearningRateMonitor
+from lightning.pytorch.callbacks import (
+    EarlyStopping,
+    ModelCheckpoint,
+    LearningRateMonitor,
+)
 from pytorch_lightning.loggers import CometLogger
 
 from toxy_bot.ml.config import CONFIG, DATAMODULE_CONFIG, MODULE_CONFIG, TRAINER_CONFIG
@@ -17,8 +21,9 @@ from toxy_bot.ml.utils import create_dirs
 # Constants
 DATASET_NAME = DATAMODULE_CONFIG.dataset_name
 
+
 def train(
-    model_name = MODULE_CONFIG.model_name,
+    model_name=MODULE_CONFIG.model_name,
     lr: float = MODULE_CONFIG.learning_rate,
     adam_epsilon: float = MODULE_CONFIG.adam_epsilon,
     warmup_ratio: float = MODULE_CONFIG.warmup_ratio,
@@ -41,10 +46,10 @@ def train(
     experiment_tag: str | None = None,
 ) -> None:
     torch.set_float32_matmul_precision(precision="medium")
-    
+
     create_dirs([log_dir, ckpt_dir])
-    
-    date = datetime.now().strftime("%d-%m-%Y_%H-%M-%S") 
+
+    date = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
     experiment_id = f"{model_name}_{date}".replace("/", "_")
     if experiment_tag:
         experiment_id = f"{experiment_id}_{experiment_tag}"
@@ -66,7 +71,7 @@ def train(
         warmup_ratio=warmup_ratio,
         weight_decay=weight_decay,
     )
-    
+
     comet_logger = CometLogger(
         api_key=os.environ.get("COMET_API_KEY"),
         workspace=os.environ.get("COMET_WORKSPACE"),
@@ -81,10 +86,10 @@ def train(
         monitor="val_loss",
         mode="min",
         save_top_k=1,
-        verbose=True,   
+        verbose=True,
     )
-    
-    lr_monitor = LearningRateMonitor(logging_interval='step')
+
+    lr_monitor = LearningRateMonitor(logging_interval="step")
 
     callbacks = [
         EarlyStopping(monitor="val_loss", mode="min", patience=3),

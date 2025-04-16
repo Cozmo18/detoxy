@@ -6,11 +6,14 @@ from pathlib import Path
 this_file = Path(__file__)
 root_path = this_file.parents[2]
 
+
 @dataclass(frozen=True)
 class Config:
     cache_dir: str = field(default_factory=lambda: os.path.join(root_path, "data"))
     log_dir: str = field(default_factory=lambda: os.path.join(root_path, "logs"))
-    ckpt_dir: str = field(default_factory=lambda: os.path.join(root_path, "checkpoints"))
+    ckpt_dir: str = field(
+        default_factory=lambda: os.path.join(root_path, "checkpoints")
+    )
     seed: int = 0
 
 
@@ -18,8 +21,17 @@ class Config:
 class DataModuleConfig:
     dataset_name: str = "anitamaxvim/jigsaw-toxic-comments"
     text_col: str = "comment_text"
-    label_cols: list[str] = field(default_factory=lambda: ["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"])
-    num_labels: int = 6 
+    label_cols: list[str] = field(
+        default_factory=lambda: [
+            "toxic",
+            "severe_toxic",
+            "obscene",
+            "threat",
+            "insult",
+            "identity_hate",
+        ]
+    )
+    num_labels: int = 6
     train_split: str = "balanced_train"
     test_split: str = "test"
     batch_size: int = 64
@@ -31,7 +43,9 @@ class DataModuleConfig:
 
 @dataclass(frozen=True)
 class ModuleConfig:
-    model_name: str = "google/bert_uncased_L-2_H-128_A-2" #"google-bert/bert-base-uncased"
+    model_name: str = (
+        "google/bert_uncased_L-2_H-128_A-2"  # "google-bert/bert-base-uncased"
+    )
     learning_rate: float = 2e-5
     adam_epsilon: float = 1e-8
     warmup_ratio: float = 0.1
@@ -48,9 +62,9 @@ class TrainerConfig:
     max_epochs: int = 10
     log_every_n_steps: int | None = 20
     deterministic: bool = True
-    
+
+
 CONFIG = Config()
 DATAMODULE_CONFIG = DataModuleConfig()
 MODULE_CONFIG = ModuleConfig()
 TRAINER_CONFIG = TrainerConfig()
-

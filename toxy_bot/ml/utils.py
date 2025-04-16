@@ -30,10 +30,10 @@ def log_perf(
     if mc:
         mc = mc[0]
         version = mc._last_checkpoint_saved.split("/")[-1].split(".")[0]
-    else: # this should never be triggered since the example forces use of ModelCheckpoint
+    else:  # this should never be triggered since the example forces use of ModelCheckpoint
         perfs = os.listdir(perf_dir)
         version = f"version_{len(perfs)}"
-        
+
     perf_metrics: dict[str, dict[str, str | int | float]] = {
         "perf": {
             "device_name": get_device_name(),
@@ -53,11 +53,9 @@ def log_perf(
 
     if not os.path.isdir(perf_dir):
         os.mkdir(perf_dir)
-        
 
     with open(os.path.join(perf_dir, version + ".json"), "w") as perf_file:
         json.dump(perf_metrics, perf_file, indent=4)
-
 
 
 def create_dirs(dirs: str | list[str]) -> None:

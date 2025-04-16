@@ -126,20 +126,20 @@ def create_balanced_dataset(
         dataset_name=dm_config.dataset_name,
         cache_dir=config.cache_dir,
     )
-    
+
     # Get the labels
     labels = dm_config.label_cols
-    
+
     # Create a balanced dataset
     balanced_dataset = balance_dataset(
         dataset,
         labels=labels,
         random_state=config.seed,
     )
-    
+
     # Save the balanced dataset
     save_dataset_splits(balanced_dataset, config.cache_dir)
-    
+
     return balanced_dataset
 
 
