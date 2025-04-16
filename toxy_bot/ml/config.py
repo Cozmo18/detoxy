@@ -33,7 +33,7 @@ class DataModuleConfig:
 @dataclass(frozen=True)
 class ModuleConfig:
     model_name: str = "google/bert_uncased_L-2_H-128_A-2" #"google-bert/bert-base-uncased"
-    learning_rate: float = 2e-5
+    learning_rate: float = 3e-5
     adam_epsilon: float = 1e-8
     warmup_ratio: float = 0.1
     weight_decay: float = 0
@@ -46,7 +46,7 @@ class TrainerConfig:
     devices: int | str = "auto"
     strategy: str = "auto"
     precision: str | None = "16-mixed"
-    max_epochs: int = 5
+    max_epochs: int = 10
     log_every_n_steps: int | None = 20
     deterministic: bool = True
     

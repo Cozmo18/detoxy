@@ -5,14 +5,7 @@ from torchmetrics.classification import MultilabelAccuracy, MultilabelF1Score
 from transformers import BertForSequenceClassification
 from transformers import get_cosine_schedule_with_warmup
 
-from lightning.pytorch.utilities import disable_possible_user_warnings
-
-
-
 from toxy_bot.ml.config import CONFIG, DATAMODULE_CONFIG, MODULE_CONFIG, TRAINER_CONFIG
-
-# ignore all warnings that could be false positives
-disable_possible_user_warnings()
 
 
 class SequenceClassificationModule(pl.LightningModule):
@@ -49,20 +42,6 @@ class SequenceClassificationModule(pl.LightningModule):
         
         self.accuracy = MultilabelAccuracy(num_labels=self.num_labels)
         self.f1_score = MultilabelF1Score(num_labels=num_labels)
-        
-    def setup(self, stage):
-        if stage == "fit":
-             num_training_samples = len(self.trainer.datamodule.dataset["train"])
-             num_epochs = self.trainer.max_epochs
-             batch_size = self.trainer.datamodule.batch_size
-             
-             steps_per_epoch = (num_training_samples + batch_size - 1) // batch_size  # Ceiling division
-             self.num_training_steps = steps_per_epoch * num_epochs
-             
-             if self.warmup_ratio > 0:
-                 self.num_warmup_steps = int(self.num_training_steps * self.warmup_ratio)
-             else:
-                 self.num_warmup_steps = 0
         
     def forward(self, **inputs):
         return self.model(**inputs)
@@ -113,18 +92,29 @@ class SequenceClassificationModule(pl.LightningModule):
     #     probs = torch.sigmoid(outputs["logits"]).detach().cpu().numpy()
     #     return probs
     
-    
     def configure_optimizers(self):
-        optimizer = AdamW(self.parameters(), lr=self.learning_rate, eps=self.adam_epsilon)
-        scheduler = get_cosine_schedule_with_warmup(optimizer, num_warmup_steps=self.num_warmup_steps, num_training_steps=self.num_training_steps)
-        # scheduler =  LinearWarmupCosineAnnealingLR(optimizer, warmup_epochs=self.num_warmup_steps, max_epochs=self.max_epochs)
-        
-        return {
-            "optimizer": optimizer,
-            "lr_scheduler": {
-                "scheduler": scheduler,
-                "interval": "step",
-                "frequency": 1,
+        """Prepare optimizer and schedule (linear warmup and decay)."""
+        model = self.model
+        no_decay = ["bias", "LayerNorm.weight"]
+        optimizer_grouped_parameters = [
+            {
+                "params": [p for n, p in model.named_parameters() if not any(nd in n for nd in no_decay)],
+                "weight_decay": self.hparams.weight_decay,
             },
-        }
+            {
+                "params": [p for n, p in model.named_parameters() if any(nd in n for nd in no_decay)],
+                "weight_decay": 0.0,
+            },
+        ]
+        num_training_steps = self.trainer.estimated_stepping_batches
+        num_warmup_steps = int(num_training_steps * self.warmup_ratio)
         
+        optimizer = AdamW(optimizer_grouped_parameters, lr=self.hparams.learning_rate, eps=self.hparams.adam_epsilon)
+        scheduler = get_cosine_schedule_with_warmup(
+            optimizer,
+            num_warmup_steps=num_warmup_steps,
+            num_training_steps=num_training_steps,
+        )
+        scheduler = {"scheduler": scheduler, "interval": "step", "frequency": 1}
+        return [optimizer], [scheduler]
+    
