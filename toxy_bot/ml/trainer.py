@@ -76,7 +76,7 @@ def train(
     )
     comet_logger.log_hyperparams({"batch_size": batch_size, "max_seq_length": max_seq_length})
 
-    checkpoint_filename = experiment_name + "-{epoch:02d}-{val_loss:.2f}"
+    checkpoint_filename = experiment_name + "__{epoch:02d}__{val_loss:.4f}"
     checkpoint_callback = ModelCheckpoint(
         dirpath=ckpt_dir,
         filename=checkpoint_filename,
@@ -89,7 +89,7 @@ def train(
     lr_monitor = LearningRateMonitor(logging_interval='step')
 
     callbacks = [
-        EarlyStopping(monitor="val_loss", mode="min", patience=2),
+        EarlyStopping(monitor="val_loss", mode="min", patience=3),
         checkpoint_callback,
         lr_monitor,
     ]
@@ -110,7 +110,7 @@ def train(
     lit_trainer.fit(model=lit_model, datamodule=lit_datamodule)
     
     if not fast_dev_run:
-        lit_trainer.test(ckpt_path="best", datamodule=lit_datamodule)
+        lit_trainer.test()
 
 
 if __name__ == "__main__":

@@ -34,8 +34,8 @@ class DataModuleConfig:
     num_labels: int = 6
     train_split: str = "balanced_train"
     test_split: str = "test"
-    batch_size: int = 64
-    max_seq_length: int = 512
+    batch_size: int = 128
+    max_seq_length: int = 256
     train_size: float = 0.80
     stratify_by_column: str = "toxic"
     num_workers: int = field(default_factory=cpu_count)
@@ -49,8 +49,8 @@ class ModuleConfig:
     learning_rate: float = 2e-5
     adam_epsilon: float = 1e-8
     warmup_ratio: float = 0.1
-    weight_decay: float = 1e-6
-    finetuned: str = "checkpoints/google/bert_uncased_L-4_H-512_A-8_finetuned.ckpt"
+    weight_decay: float = 0.0
+    finetuned: str = "checkpoints/bert-base-uncased_finetuned_2025-04-11_14-07-13.ckpt"
 
 
 @dataclass(frozen=True)
