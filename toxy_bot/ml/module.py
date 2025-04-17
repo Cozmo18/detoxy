@@ -77,10 +77,7 @@ class SequenceClassificationModule(pl.LightningModule):
 
         return loss, acc, f1
 
-    def predict_step(
-        self,
-        sequence: str | list[str],
-    ):
+    def predict_step(self, sequence: str):
         features = self.trainer.datamodule.tokenizer.batch_encode_plus(
             sequence,
             max_length=self.trainer.datamodule.max_seq_length,
@@ -92,7 +89,8 @@ class SequenceClassificationModule(pl.LightningModule):
         # Autotokenizer may cause tokens to lose device type and cause failure
         features = features.to(self.device)
         outputs = self.model(**features)
-        probs = torch.sigmoid(outputs["logits"]).detach().cpu().numpy()
+        logits = outputs["logits"]
+        probs = torch.sigmoid(logits).detach().cpu().numpy()
         return probs
 
     def configure_optimizers(self):

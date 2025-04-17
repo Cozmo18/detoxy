@@ -50,7 +50,7 @@ class ModuleConfig:
     adam_epsilon: float = 1e-8
     warmup_ratio: float = 0.1
     weight_decay: float = 1e-6
-    # finetuned: str = "checkpoints/google/bert_uncased_L-4_H-512_A-8_finetuned.ckpt"
+    finetuned: str = "checkpoints/google/bert_uncased_L-4_H-512_A-8_finetuned.ckpt"
 
 
 @dataclass(frozen=True)
@@ -60,7 +60,7 @@ class TrainerConfig:
     strategy: str = "auto"
     precision: str | None = "16-mixed"
     max_epochs: int = 10
-    log_every_n_steps: int | None = 20
+    log_every_n_steps: int | None = 30
     deterministic: bool = True
 
 

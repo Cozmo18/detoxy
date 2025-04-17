@@ -18,7 +18,7 @@ DATASET_NAME = DATAMODULE_CONFIG.dataset_name
 
 def train(
     model_name = MODULE_CONFIG.model_name,
-    lr: float = MODULE_CONFIG.learning_rate,
+    learning_rate: float = MODULE_CONFIG.learning_rate,
     adam_epsilon: float = MODULE_CONFIG.adam_epsilon,
     warmup_ratio: float = MODULE_CONFIG.warmup_ratio,
     weight_decay: float = MODULE_CONFIG.weight_decay,
@@ -43,11 +43,11 @@ def train(
     
     create_dirs([log_dir, ckpt_dir])
     
-    date = datetime.now().strftime("%d-%m-%Y_%H-%M-%S") 
-    experiment_id = f"{model_name}_{date}".replace("/", "_")
-    if experiment_tag:
-        experiment_id = f"{experiment_id}_{experiment_tag}"
-
+    timestamp = datetime.now().strftime("%Y%m%d")
+    experiment_name = f"{model_name}__{timestamp}__lr-{learning_rate}__bs-{batch_size}"
+    experiment_name = f"{experiment_name}_{experiment_tag}" if experiment_tag else experiment_name
+    experiment_name = experiment_name.replace("/", "_")
+    
     lit_datamodule = AutoTokenizerDataModule(
         dataset_name=DATASET_NAME,
         train_split=train_split,
@@ -60,7 +60,7 @@ def train(
 
     lit_model = SequenceClassificationModule(
         model_name=model_name,
-        learning_rate=lr,
+        learning_rate=learning_rate,
         adam_epsilon=adam_epsilon,
         warmup_ratio=warmup_ratio,
         weight_decay=weight_decay,
@@ -69,14 +69,17 @@ def train(
     comet_logger = CometLogger(
         api_key=os.environ.get("COMET_API_KEY"),
         workspace=os.environ.get("COMET_WORKSPACE"),
-        project="toxy-bot",
+        save_dir=log_dir,
+        project_name="toxyy",
         mode="create",
-        name=experiment_tag,
+        experiment_name=experiment_name,
     )
+    comet_logger.log_hyperparams({"batch_size": batch_size, "max_seq_length": max_seq_length})
 
+    checkpoint_filename = experiment_name + "-{epoch:02d}-{val_loss:.2f}"
     checkpoint_callback = ModelCheckpoint(
         dirpath=ckpt_dir,
-        filename=f"{experiment_tag}" + "_{epoch:02d}_{val_loss:.3f}",
+        filename=checkpoint_filename,
         monitor="val_loss",
         mode="min",
         save_top_k=1,
@@ -86,7 +89,7 @@ def train(
     lr_monitor = LearningRateMonitor(logging_interval='step')
 
     callbacks = [
-        EarlyStopping(monitor="val_loss", mode="min", patience=3),
+        EarlyStopping(monitor="val_loss", mode="min", patience=2),
         checkpoint_callback,
         lr_monitor,
     ]
@@ -105,9 +108,9 @@ def train(
     )
 
     lit_trainer.fit(model=lit_model, datamodule=lit_datamodule)
-
+    
     if not fast_dev_run:
-        lit_trainer.test(datamodule=lit_datamodule)
+        lit_trainer.test(ckpt_path="best", datamodule=lit_datamodule)
 
 
 if __name__ == "__main__":
