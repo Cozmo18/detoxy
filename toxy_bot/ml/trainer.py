@@ -110,7 +110,7 @@ def train(
     lit_trainer.fit(model=lit_model, datamodule=lit_datamodule)
     
     if not fast_dev_run:
-        lit_trainer.test()
+        lit_trainer.test(ckpt_path="best", datamodule=lit_datamodule)
 
 
 if __name__ == "__main__":

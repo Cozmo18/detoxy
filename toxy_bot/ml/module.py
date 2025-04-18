@@ -83,9 +83,10 @@ class SequenceClassificationModule(pl.LightningModule):
             max_length=self.trainer.datamodule.max_seq_length,
             padding="max_length",
             truncation=True,
+            return_token_type_ids=False,
             return_tensors="pt",
         )
-
+        
         # Autotokenizer may cause tokens to lose device type and cause failure
         features = features.to(self.device)
         outputs = self.model(**features)
