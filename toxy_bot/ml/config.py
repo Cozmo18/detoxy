@@ -31,6 +31,7 @@ class DataModuleConfig:
     dataset_name: str = "anitamaxvim/toxy-dataset"
     text_column: str = "text"
     label_columns: list[str] = field(default_factory=lambda: LABELS)
+    num_labels: int = len(LABELS)
     train_split: str = "balanced_train"
     test_split: str = "test"
     batch_size: int = 64

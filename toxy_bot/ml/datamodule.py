@@ -18,6 +18,7 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
         model_name: str = MODULE_CONFIG.model_name,
         text_column: str = DATAMODULE_CONFIG.text_column,
         label_columns: list[str] = DATAMODULE_CONFIG.label_columns,
+        num_labels: int = DATAMODULE_CONFIG.num_labels,
         batch_size: int = DATAMODULE_CONFIG.batch_size,
         max_seq_length: int = DATAMODULE_CONFIG.max_seq_length,
         train_split: str = DATAMODULE_CONFIG.train_split,
@@ -35,6 +36,7 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
         self.model_name = model_name
         self.text_column = text_column
         self.label_columns = label_columns
+        self.num_labels = num_labels
         self.batch_size = batch_size
         self.max_seq_length = max_seq_length
         self.train_split = train_split
@@ -44,7 +46,6 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
         self.num_workers = num_workers
         self.seed = seed
 
-        self.num_labels = len(self.label_columns)
         self.tokenizer = AutoTokenizer.from_pretrained(
             self.model_name, cache_dir=self.cache_dir, use_fast=True
         )
