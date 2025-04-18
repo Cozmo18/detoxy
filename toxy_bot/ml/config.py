@@ -42,7 +42,7 @@ class DataModuleConfig:
 
 @dataclass(frozen=True)
 class ModuleConfig:
-    model_name: str = "google/bert_uncased_L-2_H-128_A-2"  # "google-bert/bert-base-uncased"
+    model_name: str = "google-bert/bert-base-uncased"
     learning_rate: float = 2e-5
     adam_epsilon: float = 1e-8
     warmup_ratio: float = 0.1

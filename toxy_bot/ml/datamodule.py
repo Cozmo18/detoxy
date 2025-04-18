@@ -109,8 +109,11 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
             padding="max_length",
             truncation=True,
             return_token_type_ids=False,
+            return_attention_mask=True,
+            add_special_tokens=True,
             return_tensors="pt",
         )
+        
 
         # Combine labels
         features["labels"] = [
