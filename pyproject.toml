@@ -19,12 +19,15 @@ dependencies = [
     "comet-ml>=3.49.7",
     "datasets>=3.5.0",
     "jsonargparse>=4.38.0",
-    "lightning>=2.5.1",
+    "lightning[pytorch-extra]>=2.5.1",
     "pydantic>=2.11.2",
     "transformers<4.51.0",
     "litserve>=0.2.7",
     "matplotlib>=3.10.1",
     "seaborn>=0.12.1",
+    "lightning-sdk>=0.2.11",
+    "discord>=2.3.2",
+    "hf-xet>=1.0.3",
 ]
 
 [tool.uv.sources]

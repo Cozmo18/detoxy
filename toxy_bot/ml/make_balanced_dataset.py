@@ -3,6 +3,7 @@ import pandas as pd
 import os
 from toxy_bot.ml.config import CONFIG, DATAMODULE_CONFIG
 
+
 def balance_dataset(
     df: pd.DataFrame,
     labels: list[str],
@@ -37,36 +38,33 @@ if __name__ == "__main__":
         "anitamaxvim/jigsaw-toxic-comments", split="train", cache_dir=CONFIG.cache_dir
     )
     test_ds = load_dataset(
-       "anitamaxvim/jigsaw-toxic-comments", split="test", cache_dir=CONFIG.cache_dir 
+        "anitamaxvim/jigsaw-toxic-comments", split="test", cache_dir=CONFIG.cache_dir
     )
-    
-    label_columns = DATAMODULE_CONFIG.label_columns
-    
+
+    label_columns = DATAMODULE_CONFIG.labels
+
     train_df = train_ds.to_pandas()
     balanced_train_df = balance_dataset(train_df, label_columns, pos_neg_ratio=0.25)
     balanced_train_ds = Dataset.from_pandas(balanced_train_df)
-    
+
     for label_col in label_columns:
         balanced_train_ds = balanced_train_ds.cast_column(
-            label_col, 
-            ClassLabel(names=["0", "1"])
+            label_col, ClassLabel(names=["0", "1"])
         )
-        
+
         train_ds = train_ds.cast_column(
             label_col,
             ClassLabel(names=["0", "1"]),
         )
-        
-        test_ds = test_ds.cast_column(
-            label_col, 
-            ClassLabel(names=["0", "1"])
-        )
-        
+
+        test_ds = test_ds.cast_column(label_col, ClassLabel(names=["0", "1"]))
+
     balanced_train_ds = balanced_train_ds.rename_column("comment_text", "text")
     train_ds = train_ds.rename_column("comment_text", "text")
     test_ds = test_ds.rename_column("comment_text", "text")
 
-    balanced_train_ds.to_parquet(os.path.join(CONFIG.cache_dir, "balanced_train.parquet"))
+    balanced_train_ds.to_parquet(
+        os.path.join(CONFIG.cache_dir, "balanced_train.parquet")
+    )
     train_ds.to_parquet(os.path.join(CONFIG.cache_dir, "full_train.parquet"))
     test_ds.to_parquet(os.path.join(CONFIG.cache_dir, "test.parquet"))
-
