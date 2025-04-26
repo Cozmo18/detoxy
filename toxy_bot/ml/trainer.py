@@ -15,6 +15,9 @@ from toxy_bot.ml.datamodule import AutoTokenizerDataModule
 from toxy_bot.ml.module import SequenceClassificationModule
 from toxy_bot.ml.utils import create_dirs
 
+from dataclasses import asdict
+
+import torch
 
 # Constants
 MODEL_NAME = MODULE_CONFIG.model_name
@@ -27,13 +30,6 @@ def train(
     learning_rate: float = MODULE_CONFIG.learning_rate,
     max_seq_length: int = DATAMODULE_CONFIG.max_seq_length,
     batch_size: int = DATAMODULE_CONFIG.batch_size,
-    max_epochs: int = TRAINER_CONFIG.max_epochs,
-    accelerator: str = TRAINER_CONFIG.accelerator,
-    devices: int | str = TRAINER_CONFIG.devices,
-    strategy: str = TRAINER_CONFIG.strategy,
-    precision: str | None = TRAINER_CONFIG.precision,
-    deterministic: bool = TRAINER_CONFIG.deterministic,
-    log_every_n_steps: int = TRAINER_CONFIG.log_every_n_steps,
     cache_dir: str = CONFIG.cache_dir,
     log_dir: str = CONFIG.log_dir,
     ckpt_dir: str = CONFIG.ckpt_dir,
@@ -82,25 +78,32 @@ def train(
         EarlyStopping(monitor="val_loss", mode="min"),
         checkpoint_callback,
     ]
-
+    
+    trainer_config = asdict(TRAINER_CONFIG)
     lit_trainer = pl.Trainer(
-        accelerator=accelerator,
-        devices=devices,
-        strategy=strategy,
-        precision=precision,
-        max_epochs=max_epochs,
-        deterministic=deterministic,
         logger=comet_logger,
         callbacks=callbacks,
-        log_every_n_steps=log_every_n_steps,
         fast_dev_run=fast_dev_run,
+        **trainer_config,
     )
 
     lit_trainer.fit(model=lit_model, datamodule=lit_datamodule)
 
     if not fast_dev_run:
         lit_trainer.test(ckpt_path="best", datamodule=lit_datamodule)
-
+        
+def predict(ckpt_path: str) -> torch.Tensor:
+    lit_datamodule = AutoTokenizerDataModule.load_from_checkpoint(ckpt_path)
+    lit_model = SequenceClassificationModule.load_from_checkpoint(ckpt_path)
+    
+    trainer_config = asdict(TRAINER_CONFIG)
+    lit_trainer = pl.Trainer(trainer_config)
+    
+    predictions = lit_trainer.predict(model=lit_model, datamodule=lit_datamodule)
+    
+    return predictions
+    
+    
 
 if __name__ == "__main__":
     CLI(train, as_positional=False)
