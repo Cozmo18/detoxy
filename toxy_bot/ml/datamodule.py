@@ -1,11 +1,11 @@
 import os
 
 import lightning.pytorch as pl
+import numpy as np
 from datasets import load_dataset
 from lightning.pytorch.utilities.types import EVAL_DATALOADERS, TRAIN_DATALOADERS
 from torch.utils.data import DataLoader
 from transformers import AutoTokenizer
-import numpy as np
 
 from toxy_bot.ml.config import CONFIG, DATAMODULE_CONFIG, MODULE_CONFIG
 
@@ -70,21 +70,33 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
             )
 
             # Prep train
-            self.train_data = dataset["train"].map(self.preprocess_data, batched=True, remove_columns=dataset['train'].column_names)
+            self.train_data = dataset["train"].map(
+                self.preprocess_data,
+                batched=True,
+                remove_columns=dataset["train"].column_names,
+            )
             self.train_data.set_format("torch")
 
             # Prep val
-            self.val_data = dataset["test"].map(self.preprocess_data, batched=True, remove_columns=dataset["train"].column_names)
+            self.val_data = dataset["test"].map(
+                self.preprocess_data,
+                batched=True,
+                remove_columns=dataset["train"].column_names,
+            )
             self.val_data.set_format("torch")
 
             # Free memory from unneeded dataset obj
             del dataset
 
-        if stage == "test" or stage is None:
+        if stage == "test" or stage == "predict" or stage is None:
             self.test_data = load_dataset(
                 self.dataset_name, split=self.test_split, cache_dir=self.cache_dir
             )
-            self.test_data = self.test_data.map(self.preprocess_data, batched=True, remove_columns=self.test_data.column_names)
+            self.test_data = self.test_data.map(
+                self.preprocess_data,
+                batched=True,
+                remove_columns=self.test_data.column_names,
+            )
             self.test_data.set_format("torch")
 
     def train_dataloader(self) -> TRAIN_DATALOADERS:
@@ -109,11 +121,21 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
             num_workers=self.num_workers,
         )
         
+    def predict_dataloader(self) -> EVAL_DATALOADERS:
+        return DataLoader(
+            self.test_data,
+            batch_size=self.batch_size,
+            num_workers=self.num_workers,
+        )
+        
+
     def preprocess_data(self, examples: dict):
         # take a batch of texts, assume column name is "text"
         text = examples["text"]
         # encode them
-        encoding = self.tokenizer(text, padding="max_length", truncation=True, max_length=self.max_seq_length)
+        encoding = self.tokenizer(
+            text, padding="max_length", truncation=True, max_length=self.max_seq_length
+        )
         # add labels
         labels_batch = {k: examples[k] for k in examples.keys() if k in self.labels}
         # create numpy array of shape (batch_size, num_labels)
@@ -123,9 +145,8 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
             labels_matrix[:, idx] = labels_batch[label]
 
         encoding["labels"] = labels_matrix.tolist()
-        
-        return encoding
 
+        return encoding
 
 
 if __name__ == "__main__":

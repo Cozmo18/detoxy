@@ -17,7 +17,6 @@ from toxy_bot.ml.utils import create_dirs
 
 from dataclasses import asdict
 
-import torch
 
 # Constants
 MODEL_NAME = MODULE_CONFIG.model_name
@@ -92,14 +91,14 @@ def train(
     if not fast_dev_run:
         lit_trainer.test(ckpt_path="best", datamodule=lit_datamodule)
         
-def predict(ckpt_path: str) -> torch.Tensor:
-    lit_datamodule = AutoTokenizerDataModule.load_from_checkpoint(ckpt_path)
-    lit_model = SequenceClassificationModule.load_from_checkpoint(ckpt_path)
+def predict(ckpt_path: str):
+    model = SequenceClassificationModule.load_from_checkpoint(ckpt_path)
+    dm = AutoTokenizerDataModule.load_from_checkpoint(ckpt_path)
     
     trainer_config = asdict(TRAINER_CONFIG)
-    lit_trainer = pl.Trainer(trainer_config)
+    lit_trainer = pl.Trainer(**trainer_config)
     
-    predictions = lit_trainer.predict(model=lit_model, datamodule=lit_datamodule)
+    predictions = lit_trainer.predict(model=model, datamodule=dm)
     
     return predictions
     

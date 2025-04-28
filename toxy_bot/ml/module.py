@@ -71,11 +71,13 @@ class SequenceClassificationModule(pl.LightningModule):
 
         return loss, acc, f1
 
-    def predict_step(self, input: str | dict) -> torch.Tensor:
-        text = input if isinstance(input, str) else input["text"]
-        encoding = self.tokenizer(text, return_tensors="pt", padding="max_length", truncation=True, max_length=self.max_seq_length)
-        # Autotokenizer may cause tokens to lose device type and cause failure
-        encoding = encoding.to(self.device)
+    def predict_step(self, batch, batch_idx) -> torch.Tensor:
+        if isinstance(batch, str):
+            encoding = self.tokenizer(batch, return_tensors="pt", padding="max_length", truncation=True, max_length=self.max_seq_length)
+            encoding = encoding.to(self.device)
+        else:
+            encoding = batch
+            
         outputs = self.model(**encoding)
         logits = outputs.logits
         probabilities = torch.sigmoid(logits)
