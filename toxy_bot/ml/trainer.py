@@ -54,24 +54,24 @@ def train(
     comet_logger = CometLogger(
         api_key=os.environ.get("COMET_API_KEY"),
         workspace=os.environ.get("COMET_WORKSPACE"),
-        save_dir=log_dir,
-        project_name="toxyy",
+        offline_directory=log_dir,
+        project="toxyy",
+        name=exp_name,
         mode="create",
-        experiment_name=exp_name,
     )
     comet_logger.log_hyperparams({"batch_size": batch_size})
 
     checkpoint_callback = ModelCheckpoint(
         dirpath=ckpt_dir,
         filename=exp_name,
-        monitor="val_loss",
+        monitor="val-loss",
         mode="min",
         save_top_k=1,
         verbose=True,
     )
 
     callbacks = [
-        EarlyStopping(monitor="val_loss", mode="min"),
+        EarlyStopping(monitor="val-loss", mode="min"),
         checkpoint_callback,
     ]
 
