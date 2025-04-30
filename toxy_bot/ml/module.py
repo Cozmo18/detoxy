@@ -5,85 +5,88 @@ import torch
 from lightning.pytorch.utilities.types import OptimizerLRScheduler
 from torch.optim import AdamW
 from torchmetrics.classification import MultilabelAccuracy, MultilabelF1Score
-from transformers import AutoModelForSequenceClassification, AutoTokenizer
+from transformers import AutoModelForSequenceClassification
 
-from toxy_bot.ml.config import CONFIG, DATAMODULE_CONFIG, MODULE_CONFIG
+from toxy_bot.ml.config import DATAMODULE_CONFIG, MODULE_CONFIG, CONFIG
+from toxy_bot.ml.datamodule import tokenize_text
 
 
 class SequenceClassificationModule(pl.LightningModule):
     def __init__(
         self,
         model_name: str = MODULE_CONFIG.model_name,
-        label_columns: list[str] = DATAMODULE_CONFIG.labels,
+        labels: list[str] = DATAMODULE_CONFIG.labels,
         max_seq_length: int = DATAMODULE_CONFIG.max_seq_length,
         learning_rate: float = MODULE_CONFIG.learning_rate,
-        cache_dir: str | Path = CONFIG.cache_dir,
+        output_key: str = "logits",  # Set according to the model output object
+        loss_key: str = "loss",  # Set according to the model output object
     ) -> None:
         super().__init__()
 
         self.save_hyperparameters()
 
         self.model_name = model_name
-        self.label_columns = label_columns
-        self.num_labels = len(label_columns)
+        self.labels = labels
+        self.num_labels = len(labels)
         self.max_seq_length = max_seq_length
         self.learning_rate = learning_rate
-        self.cache_dir = cache_dir
-        
-        self.tokenizer = AutoTokenizer.from_pretrained(
-            model_name, cache_dir=cache_dir, use_fast=True
-        )
+        self.output_key = output_key
+        self.loss_key = loss_key
+
         self.model = AutoModelForSequenceClassification.from_pretrained(
-            model_name, num_labels=self.num_labels, problem_type="multi_label_classification", cache_dir=self.cache_dir
+            model_name,
+            problem_type="multi_label_classification",
+            num_labels=self.num_labels,
         )
 
         self.accuracy = MultilabelAccuracy(num_labels=self.num_labels)
         self.f1_score = MultilabelF1Score(num_labels=self.num_labels)
 
-    def forward(self, **inputs) -> torch.Tensor:
-        return self.model(**inputs)
-
-    def training_step(self, batch, batch_idx) -> torch.Tensor:
+    def training_step(self, batch: dict, batch_idx: int) -> torch.Tensor:
         outputs = self.model(**batch)
-        loss = outputs[0]
-        self.log(
-            "train_loss", loss, on_step=True, on_epoch=True, prog_bar=True, logger=True
-        )
+        loss = outputs[self.loss_key]
+        self.log("train-loss", loss)
         return loss
 
-    def validation_step(self, batch, batch_idx) -> None:
+    def validation_step(self, batch: dict, batch_idx: int) -> None:
         loss, acc, f1 = self._shared_eval_step(batch, batch_idx)
-        metrics = {"val_loss": loss, "val_acc": acc, "val_f1": f1}
-        self.log_dict(metrics, prog_bar=True, logger=True)
+        metrics = {"val-loss": loss, "val-acc": acc, "val-f1": f1}
+        self.log_dict(metrics, prog_bar=True)
 
-    def test_step(self, batch, batch_idx) -> None:
+    def test_step(self, batch: dict, batch_idx: int) -> None:
         loss, acc, f1 = self._shared_eval_step(batch, batch_idx)
-        metrics = {"test_loss": loss, "test_acc": acc, "test_f1": f1}
-        self.log_dict(metrics, prog_bar=True, logger=True)
+        metrics = {"test-loss": loss, "test-acc": acc, "test-f1": f1}
+        self.log_dict(metrics, prog_bar=True)
 
-    def _shared_eval_step(self, batch, batch_idx) -> tuple:
-        outputs = self.model(**batch)
+    def _shared_eval_step(self, batch: dict, batch_idx: int) -> tuple:
         labels = batch["labels"]
-
-        loss, logits = outputs[:2]
-        acc = self.accuracy(logits, labels)
-        f1 = self.f1_score(logits, labels)
+        outputs = self.model(**batch)
+        loss = outputs[self.loss_key]
+        logits = outputs[self.output_key]
+        acc = self.accuracy(logits, labels)  # accept logits as pred
+        f1 = self.f1_score(logits, labels)  # accept logits as pred
 
         return loss, acc, f1
 
-    def predict_step(self, batch, batch_idx) -> torch.Tensor:
-        if isinstance(batch, str):
-            encoding = self.tokenizer(batch, return_tensors="pt", padding="max_length", truncation=True, max_length=self.max_seq_length)
-            encoding = encoding.to(self.device)
-        else:
-            encoding = batch
-            
+    def predict_step(
+        self,
+        batch: str,
+        cache_dir: str | Path = CONFIG.cache_dir,
+    ) -> torch.Tensor:
+        encoding = tokenize_text(
+            batch,
+            model_name=self.model_name,
+            max_seq_length=self.max_seq_length,
+            cache_dir=cache_dir,
+        )
+        encoding = encoding.to(self.device)
         outputs = self.model(**encoding)
-        logits = outputs.logits
-        probabilities = torch.sigmoid(logits)
-        return probabilities
+        logits = outputs[self.output_key]
+        probabilities = torch.sigmoid(logits).flatten()
+        probabilities = probabilities.cpu().detech().numpy()
+
+        return {{label: prob for label, prob in zip(self.labels, probabilities)}}
 
     def configure_optimizers(self) -> OptimizerLRScheduler:
         optimizer = AdamW(self.parameters(), lr=self.learning_rate)
         return optimizer
-

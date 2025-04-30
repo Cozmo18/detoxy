@@ -18,9 +18,11 @@ LABELS: list[str] = [
 
 @dataclass(frozen=True)
 class Config:
-    cache_dir: str = field(default_factory=lambda: os.path.join(root_path, "data"))
-    log_dir: str = field(default_factory=lambda: os.path.join(root_path, "logs"))
-    ckpt_dir: str = field(
+    cache_dir: str | Path = field(
+        default_factory=lambda: os.path.join(root_path, "data")
+    )
+    log_dir: str | Path = field(default_factory=lambda: os.path.join(root_path, "logs"))
+    ckpt_dir: str | Path = field(
         default_factory=lambda: os.path.join(root_path, "checkpoints")
     )
     seed: int = 0
@@ -41,9 +43,15 @@ class DataModuleConfig:
 
 @dataclass
 class ModuleConfig:
-    model_name: str = "google/bert_uncased_L-2_H-128_A-2" # Tiny Bert
+    model_name: str = "google/bert_uncased_L-2_H-128_A-2"  # Tiny Bert
     learning_rate: float = 3e-5
-    finetuned: str = "checkpoints/bert-base-uncased-finetuned.ckpt"
+    finetuned: str = field(
+        default_factory=lambda: os.path.join(
+            root_path,
+            "checkpoints",
+            "google_bert_uncased_L-2_H-128_A-2__msl-512__lr-3e-05__bs-64",
+        )
+    )
 
 
 @dataclass
