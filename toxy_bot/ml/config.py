@@ -49,9 +49,11 @@ class ModuleConfig:
         default_factory=lambda: os.path.join(
             root_path,
             "checkpoints",
-            "google_bert_uncased_L-2_H-128_A-2__msl-512__lr-3e-05__bs-64",
+            "google-bert-uncased-L-2-H-128-A-2_LR3e-5_BS64_MSL512_20250430-161306.ckpt",
         )
     )
+    
+
 
 
 @dataclass

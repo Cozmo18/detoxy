@@ -1,6 +1,6 @@
 [project]
 name = "toxy-bot"
-version = "0.8.0"
+version = "0.9.0"
 description = "A trained Discord Bot to detect and handle toxic messages in text channels."
 readme = "README.md"
 authors = [

@@ -83,9 +83,9 @@ class SequenceClassificationModule(pl.LightningModule):
         outputs = self.model(**encoding)
         logits = outputs[self.output_key]
         probabilities = torch.sigmoid(logits).flatten()
-        probabilities = probabilities.cpu().detech().numpy()
+        probabilities = probabilities.cpu().detach().numpy()
 
-        return {{label: prob for label, prob in zip(self.labels, probabilities)}}
+        return {label: prob for label, prob in zip(self.labels, probabilities)}
 
     def configure_optimizers(self) -> OptimizerLRScheduler:
         optimizer = AdamW(self.parameters(), lr=self.learning_rate)
