@@ -2760,7 +2760,7 @@ wheels = [
 
 [[package]]
 name = "toxy-bot"
-version = "0.7.0"
+version = "0.9.0"
 source = { editable = "." }
 dependencies = [
     { name = "comet-ml" },

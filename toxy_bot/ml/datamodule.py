@@ -99,7 +99,7 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
             # Free memory from unneeded dataset obj
             del dataset
 
-        if stage == "test" or stage is None:
+        if stage == "test" or stage == "predict" or stage is None:
             self.test_data = load_dataset(
                 self.dataset_name, split=self.test_split, cache_dir=self.cache_dir
             )
@@ -133,11 +133,7 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
         )
 
     def predict_dataloader(self) -> EVAL_DATALOADERS:
-        return DataLoader(
-            self.test_data,
-            batch_size=self.batch_size,
-            num_workers=self.num_workers,
-        )
+        return self.test_dataloader()
 
     def preprocess_data(self, examples: dict):
         # Assume text col is "text" and tokenize
@@ -154,7 +150,7 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
 
 
 def tokenize_text(
-    batch: str | dict,
+    batch: str | list[str] | dict,
     *,
     model_name: str,
     max_seq_length: int,
@@ -163,8 +159,9 @@ def tokenize_text(
     tokenizer = AutoTokenizer.from_pretrained(
         model_name, use_fast=True, cache_dir=cache_dir
     )
+    # assume text has a "text" key in dict
     text = (
-        batch if isinstance(batch, str) else batch["text"]
+        batch["text"] if isinstance(batch, dict) else batch
     )  # Allow for inference input as raw text
     return tokenizer(
         text,

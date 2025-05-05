@@ -52,8 +52,6 @@ class ModuleConfig:
             "google-bert-uncased-L-2-H-128-A-2_LR3e-5_BS64_MSL512_20250430-161306.ckpt",
         )
     )
-    
-
 
 
 @dataclass

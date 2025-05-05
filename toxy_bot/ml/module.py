@@ -58,6 +58,20 @@ class SequenceClassificationModule(pl.LightningModule):
         metrics = {"test-loss": loss, "test-acc": acc, "test-f1": f1}
         self.log_dict(metrics, prog_bar=True)
 
+    def predict_step(
+        self, text: str, cache_dir: str | Path = CONFIG.cache_dir
+    ) -> torch.Tensor:
+        inputs = tokenize_text(
+            text,
+            model_name=self.model_name,
+            max_seq_length=self.max_seq_length,
+            cache_dir=cache_dir,
+        )
+        outputs = self.model(**inputs)
+        logits = outputs[self.output_key]
+        probabilities = torch.sigmoid(logits)
+        return probabilities
+
     def _shared_eval_step(self, batch: dict, batch_idx: int) -> tuple:
         labels = batch["labels"]
         outputs = self.model(**batch)
@@ -65,27 +79,7 @@ class SequenceClassificationModule(pl.LightningModule):
         logits = outputs[self.output_key]
         acc = self.accuracy(logits, labels)  # accept logits as pred
         f1 = self.f1_score(logits, labels)  # accept logits as pred
-
         return loss, acc, f1
-
-    def predict_step(
-        self,
-        batch: str,
-        cache_dir: str | Path = CONFIG.cache_dir,
-    ) -> torch.Tensor:
-        encoding = tokenize_text(
-            batch,
-            model_name=self.model_name,
-            max_seq_length=self.max_seq_length,
-            cache_dir=cache_dir,
-        )
-        encoding = encoding.to(self.device)
-        outputs = self.model(**encoding)
-        logits = outputs[self.output_key]
-        probabilities = torch.sigmoid(logits).flatten()
-        probabilities = probabilities.cpu().detach().numpy()
-
-        return {label: prob for label, prob in zip(self.labels, probabilities)}
 
     def configure_optimizers(self) -> OptimizerLRScheduler:
         optimizer = AdamW(self.parameters(), lr=self.learning_rate)
