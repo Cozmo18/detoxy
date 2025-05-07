@@ -1,11 +1,10 @@
-from fastapi import Request, Response
-from litserve import LitAPI, LitServer
 from pathlib import Path
 
-from toxy_bot.ml.config import MODULE_CONFIG
-from toxy_bot.ml.module import SequenceClassificationModule
-
 import torch
+from fastapi import Request, Response
+from litserve import LitAPI, LitServer
+from detoxy.ml.config import MODULE_CONFIG
+from detoxy.ml.module import ToxicClassifier
 
 
 class SimpleLitAPI(LitAPI):
@@ -13,7 +12,7 @@ class SimpleLitAPI(LitAPI):
         self, device: str, ckpt_path: str | Path = MODULE_CONFIG.finetuned
     ) -> None:
         # Load and move model to the correct device
-        self.model = SequenceClassificationModule.load_from_checkpoint(ckpt_path)
+        self.model = ToxicClassifier.load_from_checkpoint(ckpt_path)
         self.model.to(device)
         self.model.eval()
 

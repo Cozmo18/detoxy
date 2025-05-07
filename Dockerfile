@@ -29,4 +29,4 @@ ENV PATH="/app/.venv/bin:$PATH"
 ENTRYPOINT []
 
 EXPOSE 8000
-CMD ["uv", "run", "/app/toxy_bot/ml/server.py"]
+CMD ["uv", "run", "/app/detoxy/ml/server.py"]

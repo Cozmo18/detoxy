@@ -7,11 +7,11 @@ from torch.optim import AdamW
 from torchmetrics.classification import MultilabelAccuracy, MultilabelF1Score
 from transformers import AutoModelForSequenceClassification
 
-from toxy_bot.ml.config import DATAMODULE_CONFIG, MODULE_CONFIG, CONFIG
-from toxy_bot.ml.datamodule import tokenize_text
+from detoxy.ml.config import DATAMODULE_CONFIG, MODULE_CONFIG, CONFIG
+from detoxy.ml.datamodule import tokenize_text
 
 
-class SequenceClassificationModule(pl.LightningModule):
+class ToxicClassifier(pl.LightningModule):
     def __init__(
         self,
         model_name: str = MODULE_CONFIG.model_name,
@@ -22,9 +22,7 @@ class SequenceClassificationModule(pl.LightningModule):
         loss_key: str = "loss",  # Set according to the model output object
     ) -> None:
         super().__init__()
-
         self.save_hyperparameters()
-
         self.model_name = model_name
         self.labels = labels
         self.num_labels = len(labels)

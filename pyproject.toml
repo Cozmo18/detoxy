@@ -1,5 +1,5 @@
 [project]
-name = "toxy-bot"
+name = "detoxy"
 version = "0.9.0"
 description = "A trained Discord Bot to detect and handle toxic messages in text channels."
 readme = "README.md"
@@ -51,7 +51,7 @@ url = "https://download.pytorch.org/whl/cu124"
 explicit = true
 
 [project.scripts]
-toxy-bot = "toxy_bot:main"
+detoxy = "detoxy:main"
 
 [build-system]
 requires = ["hatchling"]

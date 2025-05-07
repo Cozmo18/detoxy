@@ -7,10 +7,10 @@ from jsonargparse import CLI
 from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint
 from pytorch_lightning.loggers import CometLogger
 
-from toxy_bot.ml.config import CONFIG, DATAMODULE_CONFIG, MODULE_CONFIG, TRAINER_CONFIG
-from toxy_bot.ml.datamodule import AutoTokenizerDataModule
-from toxy_bot.ml.module import SequenceClassificationModule
-from toxy_bot.ml.utils import create_dirs, make_exp_name
+from detoxy.ml.config import CONFIG, DATAMODULE_CONFIG, MODULE_CONFIG, TRAINER_CONFIG
+from detoxy.ml.datamodule import TokenizerDataModule
+from detoxy.ml.module import ToxicClassifier
+from detoxy.ml.utils import create_dirs, make_exp_name
 
 
 # see https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html
@@ -36,14 +36,14 @@ def train(
 ) -> None:
     create_dirs([log_dir, ckpt_dir])
 
-    lit_datamodule = AutoTokenizerDataModule(
+    lit_datamodule = TokenizerDataModule(
         model_name=model_name,
         cache_dir=cache_dir,
         batch_size=batch_size,
         max_seq_length=max_seq_length,
     )
 
-    lit_model = SequenceClassificationModule(
+    lit_model = ToxicClassifier(
         model_name=model_name,
         max_seq_length=max_seq_length,
         learning_rate=learning_rate,

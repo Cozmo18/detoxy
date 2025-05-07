@@ -12,10 +12,10 @@ from transformers import AutoTokenizer
 
 from pathlib import Path
 
-from toxy_bot.ml.config import CONFIG, DATAMODULE_CONFIG, MODULE_CONFIG
+from detoxy.ml.config import CONFIG, DATAMODULE_CONFIG, MODULE_CONFIG
 
 
-class AutoTokenizerDataModule(pl.LightningDataModule):
+class TokenizerDataModule(pl.LightningDataModule):
     # Set according to the tokenizer output object
     loader_columns = ["input_ids", "attention_mask", "token_type_ids", "labels"]
 
@@ -35,7 +35,6 @@ class AutoTokenizerDataModule(pl.LightningDataModule):
         seed: int = CONFIG.seed,
     ):
         super().__init__()
-
         self.dataset_name = dataset_name
         self.model_name = model_name
         self.labels = labels
@@ -190,7 +189,7 @@ if __name__ == "__main__":
     print("Testing AutoTokenizerDataModule...")
 
     # Initialize the datamodule with test parameters
-    dm = AutoTokenizerDataModule(
+    dm = TokenizerDataModule(
         batch_size=8,
         max_seq_length=128,
         train_size=0.8,

@@ -1,7 +1,7 @@
 from datasets import load_dataset, Dataset, ClassLabel
 import pandas as pd
 import os
-from toxy_bot.ml.config import CONFIG, DATAMODULE_CONFIG
+from detoxy.ml.config import CONFIG, DATAMODULE_CONFIG
 
 
 def balance_dataset(
