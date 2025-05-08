@@ -18,6 +18,7 @@ TOXIC_CHANNEL_ALERT = "⚠️ A message has been flagged as potentially harmful.
 TOXIC_DM_WARNING = "Hey @{author}, I noticed your message might be harmful to others. Let's keep our community positive and supportive. This is a friendly reminder to be mindful of our community guidelines."
 TOXIC_DM_FOLLOW_UP = "Remember, our goal is to create a safe and welcoming space for everyone. If you need help understanding our guidelines, feel free to ask!"
 REPEAT_OFFENSE = "⚠️ @{author}, this is your second warning. Continued harmful behavior may result in temporary restrictions."
+TIMEOUT_MESSAGE = "⏰ @{author}, you have been timed out for 5 minutes due to repeated violations. Please take this time to review our community guidelines."
 
 # Positive Reinforcement
 POSITIVE_MESSAGE_ACK = "🌟 That's a great contribution to our community! Keep spreading positivity!"
