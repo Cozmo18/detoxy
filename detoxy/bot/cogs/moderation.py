@@ -4,6 +4,11 @@ import aiohttp
 
 from detoxy.bot import messages
 from detoxy.bot.config import Config
+from detoxy.bot.logger import setup_logger
+
+from datetime import timedelta
+
+logger = setup_logger("moderation", Config.log_dir)
 
 
 class Moderation(commands.Cog):
@@ -14,16 +19,21 @@ class Moderation(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print(f"{__name__} is ready!")
+        logger.info("Moderation cog is ready")
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
         if message.author == self.bot.user:
             return
         else:
-            print(
+            logger.info(
                 messages.MESSAGE_LOG.format(
-                    author=message.author, content=message.content
+                    author=message.author,
+                    content=message.content,
+                    server=message.guild.name if message.guild else "DM",
+                    channel=message.channel.name
+                    if isinstance(message.channel, discord.TextChannel)
+                    else "DM",
                 )
             )
 
@@ -37,7 +47,7 @@ class Moderation(commands.Cog):
         self, message: discord.Message, toxic_labels: list[str]
     ):
         """Handle toxic message detection"""
-        print(f"Toxic message detected ({toxic_labels}): {message.content}")
+        logger.warning(f"Toxic message detected ({toxic_labels}): {message.content}")
         await message.delete()
         # await message.channel.send(
         #     messages.TOXIC_CHANNEL_ALERT.format(mention=message.author.mention)
@@ -56,21 +66,28 @@ class Moderation(commands.Cog):
                 await dm_channel.send(
                     messages.TOXIC_DM_WARNING.format(author=message.author.mention)
                 )
+                logger.info(f"Sent first warning DM to user {message.author}")
             elif warning_count == 2:
                 await dm_channel.send(
                     messages.REPEAT_OFFENSE.format(author=message.author.mention)
                 )
+                logger.info(f"Sent second warning DM to user {message.author}")
             else:
                 # Issue a 5-minute timeout
-                # await message.author.timeout(timedelta(minutes=1), reason="Multiple toxic messages")
+                await message.author.timeout(
+                    timedelta(minutes=1), reason="Multiple toxic messages"
+                )
                 await dm_channel.send(
                     messages.TIMEOUT_MESSAGE.format(author=message.author.mention)
+                )
+                logger.info(
+                    f"Issued a 1 minute timeout to {message.author} and sent timeout notification DM"
                 )
                 # Reset warning count after timeout
                 # self.user_warnings[user_id] = 0
 
-        except discord.Forbidden:
-            print(f"Could not send DM to user {message.author}")
+        except discord.Forbidden as e:
+            logger.error(f"Failed to send DM to user {message.author}: {str(e)}")
 
     async def predict_toxicity(self, message: discord.Message) -> list[str]:
         data = {"input": message.content}

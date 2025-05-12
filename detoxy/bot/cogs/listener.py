@@ -1,6 +1,10 @@
 from discord.ext import commands
 import discord
 from detoxy.bot import messages
+from detoxy.bot.config import Config
+from detoxy.bot.logger import setup_logger
+
+logger = setup_logger("listener", Config.log_dir)
 
 
 class Listener(commands.Cog):
@@ -10,13 +14,14 @@ class Listener(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print(f"{__name__} is ready!")
+        logger.info("Listener cog is ready")
 
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
         channel = member.guild.system_channel
         if channel is not None:
             await channel.send(messages.WELCOME_MESSAGE.format(member=member.mention))
+            logger.info(f"New member joined: {member.name}")
 
     @commands.command()
     async def hello(self, ctx: commands.Context, *, member: discord.Member = None):
@@ -26,6 +31,7 @@ class Listener(commands.Cog):
         else:
             await ctx.send(f"Hey {member.name}... This feels familiar.")
         self._last_member = member
+        logger.info(f"Hello command used by {member.name}")
 
 
 async def setup(bot):

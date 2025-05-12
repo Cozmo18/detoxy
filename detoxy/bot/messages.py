@@ -29,24 +29,28 @@ COMMUNITY_HIGHLIGHT = "✨ @{author} just shared something amazing! This is exac
 
 # Bot Status and System Messages
 BOT_READY = (
-    "🤖 Detoxy is online and ready to help maintain a positive community environment!"
+    "Detoxy is online and ready to help maintain a positive community environment."
 )
-MESSAGE_LOG = "📝 Message from {author}: {content}"
-SYSTEM_UPDATE = "🔄 System update: {update_message}"
+MESSAGE_LOG = "Message from {author} in {server}/{channel}: {content}"
+SYSTEM_UPDATE = "System update: {update_message}"
 
 # Error and Technical Messages
 ERROR_MESSAGE = (
-    "❌ Oops! Something went wrong. Our team has been notified and will fix it soon."
+    "An error has occurred. Our team has been notified and will address it promptly."
 )
-MAINTENANCE_MODE = "🔧 The bot is currently under maintenance. We'll be back shortly with improvements!"
+MAINTENANCE_MODE = (
+    "The bot is currently under maintenance. We'll be back shortly with improvements."
+)
 
 # Community Support
-HELP_COMMAND = "Need help? Here are some commands:\n!guidelines - View community guidelines\n!report - Report inappropriate behavior\n!help - Show this help message"
+HELP_COMMAND = "Available commands:\n!guidelines - View community guidelines\n!report - Report inappropriate behavior\n!help - Show this help message"
 REPORT_CONFIRMATION = (
-    "✅ Thank you for your report. Our moderation team will review it promptly."
+    "Thank you for your report. Our moderation team will review it promptly."
 )
-SUGGESTION_ACK = "💡 Thanks for your suggestion @{author}! We value community input for making our space better."
+SUGGESTION_ACK = "Thank you for your suggestion @{author}. We value community input for making our space better."
 
 # Special Events and Celebrations
-COMMUNITY_MILESTONE = "🎉 We've reached {milestone}! Thank you all for being part of our amazing community!"
-MEMBER_ANNIVERSARY = "🎊 Happy {years} year anniversary in our community, @{author}! Thank you for being a valued member!"
+COMMUNITY_MILESTONE = (
+    "We've reached {milestone}! Thank you all for being part of our community."
+)
+MEMBER_ANNIVERSARY = "Happy {years} year anniversary in our community, @{author}! Thank you for being a valued member."
