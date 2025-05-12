@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-import aiohttp  # Replace requests with aiohttp for async HTTP requests
+import aiohttp
 
 from detoxy.bot import messages
 from detoxy.bot.config import Config
@@ -39,9 +39,9 @@ class Moderation(commands.Cog):
         """Handle toxic message detection"""
         print(f"Toxic message detected ({toxic_labels}): {message.content}")
         await message.delete()
-        await message.channel.send(
-            messages.TOXIC_CHANNEL_ALERT.format(mention=message.author.mention)
-        )
+        # await message.channel.send(
+        #     messages.TOXIC_CHANNEL_ALERT.format(mention=message.author.mention)
+        # )
 
         user_id = message.author.id
         if user_id not in self.user_warnings:

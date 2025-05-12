@@ -1,13 +1,13 @@
 from pathlib import Path
 
 import torch
-from fastapi import Request, Response
-from litserve import LitAPI, LitServer
+import litserve as ls
 from detoxy.ml.config import MODULE_CONFIG
 from detoxy.ml.module import ToxicClassifier
+from litserve import Response, Request
 
 
-class SimpleLitAPI(LitAPI):
+class SimpleLitAPI(ls.LitAPI):
     def setup(
         self, device: str, ckpt_path: str | Path = MODULE_CONFIG.finetuned
     ) -> None:
@@ -19,13 +19,13 @@ class SimpleLitAPI(LitAPI):
         # Keep track of the device for moving data accordingly
         self.device = device
 
-    def decode_request(self, request: Request) -> dict:
+    async def decode_request(self, request: Request) -> dict:
         return request["input"]
 
-    def predict(self, input: str) -> dict:
+    async def predict(self, input: str) -> dict:
         return self.model.predict_step(input)
 
-    def encode_response(self, probabilities: torch.Tensor) -> Response:
+    async def encode_response(self, probabilities: torch.Tensor) -> Response:
         labels = self.model.labels
         probabilities = probabilities.flatten()
 
@@ -33,7 +33,6 @@ class SimpleLitAPI(LitAPI):
 
 
 if __name__ == "__main__":
-    server = LitServer(
-        SimpleLitAPI(), accelerator="auto", devices=1, track_requests=True
-    )
+    api = SimpleLitAPI(enable_async=True)
+    server = ls.LitServer(api, accelerator="auto", track_requests=True)
     server.run(port=8000)

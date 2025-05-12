@@ -1225,16 +1225,16 @@ wheels = [
 
 [[package]]
 name = "litserve"
-version = "0.2.8"
+version = "0.2.9"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "fastapi" },
     { name = "pyzmq" },
     { name = "uvicorn", extra = ["standard"] },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/44/f9/d84c4ce940fead558f9bdabb417879edad3f358e70ba25f90922c89720a2/litserve-0.2.8.tar.gz", hash = "sha256:c3cf29ad5a106d6933bde17373bede872c618c40b5cbf6301e0dce3bf227c1fa", size = 53446, upload-time = "2025-04-22T22:13:35.544Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/5d/6c/88a6ec1727ab049bba62f1094468f1c499ceb19d5fe24c5048089b61116a/litserve-0.2.9.tar.gz", hash = "sha256:5f36f9feb9b1c0573c971d1f3acc26b922dc6039af875f9b5bcbd2435c632d88", size = 56185, upload-time = "2025-05-08T13:38:17.002Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/de/90/f7f205c22adb8df1c7c9bf562f8987e4499213fa739bd29b3b2aa4629b94/litserve-0.2.8-py3-none-any.whl", hash = "sha256:5fc3531344c7e95a212b2d78176dc648b31e8b8a484791610a7f5d9ce3314a82", size = 66601, upload-time = "2025-04-22T22:13:33.401Z" },
+    { url = "https://files.pythonhosted.org/packages/b7/53/ff2b55cf3742eb7d8ebf80d46c081ffc1bb27f5a6330baac8c60f3a7dcd8/litserve-0.2.9-py3-none-any.whl", hash = "sha256:7685d66666d8d17222f477e44183b40a2c6314c89fb23ad960401ffd6b6cbb05", size = 69302, upload-time = "2025-05-08T13:38:15.903Z" },
 ]
 
 [[package]]
