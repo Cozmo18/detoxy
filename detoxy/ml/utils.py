@@ -1,12 +1,8 @@
-import json
 import os
-import shutil
 from datetime import datetime
-from pathlib import Path
 from decimal import Decimal
 
 import torch
-from lightning.pytorch import Trainer
 
 
 def get_num_trainable_params(model: torch.nn.Module) -> int:

@@ -7,7 +7,7 @@ from torch.optim import AdamW
 from torchmetrics.classification import MultilabelAccuracy, MultilabelF1Score
 from transformers import AutoModelForSequenceClassification
 
-from detoxy.ml.config import DATAMODULE_CONFIG, MODULE_CONFIG, CONFIG
+from detoxy.ml.config import CONFIG, DATAMODULE_CONFIG, MODULE_CONFIG
 from detoxy.ml.datamodule import tokenize_text
 
 

@@ -12,7 +12,6 @@ from detoxy.ml.datamodule import TokenizerDataModule
 from detoxy.ml.module import ToxicClassifier
 from detoxy.ml.utils import create_dirs, make_exp_name
 
-
 # see https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html
 torch.set_float32_matmul_precision("medium")
 

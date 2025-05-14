@@ -1,10 +1,11 @@
 from pathlib import Path
 
-import torch
 import litserve as ls
+import torch
+from litserve import Request, Response
+
 from detoxy.ml.config import MODULE_CONFIG
 from detoxy.ml.module import ToxicClassifier
-from litserve import Response, Request
 
 
 class SimpleLitAPI(ls.LitAPI):

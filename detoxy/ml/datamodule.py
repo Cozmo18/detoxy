@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from pathlib import Path
 
 import lightning.pytorch as pl
 import numpy as np
@@ -8,9 +9,6 @@ from lightning.pytorch.utilities import rank_zero_info
 from lightning.pytorch.utilities.types import EVAL_DATALOADERS, TRAIN_DATALOADERS
 from torch.utils.data import DataLoader
 from transformers import AutoTokenizer
-
-
-from pathlib import Path
 
 from detoxy.ml.config import CONFIG, DATAMODULE_CONFIG, MODULE_CONFIG
 

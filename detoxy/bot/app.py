@@ -1,8 +1,10 @@
+import asyncio
 import os
+
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-import asyncio
+
 from detoxy.bot.config import Config
 from detoxy.bot.logger import setup_logger
 

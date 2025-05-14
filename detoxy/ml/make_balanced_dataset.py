@@ -1,6 +1,8 @@
-from datasets import load_dataset, Dataset, ClassLabel
-import pandas as pd
 import os
+
+import pandas as pd
+from datasets import ClassLabel, Dataset, load_dataset
+
 from detoxy.ml.config import CONFIG, DATAMODULE_CONFIG
 
 
