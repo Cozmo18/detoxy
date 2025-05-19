@@ -1,12 +1,12 @@
+from datetime import timedelta
+
+import aiohttp
 import discord
 from discord.ext import commands
-import aiohttp
 
 from detoxy.bot import messages
 from detoxy.bot.config import Config
 from detoxy.bot.logger import setup_logger
-
-from datetime import timedelta
 
 logger = setup_logger("moderation", Config.log_dir)
 

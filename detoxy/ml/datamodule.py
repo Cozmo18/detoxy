@@ -3,14 +3,13 @@ from datetime import datetime
 from pathlib import Path
 
 import lightning.pytorch as pl
-import numpy as np
 from datasets import load_dataset
 from lightning.pytorch.utilities import rank_zero_info
 from lightning.pytorch.utilities.types import EVAL_DATALOADERS, TRAIN_DATALOADERS
 from torch.utils.data import DataLoader
-from transformers import AutoTokenizer
 
 from detoxy.ml.config import CONFIG, DATAMODULE_CONFIG, MODULE_CONFIG
+from detoxy.ml.preprocess import combine_labels, tokenize_text
 
 
 class TokenizerDataModule(pl.LightningDataModule):
@@ -144,42 +143,6 @@ class TokenizerDataModule(pl.LightningDataModule):
         encoding["labels"] = combine_labels(examples, self.labels)
 
         return encoding
-
-
-def tokenize_text(
-    batch: str | list[str] | dict,
-    *,
-    model_name: str,
-    max_seq_length: int,
-    cache_dir: str | Path,
-) -> dict:
-    tokenizer = AutoTokenizer.from_pretrained(
-        model_name, use_fast=True, cache_dir=cache_dir
-    )
-    # assume text has a "text" key in dict
-    text = (
-        batch["text"] if isinstance(batch, dict) else batch
-    )  # Allow for inference input as raw text
-    return tokenizer(
-        text,
-        truncation=True,
-        padding="max_length",
-        max_length=max_seq_length,
-        return_tensors="pt",
-    )
-
-
-def combine_labels(batch: dict, labels: list[str]) -> list:
-    batch_size = len(batch[labels[0]])
-    num_labels = len(labels)
-
-    labels_batch = {k: batch[k] for k in batch.keys() if k in labels}
-    labels_matrix = np.zeros((batch_size, num_labels))
-
-    for idx, label in enumerate(labels):
-        labels_matrix[:, idx] = labels_batch[label]
-
-    return labels_matrix.tolist()
 
 
 if __name__ == "__main__":

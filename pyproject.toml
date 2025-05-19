@@ -1,35 +1,23 @@
 [project]
 name = "detoxy"
 version = "0.9.0"
-description = "A trained Discord Bot to detect and handle toxic messages in text channels."
-readme = "README.md"
-authors = [
-    { name = "anitamaxvim", email = "107803921+anitamaxvim@users.noreply.github.com" },
-]
-license = "MIT"
-license-files = ["LICEN[CS]E*"]
-
-requires-python = ">=3.11"
+requires-python = ">=3.11.0"
 dependencies = [
-    "litserve>=0.2.7",
+    "transformers<4.51.0",
+    "huggingface_hub[hf_xet]>=0.31",
+    "litserve>=0.2.10",
     "lightning>=2.5.1.post0",
     "discord>=2.3.2",
-    "datasets>=3.5.0",
-    "transformers<4.51.0",
-    "huggingface_hub[hf_xet]",
 ]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[project.scripts]
-detoxy = "detoxy:main"
-
 [dependency-groups]
 dev = [
     "numpy==1.24",
-    "torch==2.2.2",
+    "datasets>=3.5.0",
     "jsonargparse>=4.38.0",
     "ipykernel>=6.29.5",
     "comet-ml>=3.49.7",
@@ -37,18 +25,36 @@ dev = [
     "seaborn>=0.12.1",
 ]
 
-deploy = [
-    "numpy>2.0", 
-    "torch>2.6",
-    "pandas>=2.2.2",
+[project.optional-dependencies]
+cpu = [
+  "torch==2.2.0",
+]
+cu128 = [
+  "torch>=2.7.0",
 ]
 
 [tool.uv]
 conflicts = [
-    [
-      { group = "dev" },
-      { group = "deploy" },
-    ],
+  [
+    { extra = "cpu" },
+    { extra = "cu128" },
+  ],
 ]
 
-default-groups = []
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cpu", extra = "cpu" },
+  { index = "pytorch-cu128", extra = "cu128" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+
+

@@ -1,5 +1,6 @@
-from discord.ext import commands
 import discord
+from discord.ext import commands
+
 from detoxy.bot import messages
 from detoxy.bot.config import Config
 from detoxy.bot.logger import setup_logger

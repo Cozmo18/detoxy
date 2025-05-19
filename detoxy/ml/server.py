@@ -1,39 +1,41 @@
 from pathlib import Path
 
 import litserve as ls
-import torch
 from litserve import Request, Response
 
-from detoxy.ml.config import MODULE_CONFIG
+from detoxy.ml.config import SERVER_CONFIG
 from detoxy.ml.module import ToxicClassifier
+
 
 
 class SimpleLitAPI(ls.LitAPI):
     def setup(
-        self, device: str, ckpt_path: str | Path = MODULE_CONFIG.finetuned
+        self, 
+        device: str, 
+        ckpt_path: str | Path = SERVER_CONFIG.finetuned,
+        precision: str = SERVER_CONFIG.precision,
     ) -> None:
-        # Load and move model to the correct device
-        self.model = ToxicClassifier.load_from_checkpoint(ckpt_path)
-        self.model.to(device)
-        self.model.eval()
+        self.lit_module = ToxicClassifier.load_from_checkpoint(ckpt_path).to(device)
+        self.lit_module.to(device).to(precision)
+        self.lit_module.eval()
 
-        # Keep track of the device for moving data accordingly
-        self.device = device
-
-    async def decode_request(self, request: Request) -> dict:
+    async def decode_request(self, request: Request):
         return request["input"]
 
-    async def predict(self, input: str) -> dict:
-        return self.model.predict_step(input)
+    async def predict(self, input: str):
+        return self.lit_module.predict_step(input)
 
-    async def encode_response(self, probabilities: torch.Tensor) -> Response:
-        labels = self.model.labels
-        probabilities = probabilities.flatten()
-
-        return {label: prob.item() for label, prob in zip(labels, probabilities)}
+    async def encode_response(self, output: dict) -> Response:
+        return {"output": output}
 
 
 if __name__ == "__main__":
     api = SimpleLitAPI(enable_async=True)
-    server = ls.LitServer(api, accelerator="auto", track_requests=True)
+    server = ls.LitServer(
+        api, 
+        accelerator=SERVER_CONFIG.accelerator,
+        devices=SERVER_CONFIG.devices,
+        timeout=SERVER_CONFIG.timeout,
+        track_requests=SERVER_CONFIG.track_requests,
+    )
     server.run(port=8000)

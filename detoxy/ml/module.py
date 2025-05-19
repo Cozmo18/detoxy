@@ -8,7 +8,7 @@ from torchmetrics.classification import MultilabelAccuracy, MultilabelF1Score
 from transformers import AutoModelForSequenceClassification
 
 from detoxy.ml.config import CONFIG, DATAMODULE_CONFIG, MODULE_CONFIG
-from detoxy.ml.datamodule import tokenize_text
+from detoxy.ml.preprocess import tokenize_text
 
 
 class ToxicClassifier(pl.LightningModule):
@@ -65,10 +65,12 @@ class ToxicClassifier(pl.LightningModule):
             max_seq_length=self.max_seq_length,
             cache_dir=cache_dir,
         )
+        inputs = {key: value.to(self.device) for key, value in inputs.items()}
         outputs = self.model(**inputs)
         logits = outputs[self.output_key]
-        probabilities = torch.sigmoid(logits)
-        return probabilities
+        probabilities = torch.sigmoid(logits).flatten()
+        
+        return {label: prob.item() for label, prob in zip(self.labels, probabilities)}
 
     def _shared_eval_step(self, batch: dict, batch_idx: int) -> tuple:
         labels = batch["labels"]

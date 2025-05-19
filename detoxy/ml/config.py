@@ -2,6 +2,7 @@ import os
 from dataclasses import dataclass, field
 from multiprocessing import cpu_count
 from pathlib import Path
+import torch
 
 this_file = Path(__file__)
 root_path = this_file.parents[2]
@@ -63,9 +64,26 @@ class TrainerConfig:
     max_epochs: int = 10
     log_every_n_steps: int | None = 50
     deterministic: bool = True
+    
+@dataclass
+class ServerConfig:
+    finetuned: str = field(
+        default_factory=lambda: os.path.join(
+            root_path,
+            "checkpoints",
+            "google-bert-uncased-L-2-H-128-A-2_LR3e-5_BS64_MSL512_20250430-161306.ckpt",
+        )
+    )
+    precision: str = torch.bfloat16
+    accelerator: str = "auto"
+    devices: int | str = "auto"
+    timeout: int = 30
+    track_requests: bool = True
+    
 
 
 CONFIG = Config()
 DATAMODULE_CONFIG = DataModuleConfig()
 MODULE_CONFIG = ModuleConfig()
 TRAINER_CONFIG = TrainerConfig()
+SERVER_CONFIG = ServerConfig()
