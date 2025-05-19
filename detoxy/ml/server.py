@@ -25,32 +25,37 @@ class SimpleLitAPI(ls.LitAPI):
         return request["input"]
 
     async def predict(self, input: str):
-        t0 = time.time()
-        output = self.lit_module.predict_step(input)
-        t1 = time.time()
-        self.log("model_time", t1 - t0)
-        return output
+        return self.lit_module.predict_step(input)
 
     async def encode_response(self, output: dict) -> Response:
         return {"output": output}
     
     
-class SimpleLogger(ls.Logger):
-    def process(self, key, value):
-        print(f"Recieved {key} with value {value}", flush=True)
-        
 class FileLogger(ls.Logger):
     def process(self, key, value):
-        log_filepath = os.path.join(CONFIG.log_dir, "server_logs.txt")
+        log_filepath = os.path.join(CONFIG.log_dir, "server_log.txt")
         with open(log_filepath, "a+") as f:
-            f.write(f"{key}: {value:.1f}\n")
+            f.write(f"{key}: {value:.2f}\n")
+            
+class PredictionTimeLogger(ls.Callback):
+    def on_before_predict(self, lit_api):
+        t0 = time.perf_counter()
+        self._start_time = t0
+        
+    def on_after_predict(self, lit_api):
+        t1 = time.perf_counter()
+        elapsed = t1 - self._start_time
+        lit_api.log("prediction_time", elapsed)
         
 
 if __name__ == "__main__":
     api = SimpleLitAPI(enable_async=True)
-    loggers = [SimpleLogger(), FileLogger()]
+    callbacks = [PredictionTimeLogger()]
+    loggers = [FileLogger()]
+    
     server = ls.LitServer(
-        api, 
+        api,
+        callbacks=callbacks,
         loggers=loggers,
         accelerator=SERVER_CONFIG.accelerator,
         devices=SERVER_CONFIG.devices,
