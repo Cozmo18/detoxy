@@ -2,6 +2,7 @@ import os
 from dataclasses import dataclass, field
 from multiprocessing import cpu_count
 from pathlib import Path
+
 import torch
 
 this_file = Path(__file__)
@@ -64,7 +65,8 @@ class TrainerConfig:
     max_epochs: int = 10
     log_every_n_steps: int | None = 50
     deterministic: bool = True
-    
+
+
 @dataclass
 class ServerConfig:
     finetuned: str = field(
@@ -79,7 +81,6 @@ class ServerConfig:
     devices: int | str = "auto"
     timeout: int = 30
     track_requests: bool = True
-    
 
 
 CONFIG = Config()
