@@ -14,6 +14,6 @@
 import requests
 
 response = requests.post(
-    "http://127.0.0.1:8000/predict", json={"input": "fuck you bitch"}
+    "http://35.178.200.142:443/predict", json={"input": "fuck you bitch"}
 )
 print(f"Status: {response.status_code}\nResponse:\n {response.text}")
