@@ -1,11 +1,10 @@
-import os
 import time
 from pathlib import Path
 
 import litserve as ls
 from litserve import Request, Response
 
-from detoxy.ml.config import CONFIG, SERVER_CONFIG
+from detoxy.ml.config import SERVER_CONFIG
 from detoxy.ml.module import ToxicClassifier
 
 
@@ -30,11 +29,9 @@ class SimpleLitAPI(ls.LitAPI):
         return {"output": output}
 
 
-class FileLogger(ls.Logger):
+class SimpleLogger(ls.Logger):
     def process(self, key, value):
-        log_filepath = os.path.join(CONFIG.log_dir, "server_log.txt")
-        with open(log_filepath, "a+") as f:
-            f.write(f"{key}: {value:.2f}\n")
+        print(f"{key}: {value:.2f}", flush=True)
 
 
 class PredictionTimeLogger(ls.Callback):
@@ -51,12 +48,12 @@ class PredictionTimeLogger(ls.Callback):
 if __name__ == "__main__":
     api = SimpleLitAPI(enable_async=True)
     callbacks = [PredictionTimeLogger()]
-    loggers = [FileLogger()]
+    loggers = [SimpleLogger()]
 
     server = ls.LitServer(
         api,
-        callbacks=callbacks,
-        loggers=loggers,
+        # callbacks=callbacks,
+        # loggers=loggers,
         accelerator=SERVER_CONFIG.accelerator,
         devices=SERVER_CONFIG.devices,
         timeout=SERVER_CONFIG.timeout,
