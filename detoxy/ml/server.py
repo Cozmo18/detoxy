@@ -62,4 +62,4 @@ if __name__ == "__main__":
         timeout=SERVER_CONFIG.timeout,
         track_requests=SERVER_CONFIG.track_requests,
     )
-    server.run(port=443)
+    server.run(port=8000, generate_client_file=SERVER_CONFIG.generate_client_file)
