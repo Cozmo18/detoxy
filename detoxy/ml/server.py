@@ -2,6 +2,7 @@ import time
 from pathlib import Path
 
 import litserve as ls
+import torch
 from litserve import Request, Response
 
 from detoxy.ml.config import SERVER_CONFIG
@@ -19,14 +20,16 @@ class SimpleLitAPI(ls.LitAPI):
         self.lit_module.to(device).to(precision)
         self.lit_module.eval()
 
+        self.labels = self.lit_module.labels
+
     async def decode_request(self, request: Request):
         return request["input"]
 
-    async def predict(self, input: str):
+    async def predict(self, input: str) -> torch.Tensor:
         return self.lit_module.predict_step(input)
 
-    async def encode_response(self, output: dict) -> Response:
-        return {"output": output}
+    async def encode_response(self, output: torch.Tensor) -> Response:
+        return {label: prob.item() for label, prob in zip(self.labels, output)}
 
 
 class SimpleLogger(ls.Logger):

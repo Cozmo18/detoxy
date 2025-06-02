@@ -70,7 +70,8 @@ class ToxicClassifier(pl.LightningModule):
         logits = outputs[self.output_key]
         probabilities = torch.sigmoid(logits).flatten()
 
-        return {label: prob.item() for label, prob in zip(self.labels, probabilities)}
+        return probabilities
+
 
     def _shared_eval_step(self, batch: dict, batch_idx: int) -> tuple:
         labels = batch["labels"]
