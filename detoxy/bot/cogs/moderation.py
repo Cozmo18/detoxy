@@ -38,10 +38,11 @@ class Moderation(commands.Cog):
             )
 
         toxic_labels = await self.predict_toxicity(message)
-        if len(toxic_labels) > 0:
-            await self.handle_toxic_message(message, toxic_labels)
-        else:
-            pass
+        print(toxic_labels)
+        # if len(toxic_labels) > 0:
+        #     await self.handle_toxic_message(message, toxic_labels)
+        # else:
+        #     pass
 
     async def handle_toxic_message(
         self, message: discord.Message, toxic_labels: list[str]
@@ -89,17 +90,20 @@ class Moderation(commands.Cog):
         except discord.Forbidden as e:
             logger.error(f"Failed to send DM to user {message.author}: {str(e)}")
 
-    async def predict_toxicity(self, message: discord.Message) -> list[str]:
-        data = {"input": message.content}
+    async def predict_toxicity(self, message: discord.Message) -> dict:
+        input = message.content
+        data = {"input": input}
+
         async with aiohttp.ClientSession() as session:
             async with session.post(
-                url="http://127.0.0.1:8000/predict", json=data
+                url="http://3.8.92.161:8000/predict", json=data
             ) as response:
                 result = await response.json()
-                toxic_labels = [
-                    label for label, prob in result.items() if prob >= self.threshold
-                ]
-                return toxic_labels
+                output = result["output"]
+                # toxic_labels = [
+                #     label for label, prob in result.items() if prob >= self.threshold
+                # ]
+                return {"input": input, "output": output}
 
 
 async def setup(bot):
