@@ -72,7 +72,6 @@ class ToxicClassifier(pl.LightningModule):
 
         return probabilities
 
-
     def _shared_eval_step(self, batch: dict, batch_idx: int) -> tuple:
         labels = batch["labels"]
         outputs = self.model(**batch)
