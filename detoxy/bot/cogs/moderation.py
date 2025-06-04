@@ -24,50 +24,88 @@ class Moderation(commands.Cog):
         logger.info("Moderation cog is ready")
 
     @commands.Cog.listener()
+    @commands.bot_has_guild_permissions(administrator=True)
     async def on_message(self, message: discord.Message):
         if message.author == self.bot.user:
             return
 
-        toxicity = await self.predict_toxicity(message)
-        if any(v > self.threshold for v in toxicity.values()):
-            await self.handle_toxic_message(message)
+        try:
+            toxicity = await self.predict_toxicity(message)
+            if any(v > self.threshold for v in toxicity.values()):
+                await self.handle_toxic_message(message)
+        except Exception as e:
+            logger.error(f"Error processing message: {e}")
 
     async def handle_toxic_message(self, message: discord.Message):
         """Handle toxic message detection"""
-        await message.delete()
-        logger.warning(f"Toxic message detected and deleted: {message.content}")
+        try:
+            await message.delete()
+            logger.info(f"Toxic message detected and deleted: {message.content}")
+        except Exception as e:
+            logger.error(f"Failed to delete toxic message: {e}")
+            return
 
-        guild_id = message.guild.id
-        user_id = message.author.id
-        warnings = increase_and_get_warnings(user_id, guild_id)
+        try:
+            guild_id = message.guild.id
+            user_id = message.author.id
+            warnings = increase_and_get_warnings(user_id, guild_id)
+            logger.debug(f"User {user_id} in guild {guild_id} has {warnings} warnings")
+        except Exception as e:
+            logger.error(f"Database error while handling warnings: {e}")
+            return
 
         if warnings == 1:
-            await message.author.send(
-                messages.TOXIC_DM_WARNING.format(author=message.author.mention)
-            )
-            logger.info(f"Sent first warning DM to user {message.author}")
+            try:
+                await message.author.send(
+                    messages.TOXIC_DM_WARNING.format(author=message.author.mention)
+                )
+                logger.info(f"Sent first warning DM to user {message.author}")
+            except Exception as e:
+                logger.warning(f"Could not send first warning DM: {e}")
         elif warnings == 2:
-            await message.author.send(
-                messages.REPEAT_OFFENSE.format(author=message.author.mention)
-            )
-            logger.info(f"Sent second warning DM to user {message.author}")
+            try:
+                await message.author.send(
+                    messages.REPEAT_OFFENSE.format(author=message.author.mention)
+                )
+                logger.info(f"Sent second warning DM to user {message.author}")
+            except Exception as e:
+                logger.warning(f"Could not send second warning DM: {e}")
         else:
-            await message.author.timeout(
-                timedelta(minutes=5), reason="Multiple toxic messages"
-            )
-            await message.author.send(
-                messages.TIMEOUT_MESSAGE.format(author=message.author.mention)
-            )
-            logger.info(
-                f"Issued a 5 minute timeout to {message.author} and sent timeout notification DM"
-            )
+            try:
+                await message.author.timeout(
+                    timedelta(minutes=5), reason="Multiple toxic messages"
+                )
+                logger.info(f"Timed out user {message.author} for 5 minutes")
+            except Exception as e:
+                logger.warning(f"Could not issue timeout: {e}")
+
+            try:
+                await message.author.send(
+                    messages.TIMEOUT_MESSAGE.format(author=message.author.mention)
+                )
+                logger.info(f"Sent timeout notification to user {message.author}")
+            except Exception as e:
+                logger.warning(f"Could not send timeout message to user: {e}")
 
     async def predict_toxicity(self, message: discord.Message) -> dict:
-        data = {"input": message.content}
-        async with aiohttp.ClientSession() as session:
-            async with session.post(url=Config.predict_url, json=data) as response:
-                result = await response.json()
-                return result
+        try:
+            data = {"input": message.content}
+            async with aiohttp.ClientSession() as session:
+                async with session.post(url=Config.predict_url, json=data) as response:
+                    if response.status != 200:
+                        logger.error(
+                            f"Prediction service returned status {response.status}"
+                        )
+                        return {}
+                    result = await response.json()
+                    logger.debug(f"Toxicity prediction result: {result}")
+                    return result
+        except aiohttp.ClientError as e:
+            logger.error(f"Network error while predicting toxicity: {e}")
+            return {}
+        except Exception as e:
+            logger.error(f"Unexpected error while predicting toxicity: {e}")
+            return {}
 
 
 async def setup(bot):
