@@ -4,10 +4,9 @@ import aiohttp
 import discord
 from discord.ext import commands
 
-from detoxy.bot import messages
-from detoxy.bot.config import Config
-from detoxy.bot.database import create_warnings_table, increase_and_get_warnings
-from detoxy.bot.logger import setup_logger
+from detoxy.app import messages
+from detoxy.app.config import Config
+from detoxy.app.logger import setup_logger
 
 logger = setup_logger("moderation", Config.log_dir)
 
@@ -16,8 +15,7 @@ class Moderation(commands.Cog):
     def __init__(self, bot, threshold: float = Config.threshold):
         self.bot = bot
         self.threshold = threshold
-
-        create_warnings_table()
+        self.user_warnings = {}
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -48,8 +46,15 @@ class Moderation(commands.Cog):
         try:
             guild_id = message.guild.id
             user_id = message.author.id
-            warnings = increase_and_get_warnings(user_id, guild_id)
+            
+            if user_id in self.user_warnings.keys():
+                self.user_warnings[user_id] += 1
+            else:
+                self.user_warnings[user_id] = 1
+                
+            warnings = self.user_warnings[user_id]
             logger.debug(f"User {user_id} in guild {guild_id} has {warnings} warnings")
+            
         except Exception as e:
             logger.error(f"Database error while handling warnings: {e}")
             return

@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: detoxy-app
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+      args:
+        - IMAGE_TAG=app
+    image: detoxy:app
+    environment:
+      - DATABASE_DIR=/data
+      - ML_SERVICE_URL=http://model:8000/predict
+      - DISCORD_TOKEN=${DISCORD_TOKEN}
+    depends_on:
+      model:
+        condition: service_healthy
+
+  model:
+    container_name: detoxy-model
+    build:
+      context: .
+      dockerfile: Dockerfile.model
+      args:
+        - IMAGE_TAG=model
+    image: detoxy:model
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s 

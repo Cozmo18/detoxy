@@ -7,10 +7,10 @@ from jsonargparse import CLI
 from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint
 from pytorch_lightning.loggers import CometLogger
 
-from detoxy.ml.config import CONFIG, DATAMODULE_CONFIG, MODULE_CONFIG, TRAINER_CONFIG
-from detoxy.ml.datamodule import TokenizerDataModule
-from detoxy.ml.module import ToxicClassifier
-from detoxy.ml.utils import create_dirs, make_exp_name
+from detoxy.model.config import CONFIG, DATAMODULE_CONFIG, MODULE_CONFIG, TRAINER_CONFIG
+from detoxy.model.datamodule import TokenizerDataModule
+from detoxy.model.module import ToxicClassifier
+from detoxy.model.utils import create_dirs, make_exp_name
 
 # see https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html
 torch.set_float32_matmul_precision("medium")

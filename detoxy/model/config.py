@@ -21,11 +21,11 @@ LABELS: list[str] = [
 @dataclass(frozen=True)
 class Config:
     cache_dir: str | Path = field(
-        default_factory=lambda: os.path.join(root_path, "data")
+        default_factory=lambda: os.path.join(root_path, "data", "huggingface")
     )
     log_dir: str | Path = field(default_factory=lambda: os.path.join(root_path, "logs"))
     ckpt_dir: str | Path = field(
-        default_factory=lambda: os.path.join(root_path, "checkpoints")
+        default_factory=lambda: os.path.join(this_file.parent, "checkpoints")
     )
     seed: int = 0
 
@@ -49,7 +49,7 @@ class ModuleConfig:
     learning_rate: float = 3e-5
     finetuned: str = field(
         default_factory=lambda: os.path.join(
-            root_path,
+            this_file.parent,
             "checkpoints",
             "google-bert-uncased-L-2-H-128-A-2_LR3e-5_BS64_MSL512_20250430-161306.ckpt",
         )
@@ -71,7 +71,7 @@ class TrainerConfig:
 class ServerConfig:
     finetuned: str = field(
         default_factory=lambda: os.path.join(
-            root_path,
+            this_file.parent,
             "checkpoints",
             "google-bert-uncased-L-2-H-128-A-2_LR3e-5_BS64_MSL512_20250430-161306.ckpt",
         )

@@ -8,7 +8,6 @@ root_path = this_file.parents[2]
 
 @dataclass(frozen=True)
 class Config:
-    predict_url: str = "http://0.0.0.0:8000/predict"
-    threshold: float = 0.8
-    database_dir: Path = root_path / "data"
+    predict_url: str = os.getenv("ML_SERVICE_URL", "http://0.0.0.0:8000/predict")
+    threshold: float = float(os.getenv("TOXICITY_THRESHOLD", "0.8"))
     log_dir: str | Path = os.path.join(root_path, "logs", "discord.log")

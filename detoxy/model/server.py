@@ -5,8 +5,8 @@ import litserve as ls
 import torch
 from litserve import Request, Response
 
-from detoxy.ml.config import SERVER_CONFIG
-from detoxy.ml.module import ToxicClassifier
+from detoxy.model.config import SERVER_CONFIG
+from detoxy.model.module import ToxicClassifier
 
 
 class SimpleLitAPI(ls.LitAPI):

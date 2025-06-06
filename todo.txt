@@ -1,0 +1,2 @@
+- Make dependency groups in pyproject.toml: dev (train with gpu), model (cpu), app
+- Use AWS secrets instead of .env

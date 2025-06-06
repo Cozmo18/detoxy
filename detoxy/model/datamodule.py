@@ -8,8 +8,8 @@ from lightning.pytorch.utilities import rank_zero_info
 from lightning.pytorch.utilities.types import EVAL_DATALOADERS, TRAIN_DATALOADERS
 from torch.utils.data import DataLoader
 
-from detoxy.ml.config import CONFIG, DATAMODULE_CONFIG, MODULE_CONFIG
-from detoxy.ml.preprocess import combine_labels, tokenize_text
+from detoxy.model.config import CONFIG, DATAMODULE_CONFIG, MODULE_CONFIG
+from detoxy.model.preprocess import combine_labels, tokenize_text
 
 
 class TokenizerDataModule(pl.LightningDataModule):

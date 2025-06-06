@@ -1,9 +1,9 @@
 import discord
 from discord.ext import commands
 
-from detoxy.bot import messages
-from detoxy.bot.config import Config
-from detoxy.bot.logger import setup_logger
+from detoxy.app import messages
+from detoxy.app.config import Config
+from detoxy.app.logger import setup_logger
 
 logger = setup_logger("listener", Config.log_dir)
 

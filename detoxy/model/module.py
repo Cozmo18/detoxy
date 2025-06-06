@@ -7,8 +7,8 @@ from torch.optim import AdamW
 from torchmetrics.classification import MultilabelAccuracy, MultilabelF1Score
 from transformers import AutoModelForSequenceClassification
 
-from detoxy.ml.config import CONFIG, DATAMODULE_CONFIG, MODULE_CONFIG
-from detoxy.ml.preprocess import tokenize_text
+from detoxy.model.config import CONFIG, DATAMODULE_CONFIG, MODULE_CONFIG
+from detoxy.model.preprocess import tokenize_text
 
 
 class ToxicClassifier(pl.LightningModule):
