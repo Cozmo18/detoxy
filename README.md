@@ -1,7 +1,7 @@
 <!-- LOGO -->
 <h1>
 <p align="center">
-  <img src="detoxy/app/assets/logo.png" alt="detoxy Logo" width="128">
+  <img src="/app/assets/logo.png" alt="detoxy Logo" width="128">
 </h1>
   <p align="center">
     AI-powered Discord bot for automated content moderation and toxicity detection.
