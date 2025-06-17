@@ -13,5 +13,7 @@ REPEAT_OFFENSE = "{author}, this is your second warning. Continued harmful behav
 TIMEOUT_MESSAGE = "{author}, you have been timed out for 5 minutes due to repeated violations. Please take this time to review our community guidelines."
 
 # Bot Status and System Messages
-BOT_READY = "Detoxy is online and ready to help maintain a positive community environment."
+BOT_READY = (
+    "Detoxy is online and ready to help maintain a positive community environment."
+)
 MESSAGE_LOG = "Message from {author} in {server}/{channel}: {content}"

@@ -17,7 +17,9 @@ class SimpleLitAPI(ls.LitAPI):
         ckpt_dir: str | Path = CONFIG.ckpt_dir,
     ) -> None:
         self.precision = torch.bfloat16
-        self.lit_module = ToxicClassifier.load_from_checkpoint(os.path.join(ckpt_dir, checkpoint)).to(device)
+        self.lit_module = ToxicClassifier.load_from_checkpoint(
+            os.path.join(ckpt_dir, checkpoint)
+        ).to(device)
         self.lit_module.to(device).to(self.precision)
         self.lit_module.eval()
 

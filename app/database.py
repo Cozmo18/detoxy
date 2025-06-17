@@ -3,10 +3,11 @@ import sqlite3
 
 from config import Config
 
+
 def init_database():
     database_dir = Config.database_dir
     os.makedirs(database_dir, exist_ok=True)
-    
+
     db_path = database_dir / "warnings.db"
     if not db_path.exists():
         connection = sqlite3.connect(db_path)
@@ -24,26 +25,26 @@ def init_database():
         print(f"Created database file at {db_path}")
     else:
         print(f"Database file already exists at {db_path}")
-        
-    
-    
+
+
 def get_warnings(user_id: int, guild_id: int) -> int:
     connection = sqlite3.connect(Config.database_dir / "warnings.db")
     cursor = connection.cursor()
     cursor.execute(
-    """
+        """
     SELECT warnings FROM user_warnings WHERE user_id = ? AND guild_id = ?
     """,
         (user_id, guild_id),
     )
     warnings = cursor.fetchone()
     connection.close()
-    
+
     if warnings:
         return warnings
     else:
         return 0
-    
+
+
 def increase_and_get_warnings(user_id: int, guild_id: int) -> int:
     connection = sqlite3.connect(Config.database_dir / "warnings.db")
     cursor = connection.cursor()
@@ -77,5 +78,6 @@ def increase_and_get_warnings(user_id: int, guild_id: int) -> int:
 
     return warnings
 
+
 if __name__ == "__main__":
-    init_database() 
+    init_database()

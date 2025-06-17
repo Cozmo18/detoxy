@@ -11,7 +11,7 @@ from logger import setup_logger
 load_dotenv()
 
 TOKEN = os.environ.get("DISCORD_TOKEN")
-# TEST_GUILD_ID = os.environ.get("TEST_GUILD_ID") 
+# TEST_GUILD_ID = os.environ.get("TEST_GUILD_ID")
 TEST_GUILD = discord.Object(id=1380173035952410624)
 
 logger = setup_logger("bot")

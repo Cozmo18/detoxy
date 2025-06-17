@@ -1,15 +1,14 @@
+import os
 from datetime import timedelta
 
 import aiohttp
 import discord
 from discord.ext import commands
+from dotenv import load_dotenv
 
-import os
 import messages
 from config import Config
 from logger import setup_logger
-
-from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -71,7 +70,9 @@ class Moderation(commands.Cog):
             logger.error(f"Error updating warnings: {e}")
             return 0
 
-    async def _handle_warning_level(self, message: discord.Message, warnings: int) -> None:
+    async def _handle_warning_level(
+        self, message: discord.Message, warnings: int
+    ) -> None:
         """Handle different warning levels and take appropriate action."""
         if warnings == 1:
             await self._send_first_warning(message)
@@ -88,7 +89,9 @@ class Moderation(commands.Cog):
             )
             logger.info(f"Sent first warning DM to user {message.author}")
         except discord.Forbidden:
-            logger.warning(f"Could not send first warning DM to {message.author} - Bot does not have permissions.")
+            logger.warning(
+                f"Could not send first warning DM to {message.author} - Bot does not have permissions."
+            )
         except Exception as e:
             logger.warning(f"Could not send first warning DM: {e}")
 
@@ -100,7 +103,9 @@ class Moderation(commands.Cog):
             )
             logger.info(f"Sent second warning DM to user {message.author}")
         except discord.Forbidden:
-            logger.warning(f"Could not send second warning DM to {message.author} - DMs closed")
+            logger.warning(
+                f"Could not send second warning DM to {message.author} - DMs closed"
+            )
         except Exception as e:
             logger.warning(f"Could not send second warning DM: {e}")
 
@@ -112,7 +117,9 @@ class Moderation(commands.Cog):
             )
             logger.info(f"Timed out user {message.author} for 5 minutes")
         except discord.Forbidden:
-            logger.warning(f"Could not timeout user {message.author} - insufficient permissions")
+            logger.warning(
+                f"Could not timeout user {message.author} - insufficient permissions"
+            )
         except Exception as e:
             logger.warning(f"Could not issue timeout: {e}")
 
@@ -122,7 +129,9 @@ class Moderation(commands.Cog):
             )
             logger.info(f"Sent timeout notification to user {message.author}")
         except discord.Forbidden:
-            logger.warning(f"Could not send timeout message to {message.author} - DMs closed")
+            logger.warning(
+                f"Could not send timeout message to {message.author} - DMs closed"
+            )
         except Exception as e:
             logger.warning(f"Could not send timeout message to user: {e}")
 
