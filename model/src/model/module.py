@@ -7,8 +7,8 @@ from torch.optim import AdamW
 from torchmetrics.classification import MultilabelAccuracy, MultilabelF1Score
 from transformers import AutoModelForSequenceClassification
 
-from config import CONFIG, DATAMODULE_CONFIG, MODULE_CONFIG
-from preprocess import tokenize_text
+from model.config import CONFIG, DATAMODULE_CONFIG, MODULE_CONFIG
+from model.preprocess import tokenize_text
 
 
 class ToxicClassifier(pl.LightningModule):

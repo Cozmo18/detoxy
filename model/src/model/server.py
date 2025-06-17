@@ -5,8 +5,8 @@ import litserve as ls
 import torch
 from litserve import Request, Response
 
-from config import CONFIG, SERVER_CONFIG
-from module import ToxicClassifier
+from model.config import CONFIG, SERVER_CONFIG
+from model.module import ToxicClassifier
 
 
 class SimpleLitAPI(ls.LitAPI):
@@ -35,7 +35,7 @@ class SimpleLitAPI(ls.LitAPI):
         return {label: prob.item() for label, prob in zip(self.labels, output)}
 
 
-if __name__ == "__main__":
+def main() -> None:
     api = SimpleLitAPI(enable_async=True)
     server = ls.LitServer(
         api,
@@ -45,3 +45,7 @@ if __name__ == "__main__":
         track_requests=SERVER_CONFIG.track_requests,
     )
     server.run(port=8000, generate_client_file=SERVER_CONFIG.generate_client_file)
+
+
+if __name__ == "__main__":
+    main()

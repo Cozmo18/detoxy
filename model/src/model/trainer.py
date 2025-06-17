@@ -7,10 +7,10 @@ from jsonargparse import CLI
 from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint
 from pytorch_lightning.loggers import CometLogger
 
-from config import CONFIG, DATAMODULE_CONFIG, MODULE_CONFIG, TRAINER_CONFIG
-from datamodule import TokenizerDataModule
-from module import ToxicClassifier
-from utils import create_dirs, make_exp_name
+from model.config import CONFIG, DATAMODULE_CONFIG, MODULE_CONFIG, TRAINER_CONFIG
+from model.datamodule import TokenizerDataModule
+from model.module import ToxicClassifier
+from model.utils import create_dirs, make_exp_name
 
 # see https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html
 torch.set_float32_matmul_precision("medium")

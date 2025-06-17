@@ -2,10 +2,9 @@ import asyncio
 import os
 
 import discord
+from config import Config
 from discord.ext import commands
 from dotenv import load_dotenv
-
-from config import Config
 from logger import setup_logger
 
 load_dotenv()

@@ -6,7 +6,7 @@ from pathlib import Path
 import torch
 
 this_file = Path(__file__)
-root_path = this_file.parent
+root_path = this_file.parents[2]
 
 LABELS: list[str] = [
     "toxic",

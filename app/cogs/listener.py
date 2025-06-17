@@ -1,8 +1,7 @@
 import discord
-from discord.ext import commands
-
 import messages
 from config import Config
+from discord.ext import commands
 from logger import setup_logger
 
 logger = setup_logger("listener")

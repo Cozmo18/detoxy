@@ -8,4 +8,5 @@ jobs:
       - uses: astral-sh/ruff-action@v3
       - uses: astral-sh/ruff-action@v3
         with:
-          args: format
+          args: check --select B
+          src: "./src"

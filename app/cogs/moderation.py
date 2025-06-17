@@ -3,11 +3,10 @@ from datetime import timedelta
 
 import aiohttp
 import discord
-from discord.ext import commands
-from dotenv import load_dotenv
-
 import messages
 from config import Config
+from discord.ext import commands
+from dotenv import load_dotenv
 from logger import setup_logger
 
 load_dotenv()
