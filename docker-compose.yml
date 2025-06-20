@@ -1,36 +1,28 @@
 services:
-  app:
-    container_name: detoxy-app
+  bot:
+    container_name: detoxy-discord-bot
     build:
-      context: ./app
-      dockerfile: Dockerfile
-      args:
-        - IMAGE_TAG=app
-    image: detoxy:app
-    environment:
-      DISCORD_TOKEN: ${DISCORD_TOKEN}
-      TEST_GUILD_ID: ${TEST_GUILD_ID}
-      PREDICT_URL: ${PREDICT_URL}
+      context: ./bot
+    image: detoxy-discord-bot:latest
+    env_file:
+      - ./bot/.env
     depends_on:
       model:
         condition: service_healthy
         restart: true
 
   model:
-    container_name: detoxy-model
+    container_name: detoxy-model-api
     build:
       context: ./model
-      dockerfile: Dockerfile
-      args:
-        - IMAGE_TAG=model
-    image: detoxy:model
-    environment:
-      HF_TOKEN: ${HF_TOKEN}
+    image: detoxy-model-api:latest
+    env_file:
+      - ./model/.env
     ports:
       - "8000:8000"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       start_period: 45s
-      interval: 5m
+      interval: 30s
       retries: 3
       timeout: 5s

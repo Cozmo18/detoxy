@@ -32,10 +32,12 @@ class SimpleLitAPI(ls.LitAPI):
         return self.lit_module.predict_step(input)
 
     async def encode_response(self, output: torch.Tensor) -> Response:
-        return {label: prob.item() for label, prob in zip(self.labels, output)}
+        return {
+            label: prob.item() for label, prob in zip(self.labels, output, strict=False)
+        }
 
 
-def main() -> None:
+def serve() -> None:
     api = SimpleLitAPI(enable_async=True)
     server = ls.LitServer(
         api,
@@ -48,4 +50,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    serve()

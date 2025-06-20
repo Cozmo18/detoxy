@@ -31,7 +31,7 @@ def combine_labels(batch: dict, labels: list[str]) -> list:
     batch_size = len(batch[labels[0]])
     num_labels = len(labels)
 
-    labels_batch = {k: batch[k] for k in batch.keys() if k in labels}
+    labels_batch = {k: batch[k] for k in batch if k in labels}
     labels_matrix = np.zeros((batch_size, num_labels))
 
     for idx, label in enumerate(labels):

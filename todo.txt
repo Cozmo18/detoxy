@@ -1,1 +1,1 @@
-- find best way to structure dockerfiles and source code
+- check curl thing

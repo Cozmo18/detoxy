@@ -1,6 +1,6 @@
-from config import Config
-from database import get_warnings
 from discord.ext import commands
+
+from database import get_warnings
 from logger import setup_logger
 
 logger = setup_logger("admin")

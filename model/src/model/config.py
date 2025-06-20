@@ -3,8 +3,6 @@ from dataclasses import dataclass, field
 from multiprocessing import cpu_count
 from pathlib import Path
 
-import torch
-
 this_file = Path(__file__)
 root_path = this_file.parents[2]
 

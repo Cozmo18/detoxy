@@ -3,15 +3,16 @@ from datetime import timedelta
 
 import aiohttp
 import discord
-import messages
-from config import Config
 from discord.ext import commands
 from dotenv import load_dotenv
+
+import messages
+from config import Config
 from logger import setup_logger
 
 load_dotenv()
 
-PREDICT_URL = os.environ.get("PREDICT_URL")
+API_URL = os.environ.get("API_URL")
 
 logger = setup_logger("moderation")
 
@@ -89,7 +90,8 @@ class Moderation(commands.Cog):
             logger.info(f"Sent first warning DM to user {message.author}")
         except discord.Forbidden:
             logger.warning(
-                f"Could not send first warning DM to {message.author} - Bot does not have permissions."
+                f"Could not send first warning DM to {message.author} - "
+                "Bot does not have permissions."
             )
         except Exception as e:
             logger.warning(f"Could not send first warning DM: {e}")
@@ -137,16 +139,18 @@ class Moderation(commands.Cog):
     async def predict_toxicity(self, message: discord.Message) -> dict:
         try:
             data = {"input": message.content}
-            async with aiohttp.ClientSession() as session:
-                async with session.post(url=PREDICT_URL, json=data) as response:
-                    if response.status != 200:
-                        logger.error(
-                            f"Prediction service returned status {response.status}"
-                        )
-                        return {}
-                    result = await response.json()
-                    logger.debug(f"Toxicity prediction result: {result}")
-                    return result
+            async with (
+                aiohttp.ClientSession() as session,
+                session.post(url=API_URL, json=data) as response,
+            ):
+                if response.status != 200:
+                    logger.error(
+                        f"Prediction service returned status {response.status}"
+                    )
+                    return {}
+                result = await response.json()
+                logger.debug(f"Toxicity prediction result: {result}")
+                return result
         except aiohttp.ClientError as e:
             logger.error(f"Network error while predicting toxicity: {e}")
             return {}
