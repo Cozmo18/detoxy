@@ -2,22 +2,24 @@ services:
   bot:
     container_name: detoxy-discord-bot
     build:
-      context: ./bot
+      context: .
+      dockerfile: packages/bot/Dockerfile
     image: detoxy-discord-bot:latest
     env_file:
-      - ./bot/.env
+      - packages/bot/.env
     depends_on:
       model:
         condition: service_healthy
         restart: true
 
   model:
-    container_name: detoxy-model-api
+    container_name: detoxy-model
     build:
-      context: ./model
-    image: detoxy-model-api:latest
+      context: .
+      dockerfile: packages/model/Dockerfile
+    image: detoxy-model:latest
     env_file:
-      - ./model/.env
+      - packages/model/.env
     ports:
       - "8000:8000"
     healthcheck:

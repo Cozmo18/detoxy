@@ -1,0 +1,20 @@
+[project]
+name = "bot"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Cozmo", email = "107803920+Cozmo18@users.noreply.github.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "discord>=2.3.2",
+    "dotenv>=0.9.9",
+]
+
+[project.scripts]
+run = "bot.core:main_sync"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
