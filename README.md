@@ -1,7 +1,7 @@
 <!-- LOGO -->
 <h1>
 <p align="center">
-  <img src="/images/logo.png" alt="detoxy Logo" width="128">
+  <img src="/images/nm-high-resolution-logo.png" alt="nm logo" width="128">
 </h1>
   <p align="center">
     AI-powered Discord bot for automated content moderation and toxicity detection.
@@ -18,9 +18,9 @@
 
 ## About
 
-Detoxy is a powerful Discord bot that leverages machine learning to automatically detect and moderate toxic content in your server. Built with modern AI technologies and best practices, Detoxy helps maintain a healthy and positive community environment by identifying and handling inappropriate messages in real-time.
+nm (short for "no more") is a powerful Discord bot that leverages machine learning to automatically detect and moderate toxic content in your server. Built with modern AI technologies and best practices, nm helps maintain a healthy and positive community environment by identifying and handling inappropriate messages in real-time.
 
-Unlike other moderation bots that rely on simple keyword matching, Detoxy uses advanced natural language processing to understand context and nuance, providing more accurate and fair moderation decisions.
+Unlike other moderation bots that rely on simple keyword matching, nm uses advanced natural language processing to understand context and nuance, providing more accurate and fair moderation decisions.
 
 ## Features
 
@@ -72,8 +72,8 @@ Unlike other moderation bots that rely on simple keyword matching, Detoxy uses a
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/detoxy.git
-cd detoxy
+git clone https://github.com/yourusername/nm.git
+cd nm
 ```
 
 2. Install dependencies:

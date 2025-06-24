@@ -1,10 +1,10 @@
 services:
   bot:
-    container_name: detoxy-discord-bot
+    container_name: nm-bot
     build:
       context: .
       dockerfile: packages/bot/Dockerfile
-    image: detoxy-discord-bot:latest
+    image: nm-bot:latest
     env_file:
       - packages/bot/.env
     depends_on:
@@ -13,11 +13,11 @@ services:
         restart: true
 
   model:
-    container_name: detoxy-model
+    container_name: nm-model
     build:
       context: .
       dockerfile: packages/model/Dockerfile
-    image: detoxy-model:latest
+    image: nm-model:latest
     env_file:
       - packages/model/.env
     ports:

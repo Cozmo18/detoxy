@@ -1,5 +1,5 @@
 [project]
-name = "detoxy"
+name = "nm"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -10,7 +10,7 @@ requires-python = ">=3.12"
 dependencies = []
 
 [project.scripts]
-detoxy = "detoxy:main"
+nm = "nm:main"
 
 [build-system]
 requires = ["hatchling"]

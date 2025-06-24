@@ -11,3 +11,6 @@ wheels/
 
 # Enviorment variables
 *.env
+
+packages/model/data
+packages/model/checkpoints
