@@ -15,28 +15,29 @@ COMET_WORKSPACE: str | None = os.environ.get("COMET_WORKSPACE")
 this_file = Path(__file__)
 root_path = this_file.parents[2]
 
-LABELS: list[str] = [
+CLASSES: list[str] = [
     "toxic",
-    "severe_toxic",
-    "obscene",
+    # "severe_toxic",
+    # "obscene",
     "threat",
-    "insult",
-    "identity_hate",
+    # "insult",
+    # "identity_hate",
 ]
 
 
 @dataclass()
 class Config:
-    cache_dir: str | Path = os.path.join(root_path, "data")
-    log_dir: str | Path = os.path.join(root_path, "logs")
-    ckpt_dir: str | Path = os.path.join(root_path, "checkpoints")
+    cache_dir: Path = field(default_factory=lambda: root_path / "data")
+    log_dir: Path = field(default_factory=lambda: root_path / "logs")
+    ckpt_dir: Path = field(default_factory=lambda: root_path / "checkpoints")
+    data_dir: Path = field(default_factory=lambda: root_path / "data")
     seed: int = 0
 
 
 @dataclass
-class DataModuleConfig:
+class DataConfig:
     dataset_name: str = "anitamaxvim/toxy-dataset"
-    labels: list[str] = field(default_factory=lambda: LABELS)
+    classes: list[str] = field(default_factory=lambda: CLASSES)
     train_split: str = "balanced_train"
     test_split: str = "test"
     batch_size: int = 64
@@ -48,12 +49,12 @@ class DataModuleConfig:
 
 @dataclass
 class ModuleConfig:
-    model_name: str = "google/bert_uncased_L-2_H-128_A-2"  # Tiny Bert
+    model_name: str = "google/bert_uncased_L-2_H-128-A-2"  # Tiny Bert
     learning_rate: float = 3e-5
-    finetuned: str = os.path.join(
-        this_file.parent,
-        "checkpoints",
-        "google-bert-uncased-L-2-H-128-A-2_LR3e-5_BS64_MSL512_20250430-161306.ckpt",
+    finetuned: Path = field(
+        default_factory=lambda: this_file.parent
+        / "checkpoints"
+        / "google-bert-uncased-L-2-H-128-A-2_LR3e-5_BS64_MSL512_20250430-161306.ckpt"
     )
 
 
