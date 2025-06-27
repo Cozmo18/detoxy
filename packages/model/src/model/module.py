@@ -4,81 +4,94 @@ import lightning.pytorch as pl
 import torch
 from lightning.pytorch.utilities.types import OptimizerLRScheduler
 from torch.optim import AdamW
-from torchmetrics.classification import MultilabelAccuracy, MultilabelF1Score
-from transformers import AutoModelForSequenceClassification
+from torchmetrics.classification import MultilabelAccuracy
 
+# from torch.nn.functional import binary_cross_entropy_wiA
 from model.config import Config, DataModuleConfig, ModuleConfig
-from model.preprocess import tokenize_text
+from model.utils import get_model_and_tokenizer
 
 
 class SequenceClassificationModule(pl.LightningModule):
     def __init__(
         self,
-        model_name: str = ModuleConfig().model_name,
-        labels: list[str] = DataModuleConfig().labels,
-        max_seq_length: int = DataModuleConfig().max_seq_length,
-        learning_rate: float = ModuleConfig().learning_rate,
-        output_key: str = "logits",  # Set according to the model output object
-        loss_key: str = "loss",  # Set according to the model output object
+        model_name: str = ModuleConfig.model_name,
+        num_classes: int = len(DataModuleConfig.label_cols),
+        max_token_len: int = ModuleConfig.max_token_len,
+        learning_rate: float = ModuleConfig.learning_rate,
+        cache_dir: str | Path = Config.cache_dir,
+        input_key: str = "input_ids",
+        mask_key: str = "attention_mask",
+        output_key: str = "logits",
+        loss_key: str = "loss",
     ) -> None:
         super().__init__()
         self.save_hyperparameters()
         self.model_name = model_name
-        self.labels = labels
-        self.num_labels = len(labels)
-        self.max_seq_length = max_seq_length
+        self.num_classes = num_classes
+        self.max_token_len = max_token_len
         self.learning_rate = learning_rate
+        self.ache_dir = cache_dir
+        self.input_key = input_key
+        self.mask_key = mask_key
         self.output_key = output_key
         self.loss_key = loss_key
 
-        self.model = AutoModelForSequenceClassification.from_pretrained(
-            model_name,
-            problem_type="multi_label_classification",
-            num_labels=self.num_labels,
+        self.tokenizer, self.model = get_model_and_tokenizer(
+            model_name, num_labels=num_classes, cache_dir=cache_dir
         )
+        self.criterion = torch.nn.BCEWithLogitsLoss()
+        self.accuracy = MultilabelAccuracy(num_labels=num_classes)
 
-        self.accuracy = MultilabelAccuracy(num_labels=self.num_labels)
-        self.f1_score = MultilabelF1Score(num_labels=self.num_labels)
+    def forward(self, x: str | list[str]) -> torch.Tensor:
+        encodings = self.tokenizer(
+            x,
+            add_special_tokens=True,
+            max_length=self.max_token_len,
+            return_token_type_ids=False,
+            padding="max_length",
+            truncation=True,
+            return_attention_mask=True,
+            return_tensors="pt",
+        )
+        outputs = self.model(
+            encodings[self.input_key],
+            attention_mask=encodings[self.mask_key],
+        )
+        return outputs[self.output_key]
 
-    def training_step(self, batch: dict, batch_idx: int) -> torch.Tensor:
-        outputs = self.model(**batch)
-        loss = outputs[self.loss_key]
+    def training_step(
+        self, batch: tuple[list[str], torch.Tensor], batch_idx: int
+    ) -> torch.Tensor:
+        text, labels = batch
+        logits = self.forward(text)
+        loss = self.criterion(logits, labels)
         self.log("train-loss", loss)
         return loss
 
-    def validation_step(self, batch: dict, batch_idx: int) -> None:
-        loss, acc, f1 = self._shared_eval_step(batch, batch_idx)
-        metrics = {"val-loss": loss, "val-acc": acc, "val-f1": f1}
-        self.log_dict(metrics, prog_bar=True)
+    def validation_step(
+        self, batch: tuple[list[str], torch.Tensor], batch_idx: int
+    ) -> None:
+        text, labels = batch
+        logits = self.forward(text)
+        loss = self.criterion(logits, labels)
+        preds = torch.sigmoid(logits)
+        acc = self.accuracy(preds, labels)
+        self.log("val-loss", loss, prog_bar=True)
+        self.log("val-acc", acc, prog_bar=True)
 
-    def test_step(self, batch: dict, batch_idx: int) -> None:
-        loss, acc, f1 = self._shared_eval_step(batch, batch_idx)
-        metrics = {"test-loss": loss, "test-acc": acc, "test-f1": f1}
-        self.log_dict(metrics, prog_bar=True)
+    def test_step(self, batch: tuple[list[str], torch.Tensor], batch_idx: int) -> None:
+        text, labels = batch
+        logits = self.forward(text)
+        loss = self.criterion(logits, labels)
+        preds = torch.sigmoid(logits)
+        acc = self.accuracy(preds, labels)
+        self.log("test-loss", loss, prog_bar=True)
+        self.log("test-acc", acc, prog_bar=True)
 
-    def predict_step(
-        self, text: str, cache_dir: str | Path = Config().cache_dir
-    ) -> torch.Tensor:
-        inputs = tokenize_text(
-            text,
-            model_name=self.model_name,
-            max_seq_length=self.max_seq_length,
-            cache_dir=cache_dir,
-        )
-        inputs = {key: value.to(self.device) for key, value in inputs.items()}
-        outputs = self.model(**inputs)
-        logits = outputs[self.output_key]
-        return torch.sigmoid(logits).flatten()
-
-
-    def _shared_eval_step(self, batch: dict, batch_idx: int) -> tuple:
-        labels = batch["labels"]
-        outputs = self.model(**batch)
-        loss = outputs[self.loss_key]
-        logits = outputs[self.output_key]
-        acc = self.accuracy(logits, labels)  # accept logits as pred
-        f1 = self.f1_score(logits, labels)  # accept logits as pred
-        return loss, acc, f1
+    def predict_step(self, text: str) -> torch.Tensor:
+        logits = self.forward(text)
+        preds = torch.sigmoid(logits)
+        return preds.flatten()
 
     def configure_optimizers(self) -> OptimizerLRScheduler:
         return AdamW(self.parameters(), lr=self.learning_rate)

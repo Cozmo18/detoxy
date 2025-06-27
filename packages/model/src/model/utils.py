@@ -1,7 +1,7 @@
+from pathlib import Path
+
 import torch
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
-from transformers.tokenization_utils import PreTrainedTokenizer
-from transformers.utils.dummy_pt_objects import PreTrainedModel
 
 
 def move_to(obj: torch.Tensor | dict | list, device: str) -> torch.Tensor | dict | list:
@@ -22,15 +22,27 @@ def move_to(obj: torch.Tensor | dict | list, device: str) -> torch.Tensor | dict
             res.append(move_to(v, device))
         return res
 
-    raise TypeError("Invalid type")
+    msg = "Invalid type"
+    raise TypeError(msg)
+
+
+def create_dirs(dirs: list[str | Path]) -> None:
+    for d in dirs:
+        path = Path(d) if isinstance(d, str) else d
+        if not path.is_dir():
+            path.mkdir()
 
 
 def get_model_and_tokenizer(
-    model_name: str, num_labels: int
-) -> tuple[PreTrainedModel, PreTrainedTokenizer]:
+    model_name: str,
+    num_labels: int,
+    cache_dir: str | Path,
+) -> tuple[AutoTokenizer, AutoModelForSequenceClassification]:
+    tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=cache_dir)
     model = AutoModelForSequenceClassification.from_pretrained(
-        model_name, num_labels=num_labels, problem_type="multi_label_classification"
+        model_name,
+        num_labels=num_labels,
+        cache_dir=cache_dir,
+        problem_type="multi_label_classification",
     )
-    tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
-
-    return model, tokenizer
+    return tokenizer, model

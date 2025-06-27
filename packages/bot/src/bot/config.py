@@ -10,4 +10,4 @@ root_path: Path = this_file.parent
 
 THRESHOLD = float(os.environ.get("THRESHOLD"))
 DISCORD_TOKEN = str(os.environ.get("DISCORD_TOKEN"))
-API_URL= str(os.environ.get("API_URL"))
+API_URL = str(os.environ.get("API_URL"))

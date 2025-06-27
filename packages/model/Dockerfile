@@ -43,4 +43,4 @@ ENV PATH="/app/.venv/bin:$PATH"
 # Expose the port the application listens on
 EXPOSE 8000
 
-CMD ["run"]
+CMD ["python", "-m", "model.trainer"]

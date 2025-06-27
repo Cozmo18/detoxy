@@ -9,12 +9,13 @@ authors = [
 requires-python = ">=3.12"
 dependencies = [
     "torch<2.3",
+    "numpy<2",
     "dotenv>=0.9.9",
     "lightning>=2.5.2",
     "litserve>=0.2.12",
-    "numpy<2",
-    "transformers>=4.52.4",
+    "transformers==4.49",
     "datasets>=3.6.0",
+    "jsonargparse>=4.40.0",
 ]
 
 [project.scripts]
@@ -34,3 +35,8 @@ torch = [
 name = "pytorch-cpu"
 url = "https://download.pytorch.org/whl/cpu"
 explicit = true
+
+[dependency-groups]
+dev = [
+    "comet-ml>=3.49.11",
+]
